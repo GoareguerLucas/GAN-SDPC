@@ -1,0 +1,8 @@
+# Résumé de la semaine 1 de stage
+
+
+## A faire :
+
+ - Mettre à jour l'ordinateur : Ok
+ - Trouvé un dataset Simpsons : Ok
+ - Trouver un GAN efficace sur la dataset : En cours

@@ -6,8 +6,13 @@ Dans un premier temps, nous voudrions étudier l'impacte du sparse coding sur le
 Stage M2 dans le cadre du master https://iaaa.lis-lab.fr/
 
 
-## en cours
+## En cours
+
+Recherche d'un GAN efficace : https://github.com/eriklindernoren/PyTorch-GAN
 
 
+## Lien utile
 
-https://github.com/eriklindernoren/PyTorch-GAN
+Simpsons GAN and dataset : https://github.com/gsurma/image_generator
+
+
