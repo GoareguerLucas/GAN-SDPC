@@ -5,4 +5,9 @@
 
  - Mettre à jour l'ordinateur : Ok
  - Trouvé un dataset Simpsons : Ok
+ - Construire un module Dataset torch : Ok
  - Trouver un GAN efficace sur la dataset : En cours
+ - Entrainer le GAN jusqu'à avoir un résultats concluant : A suivre
+ - Prendre en main SDPC : A suivre
+ - Trouver une architecture pour fusionner le GAN et SDPC : A suivre
+ - Evaluer l'intèret de l'architecture : A suivre
