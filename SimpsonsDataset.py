@@ -8,20 +8,20 @@ import numpy as np
 import random
 
 INPUT_DATA_DIR = "../Dataset/cropped/"
-IMAGE_SIZE = 200
+IMAGE_SIZE = 32
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
 
 
 def show_tensor(sample_tensor, epoch):
-	figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
-	for index, axis in enumerate(axes):
-	    axis.axis('off')
+	#figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
+	#for index, axis in enumerate(axes):
+	#	axis.axis('off')
 	
 	tensor_view = sample_tensor.permute(1, 2, 0)
 
 	print(tensor_view.shape)
 	
-	plt.imshow(tensor_view)
+	plt.imshow(np.asarray(tensor_view))
 		
 	plt.show()
 
@@ -61,8 +61,8 @@ class SimpsonsDataset(Dataset):
 if __name__ == "__main__":
 	
 	
-	transformations = transforms.Compose([transforms.ToTensor(), transforms.Normalize([0.5],[0.5])])
-	simpsonsDataset = SimpsonsDataset('../Dataset/cropped/', IMAGE_SIZE, IMAGE_SIZE, transformations)
+	transformations = transforms.Compose([transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5],[0.5])])
+	simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations)
 	
 	print(type(simpsonsDataset), len(simpsonsDataset))
 	
