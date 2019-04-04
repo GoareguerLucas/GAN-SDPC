@@ -8,6 +8,41 @@
  - Construire un module Dataset torch : Ok
  - Trouver un GAN efficace sur le dataset : En cours
  - Tunner le GAN jusqu'à avoir un résultats concluant : A suivre
+ - Tester CycleGAN pour transformer des visages humain en Simpsons : A suivre
  - Prendre en main SDPC : A suivre
  - Trouver une architecture pour fusionner le GAN et SDPC : A suivre
  - Evaluer l'intèret de l'architecture : A suivre
+
+## Note d'expériences
+
+Teste GAN1 DCGAN1 AAE1 en 32*32 lr=0.0002 epochs=200 :
+Résultats :
+	- GAN : résultats brouiller et flou mais forme des visage, couleur jaune et yeux blanc
+	- DCGAN : bouillie multi color en fond et jaune au centre
+	- AAE : visage flou mais presque reconnaisable (Homer, Marge et Bart), fond presque unis
+Conclusion :
+	- entrainement fonctionnel
+	- epochs trop faible
+	- AAE prometteur
+	- DCGAN surement besoin de beaucoup plus d'epochs
+
+Teste GAN2 DCGAN2 AAE2 en 32*32 lr=0.00002 epochs=300 :
+Résultats :
+	- GAN : aucune convergeance, brouillage jaune uniquement
+	- DCGAN : pareil que l'expérience 1
+	- AAE : visage plus flou que pour l'expérience 1 
+Conclusion :
+	- l'augmentation des epochs n'a pas compensser la diminution du lr
+	- epochs trop faible
+	- AAE toujours le plus prometteur
+
+Teste GAN3 DCGAN3 AAE3 en 64*64 lr=0.00002 epochs=300 :
+Résultats :
+	- GAN : faible convergeance, forme de visage brouiller
+	- DCGAN : pareil que l'expérience 1
+	- AAE : la forme des visage n'est aussi bien dessiner que pour les expériences précédentes
+Conclusion :
+	- les models fonction en 64*64 et cette dimension semble bien pour reconnaître des visages
+	- epochs trop faible
+	- AAE toujours le plus prometteur
+
