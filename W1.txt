@@ -12,6 +12,7 @@
  - Prendre en main SDPC : A suivre
  - Trouver une architecture pour fusionner le GAN et SDPC : A suivre
  - Evaluer l'intèret de l'architecture : A suivre
+ - Tester BigGan qui promet de bien marcher mais demande beaucoup de ressource : Peut être
 
 ## Note d'expériences
 
@@ -36,7 +37,7 @@ Conclusion :
 	- epochs trop faible
 	- AAE toujours le plus prometteur
 
-Teste GAN3 DCGAN3 AAE3 en 64*64 lr=0.00002 epochs=300 :
+Teste GAN64 DCGAN64 AAE64 en 64*64 lr=0.00002 epochs=300 :
 Résultats :
 	- GAN : faible convergeance, forme de visage brouiller
 	- DCGAN : pareil que l'expérience 1
@@ -46,3 +47,31 @@ Conclusion :
 	- epochs trop faible
 	- AAE toujours le plus prometteur
 
+Teste DCGAN Loss en 32*32 lr=0.00007 epochs=280-266 :
+Le loss des AAE inclus une part de comparaison entre l'image générer et l'image réel.
+Sur ce principe j'ai ajouter au loss du générateur des DCGAN une comparaison entre l'image générer et l'image réel.
+dcganLoss1 : 0.01 * adverserialLoss + 0.99*newLoss
+dcganLoss2 : 0.7 * adverserialLoss + 0.3*newLoss
+Résultats :
+	- dcganLoss1 et dcganLoss2 : Meilleur que DCGAN pour un nombre d'epochs comparrable
+	- Le dcganLoss1 semble commencer a dessiner des contours
+	- dcganLoss1 > dcganLoss2
+Conclusion :
+	- L'ajout de ce nouveau loss améliore la qualité des images produites
+	- Il faudrait tester avec plus epochs et 0.999*newLoss (comme pour le aae)
+
+Teste AAE3 en 32*32 lr=0.00007 epochs=430 :
+Résultats :
+	- AAE1 > AAE3 > AAE2
+ 	- AAE3 : La forme des visage n'est pas très bien dessiner
+Conclusion :
+	- epochs trop faible
+	- AAE3 moins bon
+	- lr trop faible pour le nombre d'epochs
+
+
+Next exp:
+2854 dcganLoss3 : 0.001 * adverserialLoss + 0.999*newLoss epochs = 600 lr = 0.00007
+3569 dcganLoss4 : 0.1 * adverserialLoss + 0.9*newLoss epochs = 600 lr = 0.00007
+40253 aae4 : lr=0.00012 epochs=600
+1923 aaeLoss1 : lr=0.00012 epochs=600 0.1 * adverserialLoss + 0.9*newLoss
