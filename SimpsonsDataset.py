@@ -57,6 +57,43 @@ class SimpsonsDataset(Dataset):
 	def __len__(self):
 		return len(self.files)
 		
+class FastSimpsonsDataset(Dataset):
+	def __init__(self, dir_path, height, width, transforms=None):
+		"""
+		Args:
+			dir_path (string): path to dir conteint exclusively images png
+			height (int): image height
+			width (int): image width
+			transform: pytorch transforms for transforms and tensor conversion
+		"""
+		self.files = glob(dir_path + '*')
+		self.labels = np.zeros(len(self.files))
+		self.height = height
+		self.width = width
+		self.transforms = transforms
+		
+		# Chargement des images
+		self.tensors = list()
+		for img in self.files:
+			img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
+			# Convert image from numpy array to PIL image
+			img_as_img = Image.fromarray(img_as_np)
+			img_as_img = img_as_img.convert('RGB')
+			# Transform image to tensor
+			if self.transforms is not None:
+				img_as_tensor = self.transforms(img_as_img)
+			self.tensors.append(img_as_tensor)
+
+	def __getitem__(self, index):
+		single_image_label = self.labels[index]
+		img_as_tensor = self.tensors[index]
+
+		# Return image and the label
+		return (img_as_tensor, single_image_label)
+
+	def __len__(self):
+		return len(self.files)
+		
 
 if __name__ == "__main__":
 	

@@ -1,0 +1,43 @@
+# Résumé de la semaine 2 de stage
+
+
+## A faire :
+
+ - Mettre à jour l'ordinateur : Ok
+ - Trouvé un dataset Simpsons : Ok
+ - Construire un module Dataset torch : Ok
+ - Trouver un GAN efficace sur le dataset : En cours
+ - Tunner le GAN jusqu'à avoir un résultats concluant : A suivre
+ - Tester CycleGAN pour transformer des visages humain en Simpsons : A suivre
+ - Prendre en main SDPC : A suivre
+ - Trouver une architecture pour fusionner le GAN et SDPC : A suivre
+ - Evaluer l'intèret de l'architecture : A suivre
+ - Tester BigGan qui promet de bien marcher mais demande beaucoup de ressource : Peut être
+
+## Note d'expériences
+
+Teste GAN10K DCGAN3K AAE10K en 32*32 lr=0.0002 epochs=10000-3000-10000 :
+Enfin des expériences d'ampleur
+Résultats :
+	- GAN : On constate des résultats meilleurs que ceux optenus avec les autres GAN (simple). Un sur-apprentissage apparaît entre les epochs 500 à 600 (environ). 
+		Time=4h30
+	- DCGAN : Des ré
+		Time=5h30
+	- AAE : Perte des données pour les epochs jusqu'à la 3000.
+		Time=5h30
+Conclusion :
+	- 
+
+Teste GAN800 en 32*32 lr=0.0002 epochs=800
+Re-Calibrage de GAN10K
+Résultats :
+	- GAN
+Conclusion :
+	- 
+
+Teste GAN5K en 32*32 lr=0.00002 epochs=5000
+Teste d'un lr plus faible
+Résultats :
+	- GAN
+Conclusion :
+	- 
