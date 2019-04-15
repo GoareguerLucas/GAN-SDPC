@@ -1,0 +1,55 @@
+# Résumé de la semaine 2 de stage
+
+
+## A faire :
+
+ - Mettre à jour l'ordinateur : Ok
+ - Trouvé un dataset Simpsons : Ok
+ - Construire un module Dataset torch : Ok
+ - Trouver un GAN efficace sur le dataset : En cours
+ - Tunner le GAN jusqu'à avoir un résultats concluant : A suivre
+ - Tester CycleGAN pour transformer des visages humain en Simpsons : En cours
+ - Prendre en main SDPC : A suivre
+ - Trouver une architecture pour fusionner le GAN et SDPC : A suivre
+ - Evaluer l'intèret de l'architecture : A suivre
+ - Tester BigGan qui promet de bien marcher mais demande beaucoup de ressource : Peut être
+
+## Note d'expériences
+
+Teste AAEHSuni DCGANHSuni en 32*32 lr=-0.0004 epochs=5000
+Teste pour HardSmooth uniform (fake 0.0-0.5 et valid 0.5-1.0) comparé avec AAEHSnor DCGANHSnor
+Résultats :
+	- DCGAN (gt-0): 
+	- AAE  (gt-2): 
+Conclusion :
+	- Le taux de 0.5 est trop important, le discriminateur ne clase pas bien.
+
+Teste DCGAN112uni DCGAN112nor en 112*112 lr=-0.0004 epochs=5000 
+Teste grande taille avec HardSmooth uniform (0.20) et HardSmooth normal (0.20)
+Résultats :
+	- DCGAN112uni  : Des images nette mais des formes peut cohérentes. 
+	- DCGAN112nor  :
+Conclusion :
+	- DCGAN112uni : Les meilleurs résultats pour le moments
+	- Erreur sur l'utilisation de la fonction uniform (uniform(0.75, 0.25)), à refaire
+
+Teste AAEnoise DCGANnoise GANnoise en 32*32 lr=-0.0004 epochs=2000
+Ajout d'un bruit aléatoir sur les images à chaque batch (mean=0.0,std=0.05) 
+HS : uniform(0.0, 0.3, 0.7, 1.0)
+Résultats :
+	- GAN(gt-2) : Aucune differrence notable avec ou sans le bruit (0,0.05,0.15)
+	- DCGAN : 
+	- AAE  : 
+Conclusion :
+	- 
+
+Teste GANLSmod en 32*32 lr=-0.0004 epochs=1000
+D'après (https://github.com/soumith/ganhacks/issues/41) ne pas mettre de LS sur les fake
+HS : uniform( 0.7, 1.0)
+Résultats :
+	- GAN(gt-2) : Le score fake descent à 0.
+Conclusion :
+	- D apprend toujours trop vite et G est dépasser
+
+En cours :
+- Teste : b1 = 0.9, c'est la valeurs par défault
