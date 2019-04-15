@@ -213,7 +213,7 @@ for epoch in range(opt.n_epochs):
 
 		d_loss.backward()
 		optimizer_D.step()
-		
+
 		# Save Losses for plotting later
 		G_losses.append(g_loss.item())
 		D_losses.append(d_loss.item())
@@ -239,7 +239,7 @@ print(decoder)
 print(D)
 
 
-#Plot losses			
+#Plot losses
 plt.figure(figsize=(10,5))
 plt.title("Generator and Discriminator Loss During Training")
 plt.plot(G_losses,label="G")
@@ -247,5 +247,5 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig("losses",format="png")
+plt.savefig("losses.png",format="png")
 #plt.show()

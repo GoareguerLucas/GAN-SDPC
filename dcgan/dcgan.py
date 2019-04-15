@@ -194,7 +194,7 @@ for epoch in range(opt.n_epochs):
 
 		d_loss.backward()
 		optimizer_D.step()
-		
+
 		# Save Losses for plotting later
 		G_losses.append(g_loss.item())
 		D_losses.append(d_loss.item())
@@ -207,7 +207,7 @@ for epoch in range(opt.n_epochs):
 		batches_done = epoch * len(dataloader) + i
 		if batches_done % opt.sample_interval == 0:
 			save_image(gen_imgs.data[:25], "images/%d.png" % batches_done, nrow=5, normalize=True)
-			
+
 torch.save(discriminator, "D.pt")
 torch.save(generator, "G.pt")
 
@@ -217,7 +217,7 @@ print(G)
 print(D)
 
 
-#Plot losses			
+#Plot losses
 plt.figure(figsize=(10,5))
 plt.title("Generator and Discriminator Loss During Training")
 plt.plot(G_losses,label="G")
@@ -225,5 +225,5 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig("losses",format="png")
+plt.savefig("losses.png",format="png")
 #plt.show()
