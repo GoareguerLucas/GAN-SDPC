@@ -123,7 +123,7 @@ discriminator.apply(weights_init_normal)
 
 # Configure data loader
 transformations = transforms.Compose([transforms.ToTensor()])
-dataset = SimpsonsDataset("../cropped/",opt.img_size,opt.img_size,transformations) #../../../Dataset/
+dataset = SimpsonsDataset("../../Dataset/cropped/",opt.img_size,opt.img_size,transformations) #../../../Dataset/
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=True)
 
 """os.makedirs("../../data/mnist", exist_ok=True)
