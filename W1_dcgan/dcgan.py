@@ -16,7 +16,6 @@ import torch
 
 import sys
 sys.path.append("../")
-
 from SimpsonsDataset import SimpsonsDataset
 import matplotlib.pyplot as plt
 
@@ -215,6 +214,9 @@ G = torch.load("G.pt")
 D = torch.load("D.pt")
 print(G)
 print(D)
+
+
+save_image(gen_imgs.data[:25], "final.png" % batches_done, nrow=5, normalize=True)
 
 
 #Plot losses
