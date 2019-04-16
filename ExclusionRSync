@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__
+*.py[cod]
+*.py
+*.pt
+*$py.class
+save
+*/models/
+test.py
+*.md
+.git*
+ExlusionRSync
+Makefile
