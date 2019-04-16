@@ -255,7 +255,7 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig(opt.sample_path+"/losses.png",format="png")
+plt.savefig("losses.png",format="png")
 #plt.show()
 
 #Plot game score
