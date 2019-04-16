@@ -37,7 +37,7 @@ parser.add_argument("--channels", type=int, default=3, help="number of image cha
 parser.add_argument("--sample_interval", type=int, default=4000, help="interval betwen image samples")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=100000, help="interval between image sampling")
-parser.add_argument('--model_save_path', type=str, default='model')
+parser.add_argument('--model_save_path', type=str, default='models')
 opt = parser.parse_args()
 print(opt)
 
@@ -249,7 +249,7 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig(opt.sample_path+"/losses",format="png")
+plt.savefig(opt.sample_path+"/losses.png",format="png")
 #plt.show()
 
 #Plot game score
@@ -260,4 +260,4 @@ plt.plot(D_G_z,label="D(G(z))")
 plt.xlabel("iterations")
 plt.ylabel("scores")
 plt.legend()
-plt.savefig(opt.sample_path+"/scores",format="png")
+plt.savefig("scores.png",format="png")

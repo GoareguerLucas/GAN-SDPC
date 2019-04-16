@@ -2,7 +2,6 @@ import argparse
 import os
 import numpy as np
 import math
-import itertools
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -31,14 +30,13 @@ parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espil
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--n_gpu", type=int, default=1, help="number of gpu use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent code")
+parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=4000, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=40000, help="interval between image sampling")
-parser.add_argument('--model_save_path', type=str, default='model')
+parser.add_argument('--model_save_path', type=str, default='models')
 opt = parser.parse_args()
 print(opt)
 
@@ -48,68 +46,43 @@ print(opt)
 os.makedirs(opt.sample_path, exist_ok=True)
 os.makedirs(opt.model_save_path, exist_ok=True)
 
-img_shape = (opt.channels, opt.img_size, opt.img_size)
-
 cuda = True if torch.cuda.is_available() else False
 
 
-def reparameterization(mu, logvar):
-	std = torch.exp(logvar / 2)
-	sampled_z = Variable(Tensor(np.random.normal(0, 1, (mu.size(0), opt.latent_dim))))
-	z = sampled_z * std + mu
-	return z
+def weights_init_normal(m):
+	classname = m.__class__.__name__
+	if classname.find("Conv") != -1:
+		torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
+	elif classname.find("BatchNorm2d") != -1:
+		torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
+		torch.nn.init.constant_(m.bias.data, 0.0)
 
 
-class Encoder(nn.Module):
+class Generator(nn.Module):
 	def __init__(self):
-		super(Encoder, self).__init__()
+		super(Generator, self).__init__()
 
-		self.model = nn.Sequential(
-			nn.Linear(int(np.prod(img_shape)), 512),
+		self.init_size = opt.img_size // 4
+		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 128 * self.init_size ** 2))
+
+		self.conv_blocks = nn.Sequential(
+			nn.BatchNorm2d(128),
+			nn.Upsample(scale_factor=2),
+			nn.Conv2d(128, 128, 3, stride=1, padding=1),
+			nn.BatchNorm2d(128, opt.eps),
 			nn.LeakyReLU(0.2, inplace=True),
-			nn.Linear(512, 512),
-			nn.BatchNorm1d(512, opt.eps),
+			nn.Upsample(scale_factor=2),
+			nn.Conv2d(128, 64, 3, stride=1, padding=1),
+			nn.BatchNorm2d(64, opt.eps),
 			nn.LeakyReLU(0.2, inplace=True),
-		)
-
-		self.mu = nn.Linear(512, opt.latent_dim)
-		self.logvar = nn.Linear(512, opt.latent_dim)
-
-	def forward(self, img):
-		img_flat = img.view(img.shape[0], -1)
-		
-		if img_flat.is_cuda and opt.n_gpu > 1:
-			x = nn.parallel.data_parallel(self.model, img_flat, range(opt.n_gpu))
-		else:
-			x = self.model(img_flat)
-			
-		mu = self.mu(x)
-		logvar = self.logvar(x)	
-		z = reparameterization(mu, logvar)
-		return z
-
-
-class Decoder(nn.Module):
-	def __init__(self):
-		super(Decoder, self).__init__()
-
-		self.model = nn.Sequential(
-			nn.Linear(opt.latent_dim, 512),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Linear(512, 512),
-			nn.BatchNorm1d(512, opt.eps),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Linear(512, int(np.prod(img_shape))),
+			nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
 			nn.Tanh(),
 		)
 
 	def forward(self, z):
-		if z.is_cuda and opt.n_gpu > 1:
-			img_flat = nn.parallel.data_parallel(self.model, z, range(opt.n_gpu))
-		else:
-			img_flat = self.model(z)
-			
-		img = img_flat.view(img_flat.shape[0], *img_shape)
+		out = self.l1(z)
+		out = out.view(out.shape[0], 128, self.init_size, self.init_size)
+		img = self.conv_blocks(out)
 		return img
 
 
@@ -117,40 +90,48 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
+		def discriminator_block(in_filters, out_filters, bn=True):
+			block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.25)]
+			if bn:
+				block.append(nn.BatchNorm2d(out_filters, opt.eps))
+			return block
+
 		self.model = nn.Sequential(
-			nn.Linear(opt.latent_dim, 512),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Linear(512, 256),
-			nn.LeakyReLU(0.2, inplace=True),
-			nn.Linear(256, 1),
-			nn.Sigmoid(),
+			*discriminator_block(opt.channels, 16, bn=False),
+			*discriminator_block(16, 32),
+			*discriminator_block(32, 64),
+			*discriminator_block(64, 128),
 		)
 
-	def forward(self, z):
-		if z.is_cuda and opt.n_gpu > 1:
-			validity = nn.parallel.data_parallel(self.model, z, range(opt.n_gpu))
-		else:
-			validity = self.model(z)
-		
-		#validity = self.model(z)
+		# The height and width of downsampled image
+		ds_size = opt.img_size // 2 ** 4
+		self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1), nn.Sigmoid())
+
+	def forward(self, img):
+		out = self.model(img)
+		out = out.view(out.shape[0], -1)
+		validity = self.adv_layer(out)
+
 		return validity
 
 
-# Use binary cross-entropy loss
+# Loss function
 adversarial_loss = torch.nn.BCELoss()
-pixelwise_loss = torch.nn.L1Loss()
+#pixelwise_loss = torch.nn.L1Loss()
 
 # Initialize generator and discriminator
-encoder = Encoder()
-decoder = Decoder()
+generator = Generator()
 discriminator = Discriminator()
 
 if cuda:
-	encoder.cuda()
-	decoder.cuda()
+	generator.cuda()
 	discriminator.cuda()
 	adversarial_loss.cuda()
-	pixelwise_loss.cuda()
+	#pixelwise_loss.cuda()
+
+# Initialize weights
+generator.apply(weights_init_normal)
+discriminator.apply(weights_init_normal)
 
 # Configure data loader
 transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
@@ -158,21 +139,10 @@ dataset = FastSimpsonsDataset("../../cropped/cp/",opt.img_size,opt.img_size,tran
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=True)
 
 # Optimizers
-optimizer_G = torch.optim.Adam(
-	itertools.chain(encoder.parameters(), decoder.parameters()), lr=opt.lrG, betas=(opt.b1, opt.b2)
-)
+optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
-
-def sample_image(n_row, batches_done):
-	"""Saves a grid of generated digits"""
-	# Sample noise
-	z = Variable(Tensor(np.random.normal(0, 1, (n_row ** 2, opt.latent_dim))))
-	gen_imgs = decoder(z)
-	save_image(gen_imgs.data, "%s/%d.png" % (opt.sample_path, batches_done), nrow=n_row, normalize=True)
-
 
 # ----------
 #  Training
@@ -207,30 +177,31 @@ for epoch in range(opt.n_epochs):
 
 		optimizer_G.zero_grad()
 
-		encoded_imgs = encoder(real_imgs)
-		decoded_imgs = decoder(encoded_imgs)
+		# Sample noise as generator input
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 
+		# Generate a batch of images
+		gen_imgs = generator(z)
+	
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = 0.001 * adversarial_loss(discriminator(encoded_imgs), valid) + 0.999 * pixelwise_loss(
-			decoded_imgs, real_imgs
-		)
+		g_loss = adversarial_loss(discriminator(gen_imgs), valid) 
+		"""g_loss = 0.1 * adversarial_loss(discriminator(gen_imgs), valid) + 0.9 * pixelwise_loss(
+			gen_imgs, real_imgs
+		)"""
 
 		g_loss.backward()
 		optimizer_G.step()
-		
+
 		# ---------------------
 		#  Train Discriminator
 		# ---------------------
 
 		optimizer_D.zero_grad()
 
-		# Sample noise as discriminator ground truth
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(discriminator(z), valid_smooth) #adversarial_loss(discriminator(encoded_imgs.detach()), valid) #
-		fake_loss = adversarial_loss(discriminator(encoded_imgs.detach()), fake) #adversarial_loss(discriminator(encoder(decoder(z)).detach()), fake) #
-		d_loss = 0.5 * (real_loss + fake_loss)
+		real_loss = adversarial_loss(discriminator(real_imgs), valid_smooth)
+		fake_loss = adversarial_loss(discriminator(gen_imgs.detach()), fake)
+		d_loss = (real_loss + fake_loss) / 2
 
 		d_loss.backward()
 		optimizer_D.step()
@@ -242,13 +213,13 @@ for epoch in range(opt.n_epochs):
 
 		batches_done = epoch * len(dataloader) + i
 		if batches_done % opt.sample_interval == 0:
-			sample_image(n_row=5, batches_done=batches_done)
+			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, batches_done), nrow=5, normalize=True)
 			
 		# Save Losses for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(sum(discriminator(z)).item()/imgs.size(0))
-		d_g_z.append(sum(discriminator(encoded_imgs.detach())).item()/imgs.size(0))
+		d_x.append(sum(discriminator(real_imgs.detach())).item()/imgs.size(0))
+		d_g_z.append(sum(discriminator(gen_imgs.detach())).item()/imgs.size(0))
 		if batches_done % 100 == 0:
 			G_losses.append(sum(g_losses)/100)
 			D_losses.append(sum(d_losses)/100)
@@ -262,24 +233,19 @@ for epoch in range(opt.n_epochs):
 		if batches_done % opt.model_save_interval == 0:
 			num = str(int(batches_done / opt.model_save_interval))
 			torch.save(discriminator, opt.model_save_path+"/"+num+"_D.pt")
-			torch.save(encoder, opt.model_save_path+"/"+num+"_encoder.pt")
-			torch.save(decoder, opt.model_save_path+"/"+num+"_decoder.pt")
+			torch.save(generator, opt.model_save_path+"/"+num+"_G.pt")
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.time()-t_total,"s]")
-
+			
 torch.save(discriminator, opt.model_save_path+"/last_D.pt")
-torch.save(encoder, opt.model_save_path+"/last_encoder.pt")
-torch.save(decoder, opt.model_save_path+"/last_decoder.pt")
+torch.save(generator, opt.model_save_path+"/last_G.pt")
 
-"""encoder = torch.load("encoder.pt")
-decoder = torch.load("decoder.pt")
+"""G = torch.load("G.pt")
 D = torch.load("D.pt")
-print(encoder)
-print(decoder)
+print(G)
 print(D)"""
-
 
 #Plot losses			
 plt.figure(figsize=(10,5))
@@ -289,7 +255,7 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
-plt.savefig(opt.sample_path+"/losses",format="png")
+plt.savefig(opt.sample_path+"/losses.png",format="png")
 #plt.show()
 
 #Plot game score
@@ -300,4 +266,4 @@ plt.plot(D_G_z,label="D(G(z))")
 plt.xlabel("iterations")
 plt.ylabel("scores")
 plt.legend()
-plt.savefig(opt.sample_path+"/scores",format="png")
+plt.savefig("scores.png",format="png")

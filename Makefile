@@ -1,4 +1,4 @@
-default: fetch_frioul
+default: rsync_image
 
 start_ssh:
 	sudo systemctl start ssh
