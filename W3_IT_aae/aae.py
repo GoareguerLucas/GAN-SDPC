@@ -217,7 +217,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Generator
 		# -----------------
 		
-		if current_d_g_z < 0.40 or epoch == 0:
+		if current_d_g_z < 0.30 or epoch == 0:
 			decoded_imgs = decoder(encoded_imgs)
 			
 			optimizer_G.zero_grad()
@@ -234,7 +234,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Discriminator
 		# ---------------------
 		
-		if current_d_g_z > 0.40 or current_d_x < 0.60 or epoch == 0:
+		if current_d_g_z > 0.30 or current_d_x < 0.70 or epoch == 0:
 			optimizer_D.zero_grad()
 
 			# Measure discriminator's ability to classify real from generated samples
