@@ -208,7 +208,9 @@ for epoch in range(opt.n_epochs):
 		
 		# Generate a batch of images
 		encoded_imgs = encoder(real_imgs)
-		
+
+		# Sample noise as discriminator ground truth
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 		
 		# Current scores
 		current_d_x = sum(discriminator(z)).item()/imgs.size(0)
@@ -237,9 +239,6 @@ for epoch in range(opt.n_epochs):
 		
 		if current_d_g_z > 0.40 or current_d_x < 0.60:
 			optimizer_D.zero_grad()
-
-			# Sample noise as discriminator ground truth
-			z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 
 			# Measure discriminator's ability to classify real from generated samples
 			real_loss = adversarial_loss(discriminator(z), valid_smooth) 
