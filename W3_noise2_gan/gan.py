@@ -140,7 +140,7 @@ for epoch in range(opt.n_epochs):
 		t_batch = time.time()
 		
 		# Adversarial ground truths
-		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.7, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 		#fake = Variable(Tensor(imgs.size(0), 1).fill_(float(np.random.uniform(0.0, 0.3, 1))), requires_grad=False)
@@ -148,48 +148,46 @@ for epoch in range(opt.n_epochs):
 		#fake = Variable(Tensor(imgs.size(0), 1).uniform_(0.0, 0.6), requires_grad=False)
 
 		# Configure input
-		#rand = Tensor(imgs.shape).normal_(0.0, 0.25)
-		#real_imgs = imgs.type(Tensor) + rand
-		real_imgs = Variable(imgs.type(Tensor))
+		rand = Tensor(imgs.shape).normal_(0.0, 0.25)
+		real_imgs = imgs.type(Tensor) + rand
+		#real_imgs = Variable(imgs.type(Tensor))
 		
+		# -----------------
+		#  Train Generator
+		# -----------------
+
+		optimizer_G.zero_grad()
+
 		# Sample noise as generator input
 		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 
 		# Generate a batch of images
 		gen_imgs = generator(z)
 		
-		# Current scores
-		current_d_x = sum(discriminator(real_imgs.detach())).item()/imgs.size(0)
-		current_d_g_z = sum(discriminator(gen_imgs.detach())).item()/imgs.size(0)
-		
-		# -----------------
-		#  Train Generator
-		# -----------------
-		
-		if current_d_g_z < 0.45 or epoch == 0:
-			optimizer_G.zero_grad()
+		# Loss measures generator's ability to fool the discriminator
+		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
 
-			# Loss measures generator's ability to fool the discriminator
-			g_loss = adversarial_loss(discriminator(gen_imgs), valid)
-
-			g_loss.backward()
-			optimizer_G.step()
+		g_loss.backward()
+		optimizer_G.step()
 
 		# ---------------------
 		#  Train Discriminator
 		# ---------------------
+
+		optimizer_D.zero_grad()
+
+		# Measure discriminator's ability to classify real from generated samples
+		"""if random.randint(1,6) == 3:
+			real_loss = adversarial_loss(discriminator(real_imgs), fake)
+			fake_loss = adversarial_loss(discriminator(gen_imgs.detach()), valid)
+		else:"""
+		real_loss = adversarial_loss(discriminator(real_imgs), valid_smooth)
+		fake_loss = adversarial_loss(discriminator(gen_imgs.detach()+rand), fake)
 		
-		if current_d_g_z > 0.45 or current_d_x < 0.55 or epoch == 0:
-			optimizer_D.zero_grad()
+		d_loss = (real_loss + fake_loss) / 2
 
-			# Measure discriminator's ability to classify real from generated samples
-			real_loss = adversarial_loss(discriminator(real_imgs), valid_smooth)
-			fake_loss = adversarial_loss(discriminator(gen_imgs.detach()), fake)
-			
-			d_loss = (real_loss + fake_loss) / 2
-
-			d_loss.backward()
-			optimizer_D.step()
+		d_loss.backward()
+		optimizer_D.step()
 
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
@@ -205,8 +203,8 @@ for epoch in range(opt.n_epochs):
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		#print("INFO : ",sum(discriminator(real_imgs.detach())).item()/imgs.size(0))
-		d_x.append(current_d_x)
-		d_g_z.append(current_d_g_z)
+		d_x.append(sum(discriminator(real_imgs.detach())).item()/imgs.size(0))
+		d_g_z.append(sum(discriminator(gen_imgs.detach())).item()/imgs.size(0))
 		if batches_done % 100 == 0:
 			G_losses.append(sum(g_losses)/100)
 			D_losses.append(sum(d_losses)/100)
