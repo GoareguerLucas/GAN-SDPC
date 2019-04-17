@@ -179,7 +179,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Discriminator
 		# ---------------------
 		
-		if current_d_g_z > 0.4 or current_d_x < 0.6 or epoch == 0:
+		if g_loss > 0.9 or epoch == 0:
 			optimizer_D.zero_grad()
 
 			# Measure discriminator's ability to classify real from generated samples
