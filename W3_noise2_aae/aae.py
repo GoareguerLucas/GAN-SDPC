@@ -231,8 +231,8 @@ for epoch in range(opt.n_epochs):
 		encoded_imgs_noise = encoder(real_imgs+rand)
 		
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(discriminator(z), valid_smooth) #adversarial_loss(discriminator(encoded_imgs.detach()), valid) #
-		fake_loss = adversarial_loss(discriminator(encoded_imgs_noise.detach()), fake) #adversarial_loss(discriminator(encoder(decoder(z)).detach()), fake) #
+		real_loss = adversarial_loss(discriminator(z), valid_smooth)
+		fake_loss = adversarial_loss(discriminator(encoded_imgs_noise.detach()), fake)
 		d_loss = 0.5 * (real_loss + fake_loss)
 
 		d_loss.backward()
@@ -251,7 +251,7 @@ for epoch in range(opt.n_epochs):
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		d_x.append(sum(discriminator(z)).item()/imgs.size(0))
-		d_g_z.append(sum(discriminator(encoded_imgs.detach())).item()/imgs.size(0))
+		d_g_z.append(sum(discriminator(encoded_imgs_noise.detach())).item()/imgs.size(0))
 		if batches_done % 100 == 0:
 			G_losses.append(sum(g_losses)/100)
 			D_losses.append(sum(d_losses)/100)
