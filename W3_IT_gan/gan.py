@@ -166,7 +166,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Generator
 		# -----------------
 		
-		if current_d_g_z < 0.3 or epoch == 0:
+		if current_d_g_z < 0.3 or epoch == 0 or True:
 			optimizer_G.zero_grad()
 
 			# Loss measures generator's ability to fool the discriminator
@@ -179,7 +179,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Discriminator
 		# ---------------------
 		
-		if current_d_g_z > 0.3 or current_d_x < 0.7 or epoch == 0:
+		if current_d_g_z > 0.3 or current_d_x < 0.7 or epoch == 0 or True:
 			optimizer_D.zero_grad()
 
 			# Measure discriminator's ability to classify real from generated samples
