@@ -157,9 +157,6 @@ D_G_z = []
 d_x = []
 d_g_z = []
 
-g_loss = 0
-d_loss = 0
-
 t_total = time.time()
 for epoch in range(opt.n_epochs):
 	t_epoch = time.time()
@@ -190,7 +187,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Generator
 		# -----------------
 		
-		if current_d_g_z < 0.40:
+		if current_d_g_z < 0.40 or epoch == 0:
 			optimizer_G.zero_grad()
 		
 			# Loss measures generator's ability to fool the discriminator
@@ -206,7 +203,7 @@ for epoch in range(opt.n_epochs):
 		#  Train Discriminator
 		# ---------------------
 		
-		if current_d_g_z > 0.40 or current_d_x < 0.60:
+		if current_d_g_z > 0.40 or current_d_x < 0.60 or epoch == 0:
 			optimizer_D.zero_grad()
 
 			# Measure discriminator's ability to classify real from generated samples
