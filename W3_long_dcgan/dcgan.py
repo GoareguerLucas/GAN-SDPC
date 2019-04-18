@@ -199,8 +199,11 @@ for epoch in range(opt.n_epochs):
 		optimizer_D.zero_grad()
 
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(discriminator(real_imgs), valid_smooth)
-		fake_loss = adversarial_loss(discriminator(gen_imgs.detach()), fake)
+		d_x_tmp = discriminator(real_imgs)
+		d_g_x_tmp = discriminator(gen_imgs.detach())
+		
+		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
+		fake_loss = adversarial_loss(d_g_x_tmp, fake)
 		d_loss = (real_loss + fake_loss) / 2
 
 		d_loss.backward()
@@ -218,8 +221,8 @@ for epoch in range(opt.n_epochs):
 		# Save Losses for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(sum(discriminator(real_imgs.detach())).item()/imgs.size(0))
-		d_g_z.append(sum(discriminator(gen_imgs.detach())).item()/imgs.size(0))
+		d_x.append(sum(d_x_tmp).item()/imgs.size(0))
+		d_g_z.append(sum(d_g_x_tmp).item()/imgs.size(0))
 		if batches_done % 100 == 0:
 			G_losses.append(sum(g_losses)/100)
 			D_losses.append(sum(d_losses)/100)
