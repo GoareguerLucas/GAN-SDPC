@@ -203,8 +203,8 @@ for epoch in range(1,opt.n_epochs+1):
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(sum(d_x_tmp.item())/imgs.size(0))
-		d_g_z.append(sum(d_g_x_tmp.item())/imgs.size(0))
+		d_x.append(torch.sum(d_x_tmp).item()/imgs.size(0))
+		d_g_z.append(torch.sum(d_g_x_tmp).item()/imgs.size(0))
 		if epoch % save_dot == 0 and i == 0:
 			G_losses.append(sum(g_losses)/batch_on_save_dot)
 			D_losses.append(sum(d_losses)/batch_on_save_dot)
