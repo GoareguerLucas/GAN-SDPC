@@ -13,9 +13,14 @@ sys.path.append("../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
-def load_data(path,img_size,batch_size):
+def load_data(path,img_size,batch_size,Fast=True):
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
-	dataset = FastSimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
+	
+	if Fast:
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
+	else:	
+		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
+		
 	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 	
 	return dataloader
