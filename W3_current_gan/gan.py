@@ -153,23 +153,20 @@ for epoch in range(1,opt.n_epochs+1):
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		
-		# Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-		# Generate a batch of images
-		gen_imgs = generator(z)
-		
-		#Discriminator descision
-		d_x_tmp = discriminator(real_imgs)
-		d_g_x_tmp = discriminator(gen_imgs)
-		
 		# -----------------
 		#  Train Generator
 		# -----------------
 
 		optimizer_G.zero_grad()
 		
+		# Sample noise as generator input
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		
+		# Generate a batch of images
+		gen_imgs = generator(z)
+		
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(d_g_x_tmp, valid)
+		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
@@ -179,10 +176,14 @@ for epoch in range(1,opt.n_epochs+1):
 		# ---------------------
 
 		optimizer_D.zero_grad()
-
+		
+		#Discriminator descision
+		d_x_tmp = discriminator(real_imgs)
+		d_g_x_tmp = discriminator(gen_imgs.detach())
+		
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
-		fake_loss = adversarial_loss(d_g_x_tmp.detach(), fake)
+		fake_loss = adversarial_loss(d_g_x_tmp, fake)
 		
 		d_loss = (real_loss + fake_loss) / 2
 
