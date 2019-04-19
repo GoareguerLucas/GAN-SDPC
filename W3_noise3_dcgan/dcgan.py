@@ -236,18 +236,21 @@ for epoch in range(opt.n_epochs):
 			
 		if batches_done % opt.model_save_interval == 0:
 			num = str(int(batches_done / opt.model_save_interval))
-			torch.save(discriminator, opt.model_save_path+"/"+num+"_D.pt")
-			torch.save(generator, opt.model_save_path+"/"+num+"_G.pt")
+			torch.save(discriminator.state_dict(), opt.model_save_path+"/last_D.pt")
+			torch.save(generator.state_dict(), opt.model_save_path+"/last_G.pt")
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.time()-t_total,"s]")
 			
-torch.save(discriminator, opt.model_save_path+"/last_D.pt")
-torch.save(generator, opt.model_save_path+"/last_G.pt")
+torch.save(discriminator.state_dict(), opt.model_save_path+"/last_D.pt")
+torch.save(generator.state_dict(), opt.model_save_path+"/last_G.pt")
 
-"""G = torch.load("G.pt")
-D = torch.load("D.pt")
+"""
+G = Generator()
+G = torch.load_state_dict(torch.load("G.pt"))
+D = Discriminator()
+D = torch.load_state_dict(torch.load("D.pt"))
 print(G)
 print(D)"""
 

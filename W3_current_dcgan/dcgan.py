@@ -18,11 +18,13 @@ import sys
 sys.path.append("../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+from utils import *
+
 import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=10000, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=256, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
@@ -157,37 +159,37 @@ D_G_z = []
 d_x = []
 d_g_z = []
 
+save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
+batch_on_save_dot = save_dot*len(dataloader)
+
 t_total = time.time()
-for epoch in range(opt.n_epochs):
+for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
 		
 		# Adversarial ground truths
-		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.7, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
-		
+
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
-
+		
 		# -----------------
 		#  Train Generator
 		# -----------------
 
 		optimizer_G.zero_grad()
-
+		
 		# Sample noise as generator input
 		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-
+		
 		# Generate a batch of images
 		gen_imgs = generator(z)
-	
+		
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_imgs), valid) 
-		"""g_loss = 0.1 * adversarial_loss(discriminator(gen_imgs), valid) + 0.9 * pixelwise_loss(
-			gen_imgs, real_imgs
-		)"""
+		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
 
 		g_loss.backward()
 		optimizer_G.step()
@@ -197,71 +199,67 @@ for epoch in range(opt.n_epochs):
 		# ---------------------
 
 		optimizer_D.zero_grad()
-
-		# Measure discriminator's ability to classify real from generated samples
+		
+		#Discriminator descision
 		d_x_tmp = discriminator(real_imgs)
 		d_g_x_tmp = discriminator(gen_imgs.detach())
 		
+		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
 		fake_loss = adversarial_loss(d_g_x_tmp, fake)
+		
 		d_loss = (real_loss + fake_loss) / 2
 
 		d_loss.backward()
 		optimizer_D.step()
-		
+
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
-			% (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
+			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
 		)
-
-		batches_done = epoch * len(dataloader) + i
-		if batches_done % opt.sample_interval == 0:
-			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, batches_done), nrow=5, normalize=True)
-			
-		# Save Losses for plotting later
+	
+		# Save samples
+		if epoch % opt.sample_interval == 0 and i == 0:
+			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
+		
+		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(sum(d_x_tmp).item()/imgs.size(0))
-		d_g_z.append(sum(d_g_x_tmp).item()/imgs.size(0))
-		if batches_done % 100 == 0:
-			G_losses.append(sum(g_losses)/100)
-			D_losses.append(sum(d_losses)/100)
+		d_x.append(torch.sum(d_x_tmp).item()/imgs.size(0))
+		d_g_z.append(torch.sum(d_g_x_tmp).item()/imgs.size(0))
+		if epoch % save_dot == 0 and i == 0:
+			G_losses.append(sum(g_losses)/batch_on_save_dot)
+			D_losses.append(sum(d_losses)/batch_on_save_dot)
 			g_losses = []
 			d_losses = []
-			D_x.append(sum(d_x)/100)
-			D_G_z.append(sum(d_g_z)/100)
+			D_x.append(sum(d_x)/batch_on_save_dot)
+			D_G_z.append(sum(d_g_z)/batch_on_save_dot)
 			d_x = []
 			d_g_z = []
-			
-		if batches_done % opt.model_save_interval == 0:
-			num = str(int(batches_done / opt.model_save_interval))
-			torch.save(discriminator, opt.model_save_path+"/"+num+"_D.pt")
-			torch.save(generator, opt.model_save_path+"/"+num+"_G.pt")
-
+		
+		# Save models
+		if epoch % opt.model_save_interval == 0 and i == 0:
+			num = str(int(epoch / opt.model_save_interval))
+			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
+			save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
+		
+		# Intermediate plot
+		if epoch % (opt.n_epochs/4) == 0 and i == 0:
+			#Plot losses			
+			plot_losses(G_losses,D_losses)
+			#Plot scores
+			plot_scores(D_x,D_G_z)
+	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.time()-t_total,"s]")
-			
-torch.save(discriminator.state_dict(), opt.model_save_path+"/last_D.pt")
-torch.save(generator.state_dict(), opt.model_save_path+"/last_G.pt")
 
 #Plot losses			
-plt.figure(figsize=(10,5))
-plt.title("Generator and Discriminator Loss During Training")
-plt.plot(G_losses,label="G")
-plt.plot(D_losses,label="D")
-plt.xlabel("iterations")
-plt.ylabel("Loss")
-plt.legend()
-plt.savefig("losses.png",format="png")
-#plt.show()
+plot_losses(G_losses,D_losses)
 
 #Plot game score
-plt.figure(figsize=(10,5))
-plt.title("Generator and Discriminator scores During Training")
-plt.plot(D_x,label="D(x)")
-plt.plot(D_G_z,label="D(G(z))")
-plt.xlabel("iterations")
-plt.ylabel("scores")
-plt.legend()
-plt.savefig("scores.png",format="png")
+plot_scores(D_x,D_G_z)
+
+# Save model for futur training
+save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
+save_model(generator,optimizer_G,epoch,opt.model_save_path+"/last_G.pt")
