@@ -159,7 +159,7 @@ for epoch in range(1,opt.n_epochs+1):
 		gen_imgs = generator(z)
 		
 		#Discriminator descision
-		d_x_tmp = discriminator(real_imgs.detach())
+		d_x_tmp = discriminator(real_imgs)
 		d_g_x_tmp = discriminator(gen_imgs.detach())
 		
 		# -----------------
