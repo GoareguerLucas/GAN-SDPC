@@ -155,9 +155,7 @@ if cuda:
 	pixelwise_loss.cuda()
 
 # Configure data loader
-transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
-dataset = FastSimpsonsDataset("../../cropped/cp/",opt.img_size,opt.img_size,transformations) #../../../Dataset/cropped/
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=True)
+dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(

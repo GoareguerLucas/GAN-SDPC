@@ -8,6 +8,11 @@ import numpy as np
 import random
 import torch
 
+import sys
+sys.path.append("../")#../../GAN-SDPC/
+
+from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+
 def load_data(path,img_size,batch_size):
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 	dataset = FastSimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
