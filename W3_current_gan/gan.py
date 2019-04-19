@@ -160,7 +160,7 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		#Discriminator descision
 		d_x_tmp = discriminator(real_imgs)
-		d_g_x_tmp = discriminator(gen_imgs.detach())
+		d_g_x_tmp = discriminator(gen_imgs)
 		
 		# -----------------
 		#  Train Generator
@@ -182,7 +182,7 @@ for epoch in range(1,opt.n_epochs+1):
 
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
-		fake_loss = adversarial_loss(d_g_x_tmp, fake)
+		fake_loss = adversarial_loss(d_g_x_tmp.detach(), fake)
 		
 		d_loss = (real_loss + fake_loss) / 2
 
@@ -206,8 +206,8 @@ for epoch in range(1,opt.n_epochs+1):
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(sum(d_x_tmp).item()/imgs.size(0))
-		d_g_z.append(sum(d_g_x_tmp).item()/imgs.size(0))
+		d_x.append(sum(d_x_tmp.detach()).item()/imgs.size(0))
+		d_g_z.append(sum(d_g_x_tmp.detach()).item()/imgs.size(0))
 		if epoch % save_dot == 0 and i == 0:
 			G_losses.append(sum(g_losses)/batch_on_save_dot)
 			D_losses.append(sum(d_losses)/batch_on_save_dot)
