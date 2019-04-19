@@ -36,7 +36,7 @@ parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads 
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=100, help="interval betwen image samples")
+parser.add_argument("--sample_interval", type=int, default=200, help="interval betwen image samples")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
