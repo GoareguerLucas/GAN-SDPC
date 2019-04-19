@@ -249,7 +249,7 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		# Save samples
 		if epoch % opt.sample_interval == 0 and i == 0:
-			sample_image(n_row=5, epoch=epoch)
+			sample_image(n_row=5, epoch_done=epoch)
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
