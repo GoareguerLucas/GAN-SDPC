@@ -198,10 +198,7 @@ for epoch in range(1,opt.n_epochs+1):
 		if epoch % opt.sample_interval == 0 and i == 0:
 			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		
-		print(
-			"[Time log1s: %fs]"
-			% (time.time()-t_batch)
-		)
+		print("[Time log1s: %fs]"% (time.time()-t_batch), end='')
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
@@ -218,10 +215,7 @@ for epoch in range(1,opt.n_epochs+1):
 			d_x = []
 			d_g_z = []
 		
-		print(
-			"[Time logs2: %fs]"
-			% (time.time()-t_batch)
-		)
+		print(" [Time logs2: %fs]" % (time.time()-t_batch), end='')
 		
 		# Save models
 		if epoch % opt.model_save_interval == 0 and i == 0:
@@ -229,10 +223,7 @@ for epoch in range(1,opt.n_epochs+1):
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
 			save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
 		
-		print(
-			"[Time logs3: %fs]"
-			% (time.time()-t_batch)
-		)
+		print(" [Time logs3: %fs]" % (time.time()-t_batch), end='')
 		
 		# Intermediate plot
 		if epoch % (opt.n_epochs/4) == 0 and i == 0:
@@ -241,10 +232,7 @@ for epoch in range(1,opt.n_epochs+1):
 			#Plot scores
 			plot_scores(D_x,D_G_z)
 			
-		print(
-			"[Time logs4: %fs]"
-			% (time.time()-t_batch)
-		)
+		print(" [Time logs4: %fs]" % (time.time()-t_batch), end='')
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
