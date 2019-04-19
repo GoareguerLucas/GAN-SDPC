@@ -136,6 +136,7 @@ d_x = []
 d_g_z = []
 
 save_dot = 3
+batch_on_save_dot = save_dot*len(dataloader)
 
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
@@ -194,7 +195,7 @@ for epoch in range(1,opt.n_epochs+1):
 		)
 	
 		# Save samples
-		if epoch % opt.sample_interval == 0:
+		if epoch % opt.sample_interval == 0 and i == 0:
 			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		
 		# Save Losses and scores for plotting later
@@ -202,25 +203,24 @@ for epoch in range(1,opt.n_epochs+1):
 		d_losses.append(d_loss.item())
 		d_x.append(sum(d_x_tmp).item()/imgs.size(0))
 		d_g_z.append(sum(d_g_x_tmp).item()/imgs.size(0))
-		if epoch % save_dot == 0:
-			G_losses.append(sum(g_losses)/save_dot)
-			D_losses.append(sum(d_losses)/save_dot)
+		if epoch % save_dot == 0 and i == 0:
+			G_losses.append(sum(g_losses)/batch_on_save_dot)
+			D_losses.append(sum(d_losses)/batch_on_save_dot)
 			g_losses = []
 			d_losses = []
-			D_x.append(sum(d_x)/save_dot)
-			D_G_z.append(sum(d_g_z)/save_dot)
+			D_x.append(sum(d_x)/batch_on_save_dot)
+			D_G_z.append(sum(d_g_z)/batch_on_save_dot)
 			d_x = []
 			d_g_z = []
 		
 		# Save models
-		if epoch % opt.model_save_interval == 0:
+		if epoch % opt.model_save_interval == 0 and i == 0:
 			num = str(int(epoch / opt.model_save_interval))
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
 			save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
 			
 		# Intermediate plot
-		if epoch % (opt.n_epochs/4) == 0:
-			num = str(epoch)
+		if epoch % (opt.n_epochs/4) == 0 and i == 0:
 			#Plot losses			
 			plot_losses(G_losses,D_losses)
 			#Plot scores
@@ -247,8 +247,8 @@ d = Discriminator()
 optimizer_g = torch.optim.Adam(g.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_d = torch.optim.Adam(d.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
-print(load_model(d,optimizer_d))
-print(load_model(g,optimizer_g))
+print(load_model(d,optimizer_d,opt.model_save_path+"/last_D.pt"))
+print(load_model(g,optimizer_g,opt.model_save_path+"/last_G.pt"))
 
 print(g)
 print("---------------------------\n")
