@@ -25,7 +25,7 @@ import time
 import random
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=100, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=5000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=256, help="size of the batches")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate")
 parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate")
@@ -36,9 +36,9 @@ parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads 
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=10, help="interval betwen image samples")
+parser.add_argument("--sample_interval", type=int, default=100, help="interval betwen image samples")
 parser.add_argument("--sample_path", type=str, default='images')
-parser.add_argument("--model_save_interval", type=int, default=50, help="interval between image sampling")
+parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
 opt = parser.parse_args()
 print(opt)
@@ -126,6 +126,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 #  Training
 # ----------
 
+# Liste de sauvegarde pour les courbes
 G_losses = []
 D_losses = []
 g_losses = []
@@ -135,7 +136,7 @@ D_G_z = []
 d_x = []
 d_g_z = []
 
-save_dot = 3
+save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 t_total = time.time()
@@ -150,23 +151,25 @@ for epoch in range(1,opt.n_epochs+1):
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 
 		# Configure input
-		#rand = Tensor(imgs.shape).normal_(0.0, 0.25)
 		real_imgs = Variable(imgs.type(Tensor))
+		
+		# Sample noise as generator input
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		# Generate a batch of images
+		gen_imgs = generator(z)
+		
+		#Discriminator descision
+		d_x_tmp = discriminator(real_imgs)
+		d_g_x_tmp = discriminator(gen_imgs)
 		
 		# -----------------
 		#  Train Generator
 		# -----------------
 
 		optimizer_G.zero_grad()
-
-		# Sample noise as generator input
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-
-		# Generate a batch of images
-		gen_imgs = generator(z)
 		
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
+		g_loss = adversarial_loss(d_g_x_tmp, valid)
 
 		g_loss.backward()
 		optimizer_G.step()
@@ -178,9 +181,6 @@ for epoch in range(1,opt.n_epochs+1):
 		optimizer_D.zero_grad()
 
 		# Measure discriminator's ability to classify real from generated samples
-		d_x_tmp = discriminator(real_imgs)
-		d_g_x_tmp = discriminator(gen_imgs.detach())
-		
 		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
 		fake_loss = adversarial_loss(d_g_x_tmp, fake)
 		
@@ -198,6 +198,11 @@ for epoch in range(1,opt.n_epochs+1):
 		if epoch % opt.sample_interval == 0 and i == 0:
 			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		
+		print(
+			"[Time log1s: %fs]"
+			% (time.time()-t_batch)
+		)
+		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
@@ -213,18 +218,33 @@ for epoch in range(1,opt.n_epochs+1):
 			d_x = []
 			d_g_z = []
 		
+		print(
+			"[Time logs2: %fs]"
+			% (time.time()-t_batch)
+		)
+		
 		# Save models
 		if epoch % opt.model_save_interval == 0 and i == 0:
 			num = str(int(epoch / opt.model_save_interval))
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
 			save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
-			
+		
+		print(
+			"[Time logs3: %fs]"
+			% (time.time()-t_batch)
+		)
+		
 		# Intermediate plot
 		if epoch % (opt.n_epochs/4) == 0 and i == 0:
 			#Plot losses			
 			plot_losses(G_losses,D_losses)
 			#Plot scores
 			plot_scores(D_x,D_G_z)
+			
+		print(
+			"[Time logs4: %fs]"
+			% (time.time()-t_batch)
+		)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
@@ -240,7 +260,7 @@ plot_scores(D_x,D_G_z)
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
 save_model(generator,optimizer_G,epoch,opt.model_save_path+"/last_G.pt")
 
-#Load model
+"""#Load model
 g = Generator()
 d = Discriminator()
 
@@ -255,4 +275,4 @@ print("---------------------------\n")
 print(d)
 
 g.train()
-d.train()
+d.train()"""
