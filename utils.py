@@ -41,6 +41,7 @@ def plot_scores(D_x,D_G_z):
 	plt.ylabel("scores")
 	plt.legend()
 	plt.savefig("scores.png",format="png")
+	plt.clf()
 
 def plot_losses(G_losses,D_losses):
 	#Plot losses			
@@ -52,6 +53,7 @@ def plot_losses(G_losses,D_losses):
 	plt.ylabel("Loss")
 	plt.legend()
 	plt.savefig("losses.png",format="png")
+	plt.clf()
 
 if __name__ == "__main__":
 	
