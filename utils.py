@@ -33,7 +33,7 @@ def load_model(model, optimizer, path):
 
 def plot_scores(D_x,D_G_z):
 	#Plot game score
-	plt.figure(figsize=(10,5))
+	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator scores During Training")
 	plt.plot(D_x,label="D(x)")
 	plt.plot(D_G_z,label="D(G(z))")
@@ -41,11 +41,11 @@ def plot_scores(D_x,D_G_z):
 	plt.ylabel("scores")
 	plt.legend()
 	plt.savefig("scores.png",format="png")
-	plt.clf()
+	plt.close(fig)
 
 def plot_losses(G_losses,D_losses):
 	#Plot losses			
-	plt.figure(figsize=(10,5))
+	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator Loss During Training")
 	plt.plot(G_losses,label="G")
 	plt.plot(D_losses,label="D")
@@ -53,7 +53,7 @@ def plot_losses(G_losses,D_losses):
 	plt.ylabel("Loss")
 	plt.legend()
 	plt.savefig("losses.png",format="png")
-	plt.clf()
+	plt.close(fig)
 
 if __name__ == "__main__":
 	
