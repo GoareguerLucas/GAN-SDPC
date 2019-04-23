@@ -18,5 +18,8 @@ connect_gt0:
 matplot:
 	export MPLCONFIGDIR="/var/lib/vz/data/g14006889/cache/matplotlib/"
 
+scp_gt0:
+	scp -P 8012 -r g14006889@gt-0.luminy.univ-amu.fr:/var/lib//vz/data/g14006889/GAN-SDPC/W3_current_began/M_k.png .
+
 rsync_image:
 	rsync -av . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
