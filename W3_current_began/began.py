@@ -280,7 +280,7 @@ plot_losses(G_losses,D_losses)
 #Plot game score
 plot_scores(D_x,D_G_z)
 
-plot_scores(M_plot,k_plot)
+plot_began(M_plot,k_plot)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")

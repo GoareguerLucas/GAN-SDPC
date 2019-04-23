@@ -15,5 +15,8 @@ connect_gt2:
 connect_gt0:
 	ssh -p8012 g14006889@gt-0.luminy.univ-amu.fr
 
+matplot:
+	export MPLCONFIGDIR="/var/lib/vz/data/g14006889/cache/matplotlib/"
+
 rsync_image:
 	rsync -av . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync

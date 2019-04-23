@@ -47,7 +47,7 @@ def plot_scores(D_x,D_G_z):
 	plt.title("Generator and Discriminator scores During Training")
 	plt.plot(D_x,label="D(x)")
 	plt.plot(D_G_z,label="D(G(z))")
-	plt.xlabel("iterations")
+	plt.xlabel("Epochs (/10)")
 	plt.ylabel("scores")
 	plt.legend()
 	plt.savefig("scores.png",format="png")
@@ -59,10 +59,22 @@ def plot_losses(G_losses,D_losses):
 	plt.title("Generator and Discriminator Loss During Training")
 	plt.plot(G_losses,label="G")
 	plt.plot(D_losses,label="D")
-	plt.xlabel("iterations")
+	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Loss")
 	plt.legend()
 	plt.savefig("losses.png",format="png")
+	plt.close(fig)
+
+def plot_began(M,k):
+	#Plot M and k value	
+	fig = plt.figure(figsize=(10,5))
+	plt.title("M and k Value During Training")
+	plt.plot(M,label="M")
+	plt.plot(k,label="k")
+	plt.xlabel("Epochs (/10)")
+	plt.ylabel("Value")
+	plt.legend()
+	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
 if __name__ == "__main__":
