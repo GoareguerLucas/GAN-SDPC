@@ -250,7 +250,7 @@ for epoch in range(1,opt.n_epochs+1):
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
-print("[Total Time: ",time.time()-t_total,"s]")
+print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
 #Plot losses			
 plot_losses(G_losses,D_losses)
