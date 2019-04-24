@@ -24,10 +24,10 @@ import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=5000, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=32, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
+parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
@@ -166,6 +166,9 @@ M_tmp = []
 k_plot = []
 M_plot = []
 
+lr_tmp = []
+lr_plot = []
+
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
@@ -231,10 +234,6 @@ for epoch in range(1,opt.n_epochs+1):
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs] -- M: %f, k: %f"
 			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch, M, k)
 		)
-	
-		# Save samples
-		if epoch % opt.sample_interval == 0 and i == 0:
-			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		
 		# Save Losses and scores for plotting later
 		M_tmp.append(M)
@@ -243,7 +242,13 @@ for epoch in range(1,opt.n_epochs+1):
 		d_losses.append(d_loss.item())
 		d_x.append(torch.sum(d_real).item()/imgs.size(0))
 		d_g_z.append(torch.sum(d_fake).item()/imgs.size(0))
+		lr_tmp.append(scheduler_G.get_lr())
 		
+	# Save samples
+	if epoch % opt.sample_interval == 0:
+		save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
+		
+	# Save Losses and scores for plotting later and scheduler step
 	if epoch % save_dot == 0:
 		G_losses.append(sum(g_losses)/batch_on_save_dot)
 		D_losses.append(sum(d_losses)/batch_on_save_dot)
@@ -261,6 +266,8 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		scheduler_G.step(M_plot[-1])
 		scheduler_D.step(M_plot[-1])
+		lr_plot.append(sum(lr_tmp)/batch_on_save_dot)
+		lr_tmp = []
 
 	
 	# Save models
@@ -288,7 +295,11 @@ plot_losses(G_losses,D_losses)
 #Plot game score
 plot_scores(D_x,D_G_z)
 
+#Plot began mesure of convergeance
 plot_began(M_plot,k_plot)
+
+#Plot lr
+plot_lr(lr_plot)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")

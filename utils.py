@@ -76,6 +76,17 @@ def plot_began(M,k):
 	plt.legend()
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
+	
+def plot_lr(lr):
+	#Plot lr
+	fig = plt.figure(figsize=(10,5))
+	plt.title("lr Value During Training")
+	plt.plot(lr,label="lr")
+	plt.xlabel("Epochs (/10)")
+	plt.ylabel("Value")
+	plt.legend()
+	plt.savefig("lr.png",format="png")
+	plt.close(fig)
 
 if __name__ == "__main__":
 	
