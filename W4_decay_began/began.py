@@ -242,7 +242,7 @@ for epoch in range(1,opt.n_epochs+1):
 		d_losses.append(d_loss.item())
 		d_x.append(torch.sum(d_real).item()/imgs.size(0))
 		d_g_z.append(torch.sum(d_fake).item()/imgs.size(0))
-		lr_tmp.append(scheduler_G.get_lr())
+		lr_tmp.append(optimizer_D.param_groups[0]['lr'])
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
