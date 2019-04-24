@@ -282,8 +282,10 @@ for epoch in range(1,opt.n_epochs+1):
 		plot_losses(G_losses,D_losses)
 		#Plot scores
 		plot_scores(D_x,D_G_z)
-		
-		plot_scores(M_plot,k_plot)
+		#Plot began mesure of convergeance
+		plot_began(M_plot,k_plot)
+		#Plot lr
+		plot_lr(lr_plot)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
