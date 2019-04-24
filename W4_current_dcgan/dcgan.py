@@ -216,37 +216,39 @@ for epoch in range(1,opt.n_epochs+1):
 			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
 		)
 	
-		# Save samples
-		if epoch % opt.sample_interval == 0 and i == 0:
-			save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
-		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		d_x.append(torch.sum(d_x_tmp).item()/imgs.size(0))
 		d_g_z.append(torch.sum(d_g_x_tmp).item()/imgs.size(0))
-		if epoch % save_dot == 0 and i == 0:
-			G_losses.append(sum(g_losses)/batch_on_save_dot)
-			D_losses.append(sum(d_losses)/batch_on_save_dot)
-			g_losses = []
-			d_losses = []
-			D_x.append(sum(d_x)/batch_on_save_dot)
-			D_G_z.append(sum(d_g_z)/batch_on_save_dot)
-			d_x = []
-			d_g_z = []
 		
-		# Save models
-		if epoch % opt.model_save_interval == 0 and i == 0:
-			num = str(int(epoch / opt.model_save_interval))
-			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
-			save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
-		
-		# Intermediate plot
-		if epoch % (opt.n_epochs/4) == 0 and i == 0:
-			#Plot losses			
-			plot_losses(G_losses,D_losses)
-			#Plot scores
-			plot_scores(D_x,D_G_z)
+	# Save samples
+	if epoch % opt.sample_interval == 0:
+		save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
+	
+	# Save Losses and scores for plotting later
+	if epoch % save_dot == 0:
+		G_losses.append(sum(g_losses)/batch_on_save_dot)
+		D_losses.append(sum(d_losses)/batch_on_save_dot)
+		g_losses = []
+		d_losses = []
+		D_x.append(sum(d_x)/batch_on_save_dot)
+		D_G_z.append(sum(d_g_z)/batch_on_save_dot)
+		d_x = []
+		d_g_z = []
+	
+	# Save models
+	if epoch % opt.model_save_interval == 0:
+		num = str(int(epoch / opt.model_save_interval))
+		save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
+		save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
+	
+	# Intermediate plot
+	if epoch % (opt.n_epochs/4) == 0:
+		#Plot losses			
+		plot_losses(G_losses,D_losses)
+		#Plot scores
+		plot_scores(D_x,D_G_z)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
