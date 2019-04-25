@@ -25,19 +25,19 @@ import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=5000, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=256, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b1", type=float, default=0.1, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--n_gpu", type=int, default=1, help="number of gpu use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent code")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=200, help="interval between image sampling")
+parser.add_argument("--sample_interval", type=int, default=50, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
@@ -187,7 +187,7 @@ D_G_z = []
 d_x = []
 d_g_z = []
 
-save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
+save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 t_total = time.time()
@@ -197,7 +197,7 @@ for epoch in range(1,opt.n_epochs+1):
 		t_batch = time.time()
 		
 		# Adversarial ground truths
-		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.7, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 
