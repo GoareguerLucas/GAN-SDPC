@@ -142,6 +142,9 @@ dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
+scheduler_G = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.1)
+scheduler_D = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.1)
+
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # ----------
@@ -163,6 +166,8 @@ batch_on_save_dot = save_dot*len(dataloader)
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
+	scheduler_G.step()
+	scheduler_D.step()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
 		
