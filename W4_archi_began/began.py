@@ -26,13 +26,13 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument("--n_epochs", type=int, default=5000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=32, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.00004, help="adam: learning rate for G")
+parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=64, help="dimensionality of the latent space")
+parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("--sample_interval", type=int, default=200, help="interval between image sampling")
@@ -83,8 +83,15 @@ class Discriminator(nn.Module):
 		# 32 x 32 
 		self.conv2 = conv_block(ndf, ndf*2)
 		# 16 x 16 
-		self.conv3 = conv_block(ndf*2, ndf*3)
-		if(imageSize == 64):
+		if(imageSize == 32):
+			# 8 x 8
+			self.conv3 = nn.Sequential(nn.Conv2d(ndf*2,ndf*2,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True),
+							 nn.Conv2d(ndf*2,ndf*2,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True)) 
+			self.embed1 = nn.Linear(ndf*2*8*8, hidden_size)
+		elif(imageSize == 64):
+			self.conv3 = conv_block(ndf*2, ndf*3)
 			# 8 x 8
 			self.conv4 = nn.Sequential(nn.Conv2d(ndf*3,ndf*3,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
@@ -92,6 +99,7 @@ class Discriminator(nn.Module):
 							 nn.ELU(True)) 
 			self.embed1 = nn.Linear(ndf*3*8*8, hidden_size)
 		else:
+			self.conv3 = conv_block(ndf*2, ndf*3)
 			self.conv4 = conv_block(ndf*3, ndf*4)
 			self.conv5 = nn.Sequential(nn.Conv2d(ndf*4,ndf*4,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
@@ -105,15 +113,25 @@ class Discriminator(nn.Module):
 		# 16 x 16
 		self.deconv2 = deconv_block(ndf, ndf)
 		# 32 x 32
-		self.deconv3 = deconv_block(ndf, ndf)
-		if(imageSize == 64):
-		# 64 x 64
+		if(imageSize == 32):
+			# 32 x 32
+			self.deconv3 = nn.Sequential(nn.Conv2d(ndf,ndf,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True),
+							 nn.Conv2d(ndf,ndf,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True),
+							 nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1))
+		elif(imageSize == 64):
+			# 32 x 32
+			self.deconv3 = deconv_block(ndf, ndf)
+			# 64 x 64
 			self.deconv4 = nn.Sequential(nn.Conv2d(ndf,ndf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
 							 nn.Conv2d(ndf,ndf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
 							 nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1))
 		else:
+			# 32 x 32
+			self.deconv3 = deconv_block(ndf, ndf)
 			self.deconv4 = deconv_block(ndf, ndf)
 			self.deconv5 = nn.Sequential(nn.Conv2d(ndf,ndf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
@@ -129,20 +147,26 @@ class Discriminator(nn.Module):
 		out = self.conv1(x)
 		out = self.conv2(out)
 		out = self.conv3(out)
-		out = self.conv4(out)
 		if(self.imageSize == 128):
+			out = self.conv4(out)
 			out = self.conv5(out)
 			out = out.view(out.size(0), self.ndf*4 * 8 * 8)
-		else:
+		elif(self.imageSize == 64):
+			out = self.conv4(out)
 			out = out.view(out.size(0), self.ndf*3 * 8 * 8)
+		else:
+			out = out.view(out.size(0), self.ndf*2 * 8 * 8)
 		out = self.embed1(out)
+		
 		out = self.embed2(out)
 		out = out.view(out.size(0), self.ndf, 8, 8)
 		out = self.deconv1(out)
 		out = self.deconv2(out)
 		out = self.deconv3(out)
-		out = self.deconv4(out)
-		if(self.imageSize == 128):
+		if(self.imageSize == 64):
+			out = self.deconv4(out)
+		elif(self.imageSize == 128):
+			out = self.deconv4(out)
 			out = self.deconv5(out)
 		return out
 
@@ -156,8 +180,10 @@ class Generator(nn.Module):
 		# 16 x 16
 		self.deconv2 = deconv_block(ngf, ngf)
 		# 32 x 32
-		self.deconv3 = deconv_block(ngf, ngf)
+		
 		if(imageSize == 128):
+			self.deconv3 = deconv_block(ngf, ngf)
+			# 64 x 64
 			self.deconv4 = deconv_block(ngf, ngf)
 			# 128 x 128 
 			self.deconv5 = nn.Sequential(nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
@@ -165,13 +191,23 @@ class Generator(nn.Module):
 							 nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
 							 nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1))
-		else:
+		elif(imageSize == 64):
+			self.deconv3 = deconv_block(ngf, ngf)
+			# 64 x 64
 			self.deconv4 = nn.Sequential(nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
 							 nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
 							 nn.ELU(True),
 							 nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
 							 nn.Tanh())
+		else:
+			self.deconv3 = nn.Sequential(nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True),
+							 nn.Conv2d(ngf,ngf,kernel_size=3,stride=1,padding=1),
+							 nn.ELU(True),
+							 nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
+							 nn.Tanh())
+			
 		self.ngf = ngf
 		self.imageSize = imageSize
 
@@ -181,9 +217,10 @@ class Generator(nn.Module):
 		out = self.deconv1(out)
 		out = self.deconv2(out)
 		out = self.deconv3(out)
-		out = self.deconv4(out)
-		if(self.imageSize == 128):
-			out = self.deconv5(out)
+		if self.imageSize >= 64:
+			out = self.deconv4(out)
+			if self.imageSize == 128:
+				out = self.deconv5(out)
 		return out
 
 # Initialize generator and discriminator
