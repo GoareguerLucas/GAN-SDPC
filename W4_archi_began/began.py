@@ -336,7 +336,7 @@ for epoch in range(1,opt.n_epochs+1):
 
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [LR: %f] [Time: %fs] -- M: %f, k: %f"
-			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), optimizerD.param_groups[0]['lr'], time.time()-t_batch, M, k)
+			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), optimizer_D.param_groups[0]['lr'], time.time()-t_batch, M, k)
 		)
 	
 		# Save Losses and scores for plotting later
