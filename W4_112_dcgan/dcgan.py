@@ -142,8 +142,8 @@ dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
-scheduler_G = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.1)
-scheduler_D = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.1)
+scheduler_G = torch.optim.lr_scheduler.StepLR(optimizer_G, step_size=1000, gamma=0.1)
+scheduler_D = torch.optim.lr_scheduler.StepLR(optimizer_D, step_size=1000, gamma=0.1)
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
