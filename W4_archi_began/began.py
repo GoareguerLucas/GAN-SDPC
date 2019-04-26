@@ -187,7 +187,7 @@ class Generator(nn.Module):
 		return out
 
 # Initialize generator and discriminator
-discriminator = Discriminator(opt.channels, opt.latent_dim, opt.hidden_size,opt.img_size)
+discriminator = Discriminator(opt.channels, opt.latent_dim, opt.latent_dim,opt.img_size)
 generator = Generator(opt.channels, opt.latent_dim, opt.latent_dim,opt.img_size)
 
 if cuda:
