@@ -242,6 +242,10 @@ dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
+#Scheduler
+scheduler_G = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_G, factor=0.90, patience=0, verbose=True)
+scheduler_D = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer_D, factor=0.90, patience=0, verbose=True)
+
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # ----------
@@ -252,10 +256,6 @@ G_losses = []
 D_losses = []
 g_losses = []
 d_losses = []
-D_x = []
-D_G_z = []
-d_x = []
-d_g_z = []
 
 save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
@@ -269,6 +269,9 @@ k_tmp = []
 M_tmp = []
 k_plot = []
 M_plot = []
+
+lr_tmp = []
+lr_plot = []
 
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
@@ -341,8 +344,7 @@ for epoch in range(1,opt.n_epochs+1):
 		k_tmp.append(k)
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x.append(torch.sum(d_real).item()/imgs.size(0))
-		d_g_z.append(torch.sum(d_fake).item()/imgs.size(0))
+		lr_tmp.append(optimizer_D.param_groups[0]['lr'])
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
@@ -354,17 +356,17 @@ for epoch in range(1,opt.n_epochs+1):
 		D_losses.append(sum(d_losses)/batch_on_save_dot)
 		g_losses = []
 		d_losses = []
-		D_x.append(sum(d_x)/batch_on_save_dot)
-		D_G_z.append(sum(d_g_z)/batch_on_save_dot)
-		d_x = []
-		d_g_z = []
 		
 		M_plot.append(sum(M_tmp)/batch_on_save_dot)
 		k_plot.append(sum(k_tmp)/batch_on_save_dot)
 		k_tmp = []
 		M_tmp = []
+		
+		scheduler_G.step(M_plot[-1])
+		scheduler_D.step(M_plot[-1])
+		lr_plot.append(sum(lr_tmp)/batch_on_save_dot)
+		lr_tmp = []
 
-	
 	# Save models
 	if epoch % opt.model_save_interval == 0:
 		num = str(int(epoch / opt.model_save_interval))
@@ -375,10 +377,10 @@ for epoch in range(1,opt.n_epochs+1):
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses			
 		plot_losses(G_losses,D_losses)
-		#Plot scores
-		plot_scores(D_x,D_G_z)
 		#Plot began mesure of convergeance
 		plot_began(M_plot,k_plot)
+		#Plot lr
+		plot_lr(lr_plot)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
@@ -387,11 +389,11 @@ print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_tota
 #Plot losses			
 plot_losses(G_losses,D_losses)
 
-#Plot game score
-plot_scores(D_x,D_G_z)
-
 #Plot began mesure of convergeance
 plot_began(M_plot,k_plot)
+
+#Plot lr
+plot_lr(lr_plot)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
