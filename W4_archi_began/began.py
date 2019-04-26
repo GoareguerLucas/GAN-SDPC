@@ -253,7 +253,10 @@ for epoch in range(1,opt.n_epochs+1):
 
 		# Generate a batch of images
 		gen_imgs = generator(z)
+		print("G(Z) ",gen_imgs.shape)
 
+		print("D(G(Z)) ",discriminator(gen_imgs).shape)
+		
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = torch.mean(torch.abs(discriminator(gen_imgs) - gen_imgs))
 
