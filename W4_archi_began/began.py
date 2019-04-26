@@ -290,9 +290,6 @@ for epoch in range(1,opt.n_epochs+1):
 
 		# Generate a batch of images
 		gen_imgs = generator(z)
-		print("G(Z) ",gen_imgs.shape)
-
-		print("D(G(Z)) ",discriminator(gen_imgs).shape)
 		
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = torch.mean(torch.abs(discriminator(gen_imgs) - gen_imgs))
@@ -321,7 +318,7 @@ for epoch in range(1,opt.n_epochs+1):
 		# Update weights
 		# ----------------
 
-		diff = torch.mean(gamma * d_loss_real - d_loss_fake)
+		diff = gamma * d_loss_real - d_loss_fake
 
 		# Update weight term for fake samples
 		k = k + lambda_k * diff.item()
