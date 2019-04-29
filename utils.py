@@ -50,6 +50,7 @@ def plot_scores(D_x,D_G_z):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("scores")
 	plt.legend()
+	plt.ylim([0.0,1.0])
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
@@ -74,6 +75,7 @@ def plot_began(M,k):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
+	plt.ylim([0.0,1.0])
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 	
@@ -89,5 +91,10 @@ def plot_lr(lr):
 	plt.close(fig)
 
 if __name__ == "__main__":
+	
+	D_G_z = np.random.normal(0.5,0.5,100)
+	D_x = np.random.normal(0.5,0.5,100)
+	
+	plot_scores(D_x,D_G_z)
 	
 	print("test")
