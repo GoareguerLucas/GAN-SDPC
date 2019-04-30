@@ -247,9 +247,9 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(op
 
 # Scheduler
 scheduler_G = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer_G, factor=0.50, patience=5, verbose=True)
+    optimizer_G, factor=0.90, patience=5, verbose=True)
 scheduler_D = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer_D, factor=0.50, patience=5, verbose=True)
+    optimizer_D, factor=0.90, patience=5, verbose=True)
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -330,7 +330,7 @@ for epoch in range(1, opt.n_epochs+1):
 
         # Update weight term for fake samples
         k = k + lambda_k * diff.item()
-        k = min(max(k, 0.05), .95)  # Constraint to interval [0, 1]
+        k = min(max(k, 0.005), .995)  # Constraint to interval [0, 1]
 
         # Update convergence metric
         M = (d_loss_real + torch.abs(diff)).item()
@@ -380,7 +380,7 @@ for epoch in range(1, opt.n_epochs+1):
         save_model(generator, optimizer_G, epoch, opt.model_save_path+"/"+num+"_G.pt")
 
     # Intermediate plot
-    if epoch % (opt.n_epochs/100) == 0:
+    if epoch % (opt.n_epochs/4) == 0:
         # Plot losses
         plot_losses(G_losses, D_losses)
         # Plot began mesure of convergeance
