@@ -342,7 +342,7 @@ for epoch in range(1, opt.n_epochs+1):
 
         # Update weight term for fake samples
         k = k + lambda_k * diff.item()
-        k = min(max(k, 0), 1)  # Constraint to interval [0, 1]
+        k = min(max(k, 0.05), .95)  # Constraint to interval [0, 1]
 
         # Update convergence metric
         M = (d_loss_real + torch.abs(diff)).item()
