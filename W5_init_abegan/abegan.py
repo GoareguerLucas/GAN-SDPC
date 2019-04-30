@@ -148,8 +148,8 @@ class Discriminator(nn.Module):
                                          )
         else:
             # 32 x 32
-            # self.deconv3 = deconv_block(ndf, ndf)
-            # self.deconv4 = deconv_block(ndf, ndf)
+            self.deconv3 = deconv_block(ndf, ndf)
+            self.deconv4 = deconv_block(ndf, ndf)
             self.deconv5 = nn.Sequential(nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1),
                                          nn.Tanh())
 
@@ -194,34 +194,25 @@ class Generator(nn.Module):
         # 16 x 16
         self.deconv2 = deconv_block(ngf, ngf)
         # 32 x 32
-
-        if(imageSize == 128):
-            self.deconv3 = deconv_block(ngf, ngf)
-            # 64 x 64
-            self.deconv4 = deconv_block(ngf, ngf)
-            # 128 x 128
-            self.deconv5 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1))
+        if(imageSize == 32):
+            # 32 x 32
+            self.deconv3 = nn.Sequential(nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
+										 nn.Tanh()
+                                         )
         elif(imageSize == 64):
+            # 32 x 32
             self.deconv3 = deconv_block(ngf, ngf)
             # 64 x 64
-            self.deconv4 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
-                                         nn.Tanh())
+            self.deconv4 = nn.Sequential(nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
+										 nn.Tanh()
+                                         )
         else:
-            self.deconv3 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         NONLIN(True),
-                                         nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
-                                         nn.Tanh())
-
+            # 32 x 32
+            self.deconv3 = deconv_block(ngf, ngf)
+            self.deconv4 = deconv_block(ngf, ngf)
+            self.deconv5 = nn.Sequential(nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
+                                         nn.Tanh()
+                                         )
         self.ngf = ngf
         self.imageSize = imageSize
 
