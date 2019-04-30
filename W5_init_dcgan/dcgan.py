@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=5000, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
@@ -35,7 +35,7 @@ parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads 
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=200, help="interval between image sampling")
+parser.add_argument("--sample_interval", type=int, default=40, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
@@ -59,20 +59,17 @@ def weights_init_normal(m,factor=1.0):
 		n=n/2.0
 		m.weight.data.normal_(0,math.sqrt(factor/n))
 		m.bias.data.zero_()
-		print("Conv")
 		#torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 	elif classname.find("Linear") != -1:
 		n=float(m.in_features+m.out_features)
 		n=n/2.0
 		m.weight.data.normal_(0,math.sqrt(factor/n))
 		m.bias.data.zero_()
-		print("Linear")
 	elif classname.find("BatchNorm2d") != -1:
 		m.weight.data.fill_(1.0)
 		m.bias.data.zero_()
 		#torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
 		#torch.nn.init.constant_(m.bias.data, 0.0)
-		print("BatchNorm")
 
 
 class Generator(nn.Module):

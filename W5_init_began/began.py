@@ -59,20 +59,17 @@ def weights_init_normal(m,factor=1.0):
 		n=n/2.0
 		m.weight.data.normal_(0,math.sqrt(factor/n))
 		m.bias.data.zero_()
-		print("Conv")
 		#torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 	elif classname.find("Linear") != -1:
 		n=float(m.in_features+m.out_features)
 		n=n/2.0
 		m.weight.data.normal_(0,math.sqrt(factor/n))
 		m.bias.data.zero_()
-		print("Linear")
 	elif classname.find("BatchNorm2d") != -1:
 		m.weight.data.fill_(1.0)
 		m.bias.data.zero_()
 		#torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
 		#torch.nn.init.constant_(m.bias.data, 0.0)
-		print("BatchNorm")
 		
 def conv_block(in_dim,out_dim):
 	return nn.Sequential(nn.Conv2d(in_dim,in_dim,kernel_size=3,stride=1,padding=1),
