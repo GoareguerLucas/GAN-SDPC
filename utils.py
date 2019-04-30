@@ -15,14 +15,14 @@ from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
 def load_data(path,img_size,batch_size,Fast=True):
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
-	
+
 	if Fast:
 		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
-	else:	
+	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
-		
-	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
-	
+
+	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+
 	return dataloader
 
 def save_model(model, optimizer, epoch, path):
@@ -32,13 +32,13 @@ def save_model(model, optimizer, epoch, path):
 		'optimizer_state_dict': optimizer.state_dict(),
 		}
 	torch.save(info,path)
-	
+
 def load_model(model, optimizer, path):
 	checkpoint = torch.load(path)
-	
+
 	model.load_state_dict(checkpoint['model_state_dict'])
 	optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-	
+
 	return checkpoint['epoch']
 
 def plot_scores(D_x,D_G_z):
@@ -55,7 +55,7 @@ def plot_scores(D_x,D_G_z):
 	plt.close(fig)
 
 def plot_losses(G_losses,D_losses):
-	#Plot losses			
+	#Plot losses
 	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator Loss During Training")
 	plt.plot(G_losses,label="G")
@@ -67,7 +67,7 @@ def plot_losses(G_losses,D_losses):
 	plt.close(fig)
 
 def plot_began(M,k):
-	#Plot M and k value	
+	#Plot M and k value
 	fig = plt.figure(figsize=(10,5))
 	plt.title("M and k Value During Training")
 	plt.plot(M,label="M")
@@ -78,7 +78,7 @@ def plot_began(M,k):
 	plt.ylim([0.0,1.0])
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
-	
+
 def plot_lr(lr):
 	#Plot lr
 	fig = plt.figure(figsize=(10,5))
@@ -91,10 +91,10 @@ def plot_lr(lr):
 	plt.close(fig)
 
 if __name__ == "__main__":
-	
+
 	D_G_z = np.random.normal(0.5,0.5,100)
 	D_x = np.random.normal(0.5,0.5,100)
-	
+
 	plot_scores(D_x,D_G_z)
-	
+
 	print("test")

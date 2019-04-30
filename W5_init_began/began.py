@@ -17,7 +17,7 @@ import torch
 import sys
 sys.path.append("../")#../../GAN-SDPC/
 
-from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 from utils import *
 
 import matplotlib.pyplot as plt
@@ -248,7 +248,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
+dataloader = load_data("../../cropped/cp/", opt.img_size, opt.batch_size)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
