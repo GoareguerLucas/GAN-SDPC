@@ -1,6 +1,7 @@
+import sys
+sys.path.append("../")  # ../../GAN-SDPC/
 import time
 import matplotlib.pyplot as plt
-from utils import *
 from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 import argparse
 import os
@@ -15,15 +16,15 @@ from torchvision import datasets
 from torch.autograd import Variable
 
 import torch.nn as nn
+NONLIN = nn.ELU
 import torch.nn.functional as F
 import torch
 
-import sys
-sys.path.append("../")  # ../../GAN-SDPC/
+from utils import *
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
+parser.add_argument("--n_epochs", type=int, default=100, help="number of epochs of training")
 parser.add_argument("--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
@@ -79,18 +80,18 @@ def weights_init_normal(m, factor=1.0):
 
 def conv_block(in_dim, out_dim):
     return nn.Sequential(nn.Conv2d(in_dim, in_dim, kernel_size=3, stride=1, padding=1),
-                         nn.ELU(True),
+                         NONLIN(True),
                          nn.Conv2d(in_dim, in_dim, kernel_size=3, stride=1, padding=1),
-                         nn.ELU(True),
+                         NONLIN(True),
                          nn.Conv2d(in_dim, out_dim, kernel_size=1, stride=1, padding=0),
                          nn.AvgPool2d(kernel_size=2, stride=2))
 
 
 def deconv_block(in_dim, out_dim):
     return nn.Sequential(nn.Conv2d(in_dim, out_dim, kernel_size=3, stride=1, padding=1),
-                         nn.ELU(True),
+                         NONLIN(True),
                          nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=1, padding=1),
-                         nn.ELU(True),
+                         NONLIN(True),
                          nn.UpsamplingNearest2d(scale_factor=2))
 
 
@@ -99,7 +100,7 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         # 64 x 64
         self.conv1 = nn.Sequential(nn.Conv2d(nc, ndf, kernel_size=3, stride=1, padding=1),
-                                   nn.ELU(True),
+                                   NONLIN(True),
                                    conv_block(ndf, ndf))
         # 32 x 32
         self.conv2 = conv_block(ndf, ndf*2)
@@ -107,26 +108,27 @@ class Discriminator(nn.Module):
         if(imageSize == 32):
             # 8 x 8
             self.conv3 = nn.Sequential(nn.Conv2d(ndf*2, ndf*2, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True),
+                                       NONLIN(True),
                                        nn.Conv2d(ndf*2, ndf*2, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True))
+                                       NONLIN(True))
             self.embed1 = nn.Linear(ndf*2*8*8, hidden_size)
         elif(imageSize == 64):
             self.conv3 = conv_block(ndf*2, ndf*3)
             # 8 x 8
             self.conv4 = nn.Sequential(nn.Conv2d(ndf*3, ndf*3, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True),
+                                       NONLIN(True),
                                        nn.Conv2d(ndf*3, ndf*3, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True))
+                                       NONLIN(True))
             self.embed1 = nn.Linear(ndf*3*8*8, hidden_size)
         else:
             self.conv3 = conv_block(ndf*2, ndf*3)
             self.conv4 = conv_block(ndf*3, ndf*4)
             self.conv5 = nn.Sequential(nn.Conv2d(ndf*4, ndf*4, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True),
+                                       NONLIN(True),
                                        nn.Conv2d(ndf*4, ndf*4, kernel_size=3, stride=1, padding=1),
-                                       nn.ELU(True))
+                                       NONLIN(True))
             self.embed1 = nn.Linear(ndf*4*8*8, hidden_size)
+			
         self.embed2 = nn.Linear(hidden_size, ndf*8*8)
 
         # 8 x 8
@@ -137,27 +139,27 @@ class Discriminator(nn.Module):
         if(imageSize == 32):
             # 32 x 32
             self.deconv3 = nn.Sequential(nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1))
         elif(imageSize == 64):
             # 32 x 32
             self.deconv3 = deconv_block(ndf, ndf)
             # 64 x 64
             self.deconv4 = nn.Sequential(nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1))
         else:
             # 32 x 32
             self.deconv3 = deconv_block(ndf, ndf)
             self.deconv4 = deconv_block(ndf, ndf)
             self.deconv5 = nn.Sequential(nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, ndf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ndf, nc, kernel_size=3, stride=1, padding=1),
                                          nn.Tanh())
 
@@ -209,24 +211,24 @@ class Generator(nn.Module):
             self.deconv4 = deconv_block(ngf, ngf)
             # 128 x 128
             self.deconv5 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1))
         elif(imageSize == 64):
             self.deconv3 = deconv_block(ngf, ngf)
             # 64 x 64
             self.deconv4 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
                                          nn.Tanh())
         else:
             self.deconv3 = nn.Sequential(nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, ngf, kernel_size=3, stride=1, padding=1),
-                                         nn.ELU(True),
+                                         NONLIN(True),
                                          nn.Conv2d(ngf, nc, kernel_size=3, stride=1, padding=1),
                                          nn.Tanh())
 
