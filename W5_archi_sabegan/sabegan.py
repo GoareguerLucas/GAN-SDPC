@@ -93,9 +93,9 @@ def deconv_block(in_dim, out_dim):
                          nn.UpsamplingNearest2d(scale_factor=2))
 
 
-class Encoder(nn.Module):
+class Analyse(nn.Module):
     def __init__(self, nc, ndf, hidden_size, imageSize):
-        super(Encoder, self).__init__()
+        super(Analyse, self).__init__()
         # 64 x 64
         self.conv1 = nn.Sequential(nn.Conv2d(nc, ndf, kernel_size=3, stride=1, padding=1),
                                    NONLIN,
@@ -148,9 +148,9 @@ class Encoder(nn.Module):
         return out
 
 
-class Decoder(nn.Module):
+class Generation(nn.Module):
     def __init__(self, nc, ngf, nz, imageSize):
-        super(Decoder, self).__init__()
+        super(Generation, self).__init__()
         self.embed1 = nn.Linear(nz, ngf*8*8)
 
         # 8 x 8
@@ -194,23 +194,23 @@ class Decoder(nn.Module):
 
 
 # Initialize generator and discriminator
-encoder = Encoder(opt.channels, opt.latent_dim, opt.latent_dim, opt.img_size)
-decoder = Decoder(opt.channels, opt.latent_dim, opt.latent_dim, opt.img_size)
+analyse = Analyse(opt.channels, opt.latent_dim, opt.latent_dim, opt.img_size)
+generation = Generation(opt.channels, opt.latent_dim, opt.latent_dim, opt.img_size)
 
 if cuda:
-    encoder.cuda() 
-    decoder.cuda()
+    analyse.cuda() 
+    generation.cuda()
 
 # Initialize weights
-encoder.apply(weights_init_normal)
-decoder.apply(weights_init_normal)
+analyse.apply(weights_init_normal)
+generation.apply(weights_init_normal)
 
 # Configure data loader
 dataloader = load_data("../../cropped/cp/", opt.img_size, opt.batch_size)
 
 # Optimizers
-optimizer_G = torch.optim.Adam(decoder.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
-optimizer_D = torch.optim.Adam(itertools.chain(encoder.parameters(), decoder.parameters()), lr=opt.lrD, betas=(opt.b1, opt.b2))
+optimizer_G = torch.optim.Adam(generation.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
+optimizer_D = torch.optim.Adam(itertools.chain(analyse.parameters(), generation.parameters()), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
 # Scheduler
 """scheduler_G = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -264,10 +264,10 @@ for epoch in range(1, opt.n_epochs+1):
         z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 
         # Generate a batch of images
-        gen_imgs = decoder(z)
+        gen_imgs = generation(z)
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = torch.mean(torch.abs(decoder(encoder(gen_imgs.detach()).detach()).detach() - gen_imgs))
+        g_loss = torch.mean(torch.abs(generation(analyse(gen_imgs.detach()).detach()).detach() - gen_imgs))
 
         g_loss.backward()
         optimizer_G.step()
@@ -279,8 +279,8 @@ for epoch in range(1, opt.n_epochs+1):
         optimizer_D.zero_grad()
 
         # Measure discriminator's ability to classify real from generated samples
-        d_real = decoder(encoder(real_imgs))
-        d_fake = decoder(encoder(gen_imgs.detach()))
+        d_real = generation(analyse(real_imgs))
+        d_fake = generation(analyse(gen_imgs.detach()))
 
         d_loss_real = torch.mean(torch.abs(d_real - real_imgs))
         d_loss_fake = torch.mean(torch.abs(d_fake - gen_imgs.detach()))
