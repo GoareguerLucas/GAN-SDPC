@@ -50,7 +50,7 @@ def plot_scores(D_x,D_G_z):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("scores")
 	plt.legend()
-	plt.ylim([0.0,1.0])
+	plt.ylim([0.0,1.1])
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
@@ -75,7 +75,7 @@ def plot_began(M,k):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
-	plt.ylim([0.0,1.0])
+	plt.ylim([0.0,1.1])
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
