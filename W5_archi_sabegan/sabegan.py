@@ -267,7 +267,7 @@ for epoch in range(1, opt.n_epochs+1):
         gen_imgs = generation(z)
 
         # Loss measures generator's ability to fool the discriminator
-        g_loss = torch.mean(torch.abs(generation(analyse(gen_imgs.detach()).detach()).detach() - gen_imgs))
+        g_loss = torch.mean(torch.abs(generation(analyse(gen_imgs)) - gen_imgs))
 
         g_loss.backward()
         optimizer_G.step()
@@ -343,8 +343,8 @@ for epoch in range(1, opt.n_epochs+1):
     # Save models
     if epoch % opt.model_save_interval == 0:
         num = str(int(epoch / opt.model_save_interval))
-        save_model(discriminator, optimizer_D, epoch, opt.model_save_path+"/"+num+"_D.pt")
-        save_model(generator, optimizer_G, epoch, opt.model_save_path+"/"+num+"_G.pt")
+        save_model(analyse, optimizer_D, epoch, opt.model_save_path+"/"+num+"_D.pt")
+        save_model(generation, optimizer_G, epoch, opt.model_save_path+"/"+num+"_G.pt")
 
     # Intermediate plot
     if epoch % (opt.n_epochs/4) == 0:
@@ -369,5 +369,5 @@ plot_began(M_plot, k_plot)
 plot_lr(lr_plot)
 
 # Save model for futur training
-save_model(discriminator, optimizer_D, epoch, opt.model_save_path+"/last_D.pt")
-save_model(generator, optimizer_G, epoch, opt.model_save_path+"/last_G.pt")
+save_model(analyse, optimizer_D, epoch, opt.model_save_path+"/last_D.pt")
+save_model(generation, optimizer_G, epoch, opt.model_save_path+"/last_G.pt")
