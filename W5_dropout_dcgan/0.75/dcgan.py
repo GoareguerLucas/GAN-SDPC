@@ -15,10 +15,6 @@ import torch.nn.functional as F
 import torch
 
 import sys
-sys.path.append("../")#../../GAN-SDPC/
-
-from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
-from utils import *
 
 import matplotlib.pyplot as plt
 import time
