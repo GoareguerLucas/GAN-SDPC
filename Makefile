@@ -1,5 +1,8 @@
 default: rsync_image
 
+clean_models:
+	rm */models/*.pt
+
 start_ssh:
 	sudo systemctl start ssh
 
@@ -27,5 +30,5 @@ weigth:
 see_rsync:
 	rsync -avhuzn . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
 
-rsync_image:
+rsync:
 	rsync -avhuz . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync

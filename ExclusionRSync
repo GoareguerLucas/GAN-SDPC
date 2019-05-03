@@ -5,7 +5,7 @@ __pycache__
 *.pt
 *$py.class
 save
-*/models/
+*/models/[0-9]_*.pt
 test.py
 *.md
 .git*
