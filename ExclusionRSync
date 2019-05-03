@@ -2,7 +2,6 @@
 __pycache__
 *.py[cod]
 *.py
-*.pt
 *$py.class
 save
 */models/[0-9]_*.pt
