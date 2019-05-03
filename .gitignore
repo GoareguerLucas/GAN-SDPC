@@ -6,6 +6,8 @@ __pycache__/
 save/
 */images/
 */models/
+*/*/images/
+*/*/models/
 test.py
 
 # C extensions

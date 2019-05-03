@@ -1,4 +1,4 @@
-default: rsync_image
+default: rsync
 
 clean_models:
 	rm */models/*.pt
