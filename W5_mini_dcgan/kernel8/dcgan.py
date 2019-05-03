@@ -15,10 +15,6 @@ import torch.nn.functional as F
 import torch
 
 import sys
-sys.path.append("../")#../../GAN-SDPC/
-
-from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
-from utils import *
 
 import matplotlib.pyplot as plt
 import time
@@ -39,8 +35,18 @@ parser.add_argument("--sample_interval", type=int, default=10, help="interval be
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
+parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
+
+# Particular import
+depth = ""
+if opt.depth == True:
+	depth = "../"
+sys.path.append(depth+"../")#../../GAN-SDPC/
+
+from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+from utils import *
 
 # Dossier de sauvegarde
 #os.makedirs("images", exist_ok=True)
@@ -144,7 +150,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
+dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))

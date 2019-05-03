@@ -2,6 +2,7 @@ default: rsync
 
 clean_models:
 	rm */models/*.pt
+	rm */*/models/*.pt
 
 start_ssh:
 	sudo systemctl start ssh
