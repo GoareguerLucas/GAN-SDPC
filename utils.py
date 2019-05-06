@@ -50,7 +50,8 @@ def plot_scores(D_x,D_G_z):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("scores")
 	plt.legend()
-	plt.yticks(np.arange(0.0,1.01,0.1))
+	plt.yticks(np.arange(0.0,1.2,0.1))
+	plt.grid(True)
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
@@ -63,6 +64,7 @@ def plot_losses(G_losses,D_losses):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Loss")
 	plt.legend()
+	plt.grid(True)
 	plt.savefig("losses.png",format="png")
 	plt.close(fig)
 
@@ -75,7 +77,8 @@ def plot_began(M,k):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
-	plt.yticks(np.arange(0.0,1.01,0.1))
+	plt.yticks(np.arange(0.0,1.2,0.1))
+	plt.grid(True)
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
@@ -87,6 +90,7 @@ def plot_lr(lr):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
+	plt.grid(True)
 	plt.savefig("lr.png",format="png")
 	plt.close(fig)
 
