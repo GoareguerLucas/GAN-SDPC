@@ -39,6 +39,7 @@ parser.add_argument("--sample_interval", type=int, default=40, help="interval be
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
+parser.add_argument("-t","--treshold", type=float, default=0.25, help="Seuil de renforcement [0.0-0.5]")
 opt = parser.parse_args()
 print(opt)
 
@@ -154,9 +155,6 @@ dataloader = load_data("../../cropped/cp/",opt.img_size,opt.batch_size)
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
-scheduler_G = torch.optim.lr_scheduler.StepLR(optimizer_G, step_size=1000, gamma=0.1)
-scheduler_D = torch.optim.lr_scheduler.StepLR(optimizer_D, step_size=1000, gamma=0.1)
-
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # ----------
@@ -175,16 +173,19 @@ d_g_z = []
 save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
+# Gestion du seuil
+if opt.treshold > 0.5 or opt.treshold < 0:
+	print("Attention le treshold choisi doit être compris entre 0 et 0.5.")
+	exit(0) 
+T = int(opt.treshold * opt.batch_size) # Taille des quantils
+
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
-	scheduler_G.step()
-	scheduler_D.step()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
 		
 		# Adversarial ground truths
-		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 
@@ -203,8 +204,29 @@ for epoch in range(1,opt.n_epochs+1):
 		# Generate a batch of images
 		gen_imgs = generator(z)
 		
+		#Discriminator descision
+		d_g_x_tmp = discriminator(gen_imgs)
+		
+		# Classement
+		#print("T ",T)
+		#print(d_g_x_tmp.type)
+		_,idx_best = torch.topk(d_g_x_tmp,T,dim=0,largest=True)
+		_,idx_worst = torch.topk(d_g_x_tmp,T,dim=0,largest=False)
+		#print(idx_worst.shape)
+		#print(idx_worst)
+		
+		idx_best = idx_best.data
+		idx_worst = idx_worst.data
+		
+		answer = np.full((imgs.shape[0],1),0.5,dtype=float)
+		answer[idx_best] = 1
+		answer[idx_worst] = 0
+		
+		answer = Variable(torch.from_numpy(answer), requires_grad=False).type('torch.FloatTensor')
+		#print(answer)
+		
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_imgs), valid)
+		g_loss = adversarial_loss(discriminator(gen_imgs), answer)
 
 		g_loss.backward()
 		optimizer_G.step()
@@ -217,10 +239,10 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		#Discriminator descision
 		d_x_tmp = discriminator(real_imgs)
-		d_g_x_tmp = discriminator(gen_imgs.detach())
+		d_g_x_tmp = d_g_x_tmp.detach()
 		
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(d_x_tmp, valid_smooth)
+		real_loss = adversarial_loss(d_x_tmp, valid)
 		fake_loss = adversarial_loss(d_g_x_tmp, fake)
 		
 		d_loss = (real_loss + fake_loss) / 2
