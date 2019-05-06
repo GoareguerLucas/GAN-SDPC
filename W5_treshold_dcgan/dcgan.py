@@ -213,17 +213,17 @@ for epoch in range(1,opt.n_epochs+1):
 		_,idx_best = torch.topk(d_g_x_tmp,T,dim=0,largest=True)
 		_,idx_worst = torch.topk(d_g_x_tmp,T,dim=0,largest=False)
 		#print(idx_worst.shape)
-		#print(idx_worst)
+		print(idx_worst)
 		
-		idx_best = idx_best.data
-		idx_worst = idx_worst.data
-		
+		"""
 		answer = np.full((imgs.shape[0],1),0.5,dtype=float)
 		answer[idx_best] = 1
-		answer[idx_worst] = 0
+		answer[idx_worst] = 0"""
 		
-		answer = Variable(torch.from_numpy(answer), requires_grad=False).type('torch.FloatTensor')
-		#print(answer)
+		answer = Variable(Tensor(imgs.size(0), 1).fill_(0.5), requires_grad=False)
+		answer.data[idx_best] = 1
+		answer.data[idx_worst] = 0
+		print(answer)
 		
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(discriminator(gen_imgs), answer)
