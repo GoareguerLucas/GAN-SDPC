@@ -132,15 +132,15 @@ class Discriminator(nn.Module):
 			*discriminator_block(256, 512, stride=1),
 			*discriminator_block(512, 1024),
 		)"""
+		
 		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 32, bn=False),)
 		self.conv2 = nn.Sequential(*discriminator_block(32, 64),)
-		self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
-		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1),)
-		self.conv4 = nn.Sequential(*discriminator_block(256, 512),)
+		self.conv3 = nn.Sequential(*discriminator_block(64, 128, stride=1),)
+		self.conv4 = nn.Sequential(*discriminator_block(128, 256),)
 
 		# The height and width of downsampled image
 		ds_size = opt.img_size // 2 ** 4
-		self.adv_layer = nn.Sequential(nn.Linear(8*8*512, 1))#, nn.Sigmoid()
+		self.adv_layer = nn.Sequential(nn.Linear(8*8*256, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
 		#out = self.model(img)
