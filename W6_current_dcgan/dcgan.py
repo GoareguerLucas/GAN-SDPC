@@ -211,7 +211,7 @@ for epoch in range(1,opt.n_epochs+1):
 		#Discriminator descision
 		d_x = discriminator(real_imgs)
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(d_x_tmp, valid)
+		real_loss = adversarial_loss(d_x, valid)
 		# Backward
 		real_loss.backward()
 		
