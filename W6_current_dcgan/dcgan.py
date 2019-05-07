@@ -24,11 +24,11 @@ import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--n_epochs", type=int, default=1000, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=32, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
+parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
+parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
+parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
@@ -112,7 +112,7 @@ class Discriminator(nn.Module):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True):
-			block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.25)]
+			block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -126,7 +126,7 @@ class Discriminator(nn.Module):
 
 		# The height and width of downsampled image
 		ds_size = opt.img_size // 2 ** 4
-		self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1), nn.Sigmoid())
+		self.adv_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
 		out = self.model(img)
@@ -135,10 +135,10 @@ class Discriminator(nn.Module):
 
 		return validity
 
-
 # Loss function
-adversarial_loss = torch.nn.BCELoss()
+adversarial_loss = torch.nn.BCEWithLogitsLoss()
 #pixelwise_loss = torch.nn.L1Loss()
+sigmoid = nn.Sigmoid()
 
 # Initialize generator and discriminator
 generator = Generator()
@@ -211,8 +211,10 @@ for epoch in range(1,opt.n_epochs+1):
 		optimizer_D.zero_grad()
 		
 		# Real batch
+		# Ajout d'un bruit au image  réels 
+		rand = Tensor(imgs.shape).normal_(0.0, 0.1)
 		#Discriminator descision
-		d_x = discriminator(real_imgs)
+		d_x = discriminator(real_imgs + rand)
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid)
 		# Backward
@@ -250,7 +252,11 @@ for epoch in range(1,opt.n_epochs+1):
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
 			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
 		)
-	
+		
+		# Compensation pour le BCElogits
+		d_x = sigmoid(d_x)
+		d_g_x = sigmoid(d_g_x)
+		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
