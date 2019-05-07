@@ -182,6 +182,9 @@ d_g_z_mean = []
 save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
+# Vecteur z fixe pour faire les samples 
+fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
+
 t_total = time.time()
 for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
@@ -256,7 +259,9 @@ for epoch in range(1,opt.n_epochs+1):
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
+		generator.eval()
+		fixed_gen_imgs = generator(fixed_noise)
+		save_image(fixed_gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
