@@ -91,18 +91,29 @@ class Generator(nn.Module):
 		self.init_size = opt.img_size // 4
 		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 1024 * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 
-		self.conv_blocks = nn.Sequential(
-			*generator_block(1024, 512, kernel=5, stride=2),
-			*generator_block(512, 256, kernel=5, stride=2),
-			*generator_block(128, 64, kernel=5, stride=2),
+		
+		conv1 = generator_block(1024, 512, kernel=5, stride=2),
+		conv2 = generator_block(512, 256, kernel=5, stride=2),
+		conv3 = generator_block(128, 64, kernel=5, stride=2),
+		self.conv_blocks = nn.Sequential(	
 			nn.ConvTranspose2d(64, opt.channels, kernel_size=5, stride=1),
 			nn.Tanh(),
 		)
 
 	def forward(self, z):
 		out = self.l1(z)
+		print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], 1024, self.init_size, self.init_size)
+		print("View out : ",out.shape)
+		
+		out = con1(out)
+		print("Conv1 out : ",out.shape)
+		out = con2(out)
+		print("Conv2 out : ",out.shape)
+		out = con3(out)
+		print("Conv3 out : ",out.shape)
 		img = self.conv_blocks(out)
+		print("Conv4 out : ",out.shape)
 		return img
 
 
