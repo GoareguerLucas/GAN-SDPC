@@ -92,9 +92,9 @@ class Generator(nn.Module):
 		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 1024 * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 
 		
-		self.conv1 = nn.Sequential(*generator_block(1024, 512, kernel=5, stride=2))
-		self.conv2 = nn.Sequential(*generator_block(512, 256, kernel=5, stride=2))
-		self.conv3 = nn.Sequential(*generator_block(128, 64, kernel=5, stride=2))
+		self.conv1 = nn.Sequential(*generator_block(1024, 512, kernel=5, stride=2),)
+		self.conv2 = nn.Sequential(*generator_block(512, 256, kernel=5, stride=2),)
+		self.conv3 = nn.Sequential(*generator_block(128, 64, kernel=5, stride=2),)
 		self.conv_blocks = nn.Sequential(	
 			nn.ConvTranspose2d(64, opt.channels, kernel_size=5, stride=1),
 			nn.Tanh(),
