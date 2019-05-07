@@ -95,7 +95,7 @@ class Generator(nn.Module):
 			*generator_block(1024, 512, kernel=5, stride=2),
 			*generator_block(512, 256, kernel=5, stride=2),
 			*generator_block(128, 64, kernel=5, stride=2),
-			nn.ConvTranspose2d(64, opt.channels, kernel=5, stride=1),
+			nn.ConvTranspose2d(64, opt.channels, kernel_size=5, stride=1),
 			nn.Tanh(),
 		)
 
