@@ -95,10 +95,13 @@ class Generator(nn.Module):
 		self.conv2 = nn.Sequential(*generator_block(512, 256),)
 		self.conv_blocks = nn.Sequential(	
 			nn.ConvTranspose2d(256, opt.channels, kernel_size=3, stride=1),
+			nn.Conv2d(256, opt.channels, 3, stride=1, padding=1),
 			nn.Tanh(),
 		)
 
 	def forward(self, z):
+		print("G")
+		
 		out = self.l1(z)
 		print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], 1024, self.init_size, self.init_size)
@@ -143,6 +146,8 @@ class Discriminator(nn.Module):
 		self.adv_layer = nn.Sequential(nn.Linear(8*8*128, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
+		print("D")
+		
 		#out = self.model(img)
 		print("Image shape : ",img.shape)
 		out = self.conv1(img)
