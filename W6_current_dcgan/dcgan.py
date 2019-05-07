@@ -198,9 +198,6 @@ for epoch in range(1,opt.n_epochs+1):
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 		
-		# Mode train pour G
-		generator.train()
-		
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		# Generate a batch of images
@@ -262,9 +259,7 @@ for epoch in range(1,opt.n_epochs+1):
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		generator.eval()
-		fixed_gen_imgs = generator(fixed_noise)
-		save_image(fixed_gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
+		sampling(fixed_noise, generator, opt.sample_path, epoch)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:

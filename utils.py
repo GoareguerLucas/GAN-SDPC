@@ -94,6 +94,16 @@ def plot_lr(lr):
 	plt.savefig("lr.png",format="png")
 	plt.close(fig)
 
+"""
+Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
+Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
+"""
+def sampling(noise, generator, path, epoch):
+	generator.eval()
+	gen_imgs = generator(noise)
+	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
+	generator.train()
+
 if __name__ == "__main__":
 
 	D_G_z = np.random.normal(0.5,0.5,100)
