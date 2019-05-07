@@ -121,8 +121,8 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
-		def discriminator_block(in_filters, out_filters, bn=True, kernel=5, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 2), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+		def discriminator_block(in_filters, out_filters, bn=True, kernel=5, stride=1):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 0), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
