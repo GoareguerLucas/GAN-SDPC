@@ -212,9 +212,9 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		# Real batch
 		# Ajout d'un bruit au image  réels 
-		rand = Tensor(imgs.shape).normal_(0.0, 0.1)
+		#rand = Tensor(imgs.shape).normal_(0.0, 0.1)
 		#Discriminator descision
-		d_x = discriminator(real_imgs + rand)
+		d_x = discriminator(real_imgs)
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid)
 		# Backward
