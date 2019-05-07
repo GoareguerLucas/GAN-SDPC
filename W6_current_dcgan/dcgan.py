@@ -197,7 +197,10 @@ for epoch in range(1,opt.n_epochs+1):
 		#valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
-
+		
+		# Mode train pour G
+		generator.train()
+		
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		# Generate a batch of images
