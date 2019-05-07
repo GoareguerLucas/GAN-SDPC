@@ -84,7 +84,7 @@ class Generator(nn.Module):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=5, stride=2):
-			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=0), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -122,7 +122,7 @@ class Discriminator(nn.Module):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=5, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 1), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 0), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
