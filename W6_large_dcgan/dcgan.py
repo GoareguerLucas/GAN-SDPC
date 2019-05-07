@@ -93,8 +93,8 @@ class Generator(nn.Module):
 
 		
 		self.conv1 = nn.Sequential(*generator_block(1024, 512, kernel=5, stride=2))
-		self.conv2 = nn.Sequential(generator_block(512, 256, kernel=5, stride=2))
-		self.conv3 = nn.Sequential(generator_block(128, 64, kernel=5, stride=2))
+		self.conv2 = nn.Sequential(*generator_block(512, 256, kernel=5, stride=2))
+		self.conv3 = nn.Sequential(*generator_block(128, 64, kernel=5, stride=2))
 		self.conv_blocks = nn.Sequential(	
 			nn.ConvTranspose2d(64, opt.channels, kernel_size=5, stride=1),
 			nn.Tanh(),
