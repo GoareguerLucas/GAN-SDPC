@@ -108,8 +108,8 @@ class Generator(nn.Module):
 		print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
 		print("Conv2 out : ",out.shape)
-		out = self.conv3(out)
-		print("Conv3 out : ",out.shape)
+		#out = self.conv3(out)
+		#print("Conv3 out : ",out.shape)
 		img = self.conv_blocks(out)
 		print("Conv4 out : ",out.shape)
 		return img
