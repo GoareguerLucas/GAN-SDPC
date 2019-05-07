@@ -217,9 +217,9 @@ for epoch in range(1,opt.n_epochs+1):
 		
 		# Fake batch
 		#Discriminator descision
-		d_g_x = discriminator(gen_imgs)
+		d_g_x = discriminator(gen_imgs.detach())
 		# Measure discriminator's ability to classify real from generated samples
-		fake_loss = adversarial_loss(d_g_x.detach(), fake)
+		fake_loss = adversarial_loss(d_g_x, fake)
 		# Backward
 		fake_loss.backward()
 		
