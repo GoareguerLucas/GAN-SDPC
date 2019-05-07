@@ -84,19 +84,18 @@ class Generator(nn.Module):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=5, stride=1):
-			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=0), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
 		self.init_size = opt.img_size // 4
 		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 1024 * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
-
 		
 		self.conv1 = nn.Sequential(*generator_block(1024, 512),)
 		self.conv2 = nn.Sequential(*generator_block(512, 256),)
-		self.conv3 = nn.Sequential(*generator_block(128, 64),)
+		self.conv3 = nn.Sequential(*generator_block(256, 128),)
 		self.conv_blocks = nn.Sequential(	
-			nn.ConvTranspose2d(64, opt.channels, kernel_size=5, stride=1),
+			nn.ConvTranspose2d(128, opt.channels, kernel_size=5, stride=1),
 			nn.Tanh(),
 		)
 
