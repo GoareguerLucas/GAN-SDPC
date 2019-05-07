@@ -1,5 +1,6 @@
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
+from torchvision.utils import save_image
 from PIL import Image
 import matplotlib.pyplot as plt
 from glob import glob
