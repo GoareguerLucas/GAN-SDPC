@@ -83,8 +83,8 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		def generator_block(in_filters, out_filters, kernel=3, stride=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+		def generator_block(in_filters, out_filters, kernel=5, stride=2):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=4), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -105,12 +105,12 @@ class Generator(nn.Module):
 		)
 
 	def forward(self, z):
-		print("G")
+		#print("G")
 		
 		out = self.l1(z)
-		print("l1 out : ",out.shape)
+		#print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-		print("View out : ",out.shape)
+		#print("View out : ",out.shape)
 		
 		"""out = self.conv1(out)
 		print("Conv1 out : ",out.shape)
@@ -154,7 +154,7 @@ class Discriminator(nn.Module):
 		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
-		print("D")
+		#print("D")
 		
 		out = self.model(img)
 		"""print("Image shape : ",img.shape)
