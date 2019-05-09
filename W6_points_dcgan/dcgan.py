@@ -28,7 +28,7 @@ parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of e
 parser.add_argument("-b", "--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
