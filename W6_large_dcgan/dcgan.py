@@ -26,16 +26,16 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.0004, help="adam: learning rate for D")
+parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
+parser.add_argument("-i", "--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("-s", "--sample_interval", type=int, default=40, help="interval between image sampling")
+parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
@@ -83,8 +83,8 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		def generator_block(in_filters, out_filters, kernel=5, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=4), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+		def generator_block(in_filters, out_filters, kernel=3, stride=1):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -237,7 +237,7 @@ for epoch in range(1,opt.n_epochs+1):
 		t_batch = time.time()
 		
 		# Adversarial ground truths
-		#valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 		
@@ -259,7 +259,7 @@ for epoch in range(1,opt.n_epochs+1):
 		#Discriminator descision
 		d_x = discriminator(real_imgs)
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(d_x, valid)
+		real_loss = adversarial_loss(d_x, valid_smooth)
 		# Backward
 		real_loss.backward()
 		
