@@ -123,8 +123,6 @@ class Generator(nn.Module):
 			print("Conv1 out : ",out.shape)
 			out = self.conv2(out)
 			print("Conv2 out : ",out.shape)
-			out = self.conv3(out)
-			print("Conv3 out : ",out.shape)
 		
 			img = self.conv_blocks(out)
 			print("Channels Conv out : ",img.shape)
@@ -156,7 +154,7 @@ class Discriminator(nn.Module):
 		
 		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 32, bn=False),)
 		self.conv2 = nn.Sequential(*discriminator_block(32, 64),)
-		self.conv4 = nn.Sequential(*discriminator_block(64, self.max_filters),)
+		self.conv3 = nn.Sequential(*discriminator_block(64, self.max_filters),)
 		"""
 		self.model = nn.Sequential(
 			*discriminator_block(opt.channels, 64, bn=False),
@@ -179,8 +177,6 @@ class Discriminator(nn.Module):
 			print("Conv2 out : ",out.shape)
 			out = self.conv3(out)
 			print("Conv3 out : ",out.shape)
-			out = self.conv4(out)
-			print("Conv4 out : ",out.shape)
 			
 			out = out.view(out.shape[0], -1)	
 			print("View out : ",out.shape)
