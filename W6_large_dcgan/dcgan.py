@@ -80,7 +80,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self):
+	def __init__(self,verbose=True):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -89,44 +89,57 @@ class Generator(nn.Module):
 			
 			return block
 		
+		self.verbose = verbose
+		
 		self.max_filters = 512
 		self.init_size = opt.img_size // 8
 		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 		
-		self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
-		self.conv2 = nn.Sequential(*generator_block(256, 128),)
-		self.conv3 = nn.Sequential(*generator_block(128, 64),)
-		
-		"""*generator_block(self.max_filters, 256),
-			*generator_block(256, 128),
-			*generator_block(128, 64),"""
-		self.conv_blocks = nn.Sequential(
-			nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
-			nn.Tanh(),
-		)
+		if self.verbose:
+			self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
+			self.conv2 = nn.Sequential(*generator_block(256, 128),)
+			self.conv3 = nn.Sequential(*generator_block(128, 64),)
+			self.conv_blocks = nn.Sequential(
+				nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
+				nn.Tanh(),
+			)
+		else:
+			self.conv_blocks = nn.Sequential(
+				*generator_block(self.max_filters, 256),
+				*generator_block(256, 128),
+				*generator_block(128, 64),
+				nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
+				nn.Tanh(),
+			)
 
 	def forward(self, z):
-		print("G")
+		#if self.verbose:
+			#print("G")
 		
 		out = self.l1(z)
-		print("l1 out : ",out.shape)
+		#if self.verbose:	
+			#print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-		print("View out : ",out.shape)
 		
-		out = self.conv1(out)
-		print("Conv1 out : ",out.shape)
-		out = self.conv2(out)
-		print("Conv2 out : ",out.shape)
-		out = self.conv3(out)
-		print("Conv3 out : ",out.shape)
+		if self.verbose:
+			#print("View out : ",out.shape)
+			
+			out = self.conv1(out)
+			#print("Conv1 out : ",out.shape)
+			out = self.conv2(out)
+			#print("Conv2 out : ",out.shape)
+			out = self.conv3(out)
+			#print("Conv3 out : ",out.shape)
+		
 		img = self.conv_blocks(out)
-		print("Channels Conv out : ",img.shape)
+		#if self.verbose:	
+			#print("Channels Conv out : ",img.shape)
 		
 		return img
 
 
 class Discriminator(nn.Module):
-	def __init__(self):
+	def __init__(self,verbose=True):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
@@ -136,41 +149,46 @@ class Discriminator(nn.Module):
 			return block
 		
 		self.max_filters = 512
-		"""self.model = nn.Sequential(
-			*discriminator_block(opt.channels, 64, bn=False),
-			*discriminator_block(64, 128),
-			*discriminator_block(128, 256, stride=1),
-			*discriminator_block(256, self.max_filters),
-		)"""
+		self.verbose = verbose
 		
-		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
-		self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
-		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1, padding=2),)
-		self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)
+		if self.verbose:
+			self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
+			self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
+			self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1, padding=2),)
+			self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)
+		else:
+			self.model = nn.Sequential(
+				*discriminator_block(opt.channels, 64, bn=False),
+				*discriminator_block(64, 128),
+				*discriminator_block(128, 256, stride=1),
+				*discriminator_block(256, self.max_filters),
+			)
 
 		# The height and width of downsampled image
 		self.init_size = opt.img_size // 8
 		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
-		print("D")
-		"""
-		out = self.model(img)
-		"""
-		print("Image shape : ",img.shape)
-		out = self.conv1(img)
-		print("Conv1 out : ",out.shape)
-		out = self.conv2(out)
-		print("Conv2 out : ",out.shape)
-		out = self.conv3(out)
-		print("Conv3 out : ",out.shape)
-		out = self.conv4(out)
-		print("Conv4 out : ",out.shape)
+		if self.verbose:
+			#print("D")
+			#print("Image shape : ",img.shape)
+			out = self.conv1(img)
+			#print("Conv1 out : ",out.shape)
+			out = self.conv2(out)
+			#print("Conv2 out : ",out.shape)
+			out = self.conv3(out)
+			#print("Conv3 out : ",out.shape)
+			out = self.conv4(out)
+			#print("Conv4 out : ",out.shape)
+		else:
+			out = self.model(img)
 		
 		out = out.view(out.shape[0], -1)
-		print("View out : ",out.shape)
+		#if self.verbose:	
+			#print("View out : ",out.shape)
 		validity = self.adv_layer(out)
-		print("Val out : ",validity.shape)
+		#if self.verbose:	
+			#print("Val out : ",validity.shape)
 
 		return validity
 
