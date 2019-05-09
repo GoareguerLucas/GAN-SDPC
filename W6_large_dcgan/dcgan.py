@@ -122,7 +122,7 @@ class Generator(nn.Module):
 		print("Channels Conv out : ",img.shape)"""
 		
 		img = self.conv_blocks(out)
-		print("Channels Conv out : ",img.shape)
+		
 		return img
 
 
@@ -171,7 +171,7 @@ class Discriminator(nn.Module):
 		out = out.view(out.shape[0], -1)
 		#print("View out : ",out.shape)
 		validity = self.adv_layer(out)
-		print("Val out : ",validity.shape)
+		#print("Val out : ",validity.shape)
 
 		return validity
 
