@@ -80,7 +80,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=False):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -139,7 +139,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=False):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
