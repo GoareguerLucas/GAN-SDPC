@@ -259,11 +259,12 @@ for epoch in range(1,opt.n_epochs+1):
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		gen_imgs = generator(fixed_noise)
 		# Sample during training
+		gen_imgs = generator(fixed_noise)
 		save_image(gen_imgs.data[:], "%s/%d_train.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		# Sample during eval
 		generator.eval()
+		gen_imgs = generator(fixed_noise)
 		save_image(gen_imgs.data[:], "%s/%d_eval.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
 		generator.train()
 		
