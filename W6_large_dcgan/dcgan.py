@@ -129,8 +129,8 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
-		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 1), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -145,7 +145,7 @@ class Discriminator(nn.Module):
 		
 		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
 		self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
-		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1),)
+		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1, padding=2),)
 		self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)
 
 		# The height and width of downsampled image
