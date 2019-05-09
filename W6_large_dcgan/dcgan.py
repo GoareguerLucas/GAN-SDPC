@@ -88,13 +88,18 @@ class Generator(nn.Module):
 			
 			return block
 		
+		self.max_filters = 512
 		self.init_size = opt.img_size // 8
-		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 512 * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
+		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 		
-		self.conv1 = nn.Sequential(*generator_block(512, 256),)
+		"""self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
 		self.conv2 = nn.Sequential(*generator_block(256, 128),)
-		self.conv3 = nn.Sequential(*generator_block(128, 64),)
-		self.conv_blocks = nn.Sequential(	
+		self.conv3 = nn.Sequential(*generator_block(128, 64),)"""
+		
+		self.conv_blocks = nn.Sequential(
+			*generator_block(self.max_filters, 256),
+			*generator_block(256, 128),
+			*generator_block(128, 64),
 			nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
 			nn.Tanh(),
 		)
@@ -104,17 +109,20 @@ class Generator(nn.Module):
 		
 		out = self.l1(z)
 		print("l1 out : ",out.shape)
-		out = out.view(out.shape[0], 512, self.init_size, self.init_size)
+		out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
 		print("View out : ",out.shape)
 		
-		out = self.conv1(out)
+		"""out = self.conv1(out)
 		print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
 		print("Conv2 out : ",out.shape)
 		out = self.conv3(out)
 		print("Conv3 out : ",out.shape)
 		img = self.conv_blocks(out)
-		print("Channels Conv out : ",img.shape)
+		print("Channels Conv out : ",img.shape)"""
+		
+		img = self.conv_blocks(out)
+		
 		return img
 
 
@@ -127,29 +135,29 @@ class Discriminator(nn.Module):
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
-
-		"""self.model = nn.Sequential(
+		
+		self.max_filters = 512
+		self.model = nn.Sequential(
 			*discriminator_block(opt.channels, 64, bn=False),
 			*discriminator_block(64, 128),
-			*discriminator_block(128, 256),
-			*discriminator_block(256, 512, stride=1),
-			*discriminator_block(512, 1024),
-		)"""
+			*discriminator_block(128, 256, stride=1),
+			*discriminator_block(256, self.max_filters),
+		)
 		
-		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
+		"""self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
 		self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
 		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1),)
-		self.conv4 = nn.Sequential(*discriminator_block(256, 512),)
+		self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)"""
 
 		# The height and width of downsampled image
 		self.init_size = opt.img_size // 8
-		self.adv_layer = nn.Sequential(nn.Linear(512 * self.init_size ** 2, 1))#, nn.Sigmoid()
+		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
 		print("D")
 		
-		#out = self.model(img)
-		print("Image shape : ",img.shape)
+		out = self.model(img)
+		"""print("Image shape : ",img.shape)
 		out = self.conv1(img)
 		print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
@@ -157,13 +165,13 @@ class Discriminator(nn.Module):
 		out = self.conv3(out)
 		print("Conv3 out : ",out.shape)
 		out = self.conv4(out)
-		print("Conv4 out : ",out.shape)
+		print("Conv4 out : ",out.shape)"""
 		
 		#print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], -1)
-		print("View out : ",out.shape)
+		#print("View out : ",out.shape)
 		validity = self.adv_layer(out)
-		print("Val out : ",validity.shape)
+		#print("Val out : ",validity.shape)
 
 		return validity
 
