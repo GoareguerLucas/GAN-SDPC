@@ -98,7 +98,7 @@ class Generator(nn.Module):
 		self.conv3 = nn.Sequential(*generator_block(128, 64),)
 		
 		self.conv_blocks = nn.Sequential(
-					"""*generator_block(self.max_filters, 256),
+			"""*generator_block(self.max_filters, 256),
 			*generator_block(256, 128),
 			*generator_block(128, 64),"""
 			nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
