@@ -83,8 +83,8 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		def generator_block(in_filters, out_filters, kernel=3, stride=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+		def generator_block(in_filters, out_filters, kernel=5, stride=1):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -122,7 +122,7 @@ class Generator(nn.Module):
 		print("Channels Conv out : ",img.shape)"""
 		
 		img = self.conv_blocks(out)
-		
+		print("Channels Conv out : ",img.shape)
 		return img
 
 
@@ -130,8 +130,8 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
-		def discriminator_block(in_filters, out_filters, bn=True, kernel=3, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 1), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+		def discriminator_block(in_filters, out_filters, bn=True, kernel=5, stride=2):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 2), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -171,7 +171,7 @@ class Discriminator(nn.Module):
 		out = out.view(out.shape[0], -1)
 		#print("View out : ",out.shape)
 		validity = self.adv_layer(out)
-		#print("Val out : ",validity.shape)
+		print("Val out : ",validity.shape)
 
 		return validity
 
