@@ -114,7 +114,7 @@ class Generator(nn.Module):
 		out = self.conv3(out)
 		print("Conv3 out : ",out.shape)
 		img = self.conv_blocks(out)
-		print("Conv3 out : ",img.shape)
+		print("Channels Conv out : ",img.shape)
 		return img
 
 
@@ -142,8 +142,8 @@ class Discriminator(nn.Module):
 		self.conv4 = nn.Sequential(*discriminator_block(256, 512),)
 
 		# The height and width of downsampled image
-		ds_size = opt.img_size // 2 ** 4
-		self.adv_layer = nn.Sequential(nn.Linear(8*8*128, 1))#, nn.Sigmoid()
+		ds_size = opt.img_size // 8
+		self.adv_layer = nn.Sequential(nn.Linear(512 * self.init_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
 		print("D")
