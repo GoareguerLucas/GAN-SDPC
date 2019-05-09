@@ -160,7 +160,7 @@ class Discriminator(nn.Module):
 			self.model = nn.Sequential(
 				*discriminator_block(opt.channels, 64, bn=False),
 				*discriminator_block(64, 128),
-				*discriminator_block(128, 256, stride=1),
+				*discriminator_block(128, 256, stride=1, padding=2),
 				*discriminator_block(256, self.max_filters),
 			)
 
