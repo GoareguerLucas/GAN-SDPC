@@ -176,6 +176,9 @@ sigmoid = nn.Sigmoid()
 generator = Generator()
 discriminator = Discriminator()
 
+print(generator)
+print(discriminator)
+
 if cuda:
 	generator.cuda()
 	discriminator.cuda()
