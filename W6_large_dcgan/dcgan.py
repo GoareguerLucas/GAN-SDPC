@@ -83,9 +83,9 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		def generator_block(in_filters, out_filters, kernel=5, stride=2):
+		def generator_block(in_filters, out_filters, kernel=4, stride=2):
 			#block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
-			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -129,34 +129,35 @@ class Discriminator(nn.Module):
 	def __init__(self):
 		super(Discriminator, self).__init__()
 
-		def discriminator_block(in_filters, out_filters, bn=True, kernel=5, stride=2):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 2), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2):
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, 1), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
 		
 		self.max_filters = 512
-		self.model = nn.Sequential(
+		"""self.model = nn.Sequential(
 			*discriminator_block(opt.channels, 64, bn=False),
 			*discriminator_block(64, 128),
 			*discriminator_block(128, 256, stride=1),
 			*discriminator_block(256, self.max_filters),
-		)
+		)"""
 		
-		"""self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
+		self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
 		self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
 		self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1),)
-		self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)"""
+		self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)
 
 		# The height and width of downsampled image
 		self.init_size = opt.img_size // 8
 		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
 
 	def forward(self, img):
-		#print("D")
-		
+		print("D")
+		"""
 		out = self.model(img)
-		"""print("Image shape : ",img.shape)
+		"""
+		print("Image shape : ",img.shape)
 		out = self.conv1(img)
 		print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
@@ -164,13 +165,12 @@ class Discriminator(nn.Module):
 		out = self.conv3(out)
 		print("Conv3 out : ",out.shape)
 		out = self.conv4(out)
-		print("Conv4 out : ",out.shape)"""
+		print("Conv4 out : ",out.shape)
 		
-		#print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], -1)
-		#print("View out : ",out.shape)
+		print("View out : ",out.shape)
 		validity = self.adv_layer(out)
-		#print("Val out : ",validity.shape)
+		print("Val out : ",validity.shape)
 
 		return validity
 
