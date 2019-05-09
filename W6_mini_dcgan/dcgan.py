@@ -80,7 +80,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self,verbose=False):
+	def __init__(self,verbose=True):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -132,7 +132,6 @@ class Generator(nn.Module):
 			
 			out = self.conv1(out)
 			out = self.conv2(out)
-			out = self.conv3(out)
 		
 			img = self.conv_blocks(out)
 		
@@ -140,7 +139,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-	def __init__(self,verbose=False):
+	def __init__(self,verbose=True):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
@@ -186,7 +185,6 @@ class Discriminator(nn.Module):
 			out = self.conv1(img)
 			out = self.conv2(out)
 			out = self.conv3(out)
-			out = self.conv4(out)
 			
 			out = out.view(out.shape[0], -1)
 			validity = self.adv_layer(out)	
