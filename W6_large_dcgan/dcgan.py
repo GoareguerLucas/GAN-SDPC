@@ -83,8 +83,9 @@ class Generator(nn.Module):
 	def __init__(self):
 		super(Generator, self).__init__()
 
-		def generator_block(in_filters, out_filters, kernel=5, stride=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+		def generator_block(in_filters, out_filters, kernel=5, stride=2):
+			#block = [nn.Conv2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.Upsample(scale_factor=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=2), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 			
 			return block
 		
@@ -92,36 +93,34 @@ class Generator(nn.Module):
 		self.init_size = opt.img_size // 8
 		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 		
-		"""self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
+		self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
 		self.conv2 = nn.Sequential(*generator_block(256, 128),)
-		self.conv3 = nn.Sequential(*generator_block(128, 64),)"""
+		self.conv3 = nn.Sequential(*generator_block(128, 64),)
 		
 		self.conv_blocks = nn.Sequential(
-			*generator_block(self.max_filters, 256),
+					"""*generator_block(self.max_filters, 256),
 			*generator_block(256, 128),
-			*generator_block(128, 64),
+			*generator_block(128, 64),"""
 			nn.Conv2d(64, opt.channels, 3, stride=1, padding=1),
 			nn.Tanh(),
 		)
 
 	def forward(self, z):
-		#print("G")
+		print("G")
 		
 		out = self.l1(z)
-		#print("l1 out : ",out.shape)
+		print("l1 out : ",out.shape)
 		out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-		#print("View out : ",out.shape)
+		print("View out : ",out.shape)
 		
-		"""out = self.conv1(out)
+		out = self.conv1(out)
 		print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
 		print("Conv2 out : ",out.shape)
 		out = self.conv3(out)
 		print("Conv3 out : ",out.shape)
 		img = self.conv_blocks(out)
-		print("Channels Conv out : ",img.shape)"""
-		
-		img = self.conv_blocks(out)
+		print("Channels Conv out : ",img.shape)
 		
 		return img
 
