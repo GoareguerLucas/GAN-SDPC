@@ -176,7 +176,7 @@ batch_on_save_dot = save_dot*len(dataloader)
 # Gestion du seuil
 if opt.treshold > 0.5 or opt.treshold < 0:
 	print("Attention le treshold choisi doit être compris entre 0 et 0.5.")
-	exit(0) 
+	exit(0)
 T = int(opt.treshold * opt.batch_size) # Taille des quantils
 
 t_total = time.time()
@@ -184,38 +184,38 @@ for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
-		
+
 		# Adversarial ground truths
 		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
-		
+
 		# -----------------
 		#  Train Generator
 		# -----------------
 
 		optimizer_G.zero_grad()
-		
+
 		# Sample noise as generator input
 		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-		
+
 		# Generate a batch of images
 		gen_imgs = generator(z)
-		
+
 		#Discriminator descision
 		d_g_x_tmp = discriminator(gen_imgs)
-		
+
 		# Classement
-		_,idx_best = torch.topk(d_g_x_tmp,T,dim=0,largest=True)
-		_,idx_worst = torch.topk(d_g_x_tmp,T,dim=0,largest=False)
-		
+		_, idx_best = torch.topk(d_g_x_tmp,T,dim=0,largest=True)
+		_, idx_worst = torch.topk(d_g_x_tmp,T,dim=0,largest=False)
+
 		# Treshold adversarial ground truths
 		answer = Variable(Tensor(imgs.size(0), 1).fill_(0.5), requires_grad=False)
 		answer.data[idx_best] = 1
 		answer.data[idx_worst] = 0
-		
+
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(discriminator(gen_imgs), answer)
 
@@ -227,15 +227,15 @@ for epoch in range(1,opt.n_epochs+1):
 		# ---------------------
 
 		optimizer_D.zero_grad()
-		
+
 		#Discriminator descision
 		d_x_tmp = discriminator(real_imgs)
 		d_g_x_tmp = d_g_x_tmp.detach()
-		
+
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x_tmp, valid)
 		fake_loss = adversarial_loss(d_g_x_tmp, fake)
-		
+
 		d_loss = (real_loss + fake_loss) / 2
 
 		d_loss.backward()
@@ -245,17 +245,17 @@ for epoch in range(1,opt.n_epochs+1):
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
 			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
 		)
-	
+
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		d_x.append(torch.sum(d_x_tmp).item()/imgs.size(0))
 		d_g_z.append(torch.sum(d_g_x_tmp).item()/imgs.size(0))
-		
+
 	# Save samples
 	if epoch % opt.sample_interval == 0:
 		save_image(gen_imgs.data[:25], "%s/%d.png" % (opt.sample_path, epoch), nrow=5, normalize=True)
-	
+
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
 		G_losses.append(sum(g_losses)/batch_on_save_dot)
@@ -266,25 +266,25 @@ for epoch in range(1,opt.n_epochs+1):
 		D_G_z.append(sum(d_g_z)/batch_on_save_dot)
 		d_x = []
 		d_g_z = []
-	
+
 	# Save models
 	if epoch % opt.model_save_interval == 0:
 		num = str(int(epoch / opt.model_save_interval))
 		save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
 		save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
-	
+
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
-		#Plot losses			
+		#Plot losses
 		plot_losses(G_losses,D_losses)
 		#Plot scores
 		plot_scores(D_x,D_G_z)
-	
+
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
-#Plot losses			
+#Plot losses
 plot_losses(G_losses,D_losses)
 
 #Plot game score
