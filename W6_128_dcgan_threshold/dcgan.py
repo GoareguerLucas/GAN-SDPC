@@ -306,9 +306,9 @@ for epoch in range(1,opt.n_epochs+1):
 
 		# Fake batch
 		#Discriminator descision
-		d_g_x = discriminator(gen_imgs.detach())
+		d_g_z = discriminator(gen_imgs.detach())
 		# Measure discriminator's ability to classify real from generated samples
-		fake_loss = adversarial_loss(d_g_x, fake)
+		fake_loss = adversarial_loss(d_g_z, fake)
 		# Backward
 		fake_loss.backward()
 
@@ -323,14 +323,14 @@ for epoch in range(1,opt.n_epochs+1):
 		optimizer_G.zero_grad()
 
 		#Discriminator descision
-		d_g_x = discriminator(gen_imgs)
+		d_g_z = discriminator(gen_imgs)
 
 		# Classement
-		#_, idx_best = torch.topk(d_g_x, T, dim=0,largest=True)
-		_, idx_worst = torch.topk(d_g_x, T, dim=0,largest=False)
+		#_, idx_best = torch.topk(d_g_z, T, dim=0,largest=True)
+		_, idx_worst = torch.topk(d_g_z, T, dim=0,largest=False)
 
 		# Treshold adversarial ground truths
-		answer = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
+		answer = Variable(Tensor(imgs.size(0), 1).fill_(.95), requires_grad=False)
 		#answer.data[idx_best] = 1
 		answer.data[idx_worst] = 0.5
 
@@ -350,13 +350,13 @@ for epoch in range(1,opt.n_epochs+1):
 
 		# Compensation pour le BCElogits
 		d_x = sigmoid(d_x)
-		d_g_x = sigmoid(d_g_x)
+		d_g_z = sigmoid(d_g_z)
 
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		d_x_mean.append(torch.sum(d_x).item()/imgs.size(0))
-		d_g_z_mean.append(torch.sum(d_g_x).item()/imgs.size(0))
+		d_g_z_mean.append(torch.sum(d_g_z).item()/imgs.size(0))
 
 	# Save samples
 	if epoch % opt.sample_interval == 0:
