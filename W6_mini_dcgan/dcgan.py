@@ -90,11 +90,12 @@ class Generator(nn.Module):
 			return block
 		
 		self.verbose = verbose
+		self.nb_blocks = 2
 		
 		self.max_filters = 128
-		self.init_size = opt.img_size // 8
-		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
+		self.init_size = opt.img_size // (2**self.nb_blocks)
 		
+		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 		
 		self.conv1 = nn.Sequential(*generator_block(self.max_filters, 64),)
 		self.conv2 = nn.Sequential(*generator_block(64, 32),)
