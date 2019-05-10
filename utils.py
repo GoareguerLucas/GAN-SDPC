@@ -8,7 +8,6 @@ import datetime
 import numpy as np
 import random
 import torch
-import imageio
 
 import sys
 sys.path.append("../")#../../GAN-SDPC/
@@ -106,39 +105,11 @@ def sampling(noise, generator, path, epoch):
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
 
-def print_network(net):
-	num_params = 0
-	for param in net.parameters():
-		num_params += param.numel()
-	print(net)
-	print('Total number of parameters: %d' % num_params)
-
-def comp(s):
-	s = s.split("/")[-1] # Nom du fichier
-	num = s.split(".")[0] # Numéro dans le nom du fichier
-	
-	return int(num)
-
-def generate_animation(path):
-	images_path = glob(path + '[0-9]*.png')
-	
-	images_path = sorted(images_path,key=comp)
-	
-	images = []
-	for i in images_path:
-		#print(i)
-		images.append(imageio.imread(i))
-	imageio.mimsave(path + 'training.gif', images, fps=3)
-
 if __name__ == "__main__":
 
-	"""D_G_z = np.random.normal(0.5,0.5,100)
+	D_G_z = np.random.normal(0.5,0.5,100)
 	D_x = np.random.normal(0.5,0.5,100)
 
 	plot_scores(D_x,D_G_z)
 
-	print("test")"""
-	
-	generate_animation("W6_large_dcgan/(convTranspose2d)/")
-	generate_animation("W6_128_dcgan/images/")
-	
+	print("test")
