@@ -40,6 +40,7 @@ parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
+parser.add_argument("-v", "--verbose", action="store_true", help="Affichage des tailles des entrées et sortie de chaque couches de D et G.")
 opt = parser.parse_args()
 print(opt)
 
@@ -80,7 +81,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=opt.verbose):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -140,7 +141,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=opt.verbose):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
