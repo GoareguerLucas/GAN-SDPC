@@ -50,8 +50,6 @@ if opt.depth == True:
 sys.path.append(depth+"../")#../../GAN-SDPC/
 
 # Dossier de sauvegarde
-#os.makedirs("images", exist_ok=True)
-#os.makedirs("model", exist_ok=True)
 os.makedirs(opt.sample_path, exist_ok=True)
 os.makedirs(opt.model_save_path, exist_ok=True)
 
@@ -130,15 +128,21 @@ class Generator(nn.Module):
 			img = self.conv_blocks(out)
 			print("Channels Conv out : ",img.shape)
 		else:
+			# Dim : opt.latent_dim
 			out = self.l1(z)	
 			out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
+			# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
 			
 			out = self.conv1(out)
+			# Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
 			out = self.conv2(out)
+			# Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
 			out = self.conv3(out)
+			# Dim : (self.max_filters/8, opt.img_size, opt.img_size)
 		
 			img = self.conv_blocks(out)
-		
+			# Dim : (opt.chanels, opt.img_size, opt.img_size)
+			
 		return img
 
 
@@ -189,13 +193,19 @@ class Discriminator(nn.Module):
 			validity = self.adv_layer(out)	
 			print("Val out : ",validity.shape)
 		else:
+			# Dim : (opt.chanels, opt.img_size, opt.img_size)
 			out = self.conv1(img)
+			# Dim : (self.max_filters/8, opt.img_size/2, opt.img_size/2)
 			out = self.conv2(out)
+			# Dim : (self.max_filters/4, opt.img_size/4, opt.img_size/4)
 			out = self.conv3(out)
+			# Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
 			out = self.conv4(out)
+			# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
 			
 			out = out.view(out.shape[0], -1)
-			validity = self.adv_layer(out)	
+			validity = self.adv_layer(out)
+			# Dim : (1)
 		
 		return validity
 
