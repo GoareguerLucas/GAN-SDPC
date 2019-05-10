@@ -139,5 +139,5 @@ if __name__ == "__main__":
 
 	print("test")"""
 	
-	generate_animation("W6_mini_dcgan/images/")
+	generate_animation("W6_large_dcgan/images/")
 	
