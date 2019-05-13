@@ -39,6 +39,7 @@ parser.add_argument("-s", "--sample_interval", type=int, default=10, help="inter
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
+parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
@@ -244,6 +245,23 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(op
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # ----------
+#  Load models
+# ----------
+
+start_epoch = 0
+if load_model:
+	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
+	start_epochD = load_model(generator, optimizer_D, opt.model_save_path+"/last_D.pt")
+	if start_epochG is not start_epochD:
+		print("Error : G trained different times of D  !!")
+		exit(0)
+	start_epoch = start_epochD
+
+if start_epoch >= opt.n_epochs:
+	print("Error : Nombre d'epochs demander inférieur au nombre d'epochs déjà effectuer !!")
+	exit(0)
+
+# ----------
 #  Training
 # ----------
 
@@ -263,7 +281,7 @@ batch_on_save_dot = save_dot*len(dataloader)
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 t_total = time.time()
-for epoch in range(1,opt.n_epochs+1):
+for epoch in range(start_epoch,opt.n_epochs+1):
 	t_epoch = time.time()
 	#scheduler_G.step()
 	#scheduler_D.step()
