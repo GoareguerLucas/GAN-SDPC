@@ -128,7 +128,7 @@ def generate_animation(path):
 	for i in images_path:
 		#print(i)
 		images.append(imageio.imread(i))
-	imageio.mimsave(path + 'training.gif', images, fps=3)
+	imageio.mimsave(path + 'training.gif', images, fps=1)
 
 if __name__ == "__main__":
 
@@ -139,5 +139,5 @@ if __name__ == "__main__":
 
 	print("test")"""
 	
-	generate_animation("W6_large_dcgan/images/")
+	generate_animation("W7_128_dcgan/gif/")
 	

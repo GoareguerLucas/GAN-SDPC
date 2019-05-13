@@ -335,7 +335,7 @@ for epoch in range(1,opt.n_epochs+1):
 		answer.data[idx_worst] = 0.5
 
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(discriminator(gen_imgs), answer)
+		g_loss = adversarial_loss(d_g_z, answer)
 
 		# Backward
 		g_loss.backward()
