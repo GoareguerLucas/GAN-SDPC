@@ -38,8 +38,8 @@ parser.add_argument("--channels", type=int, default=3, help="number of image cha
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
-parser.add_argument('--model_save_path', type=str, default='models')
-parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
+parser.add_argument('--models_save_path', type=str, default='models')
+parser.add_argument('--load_models', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
@@ -250,8 +250,11 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 start_epoch = 0
 if load_model:
+	print("Loading models...")
 	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
+	print("G load")
 	start_epochD = load_model(generator, optimizer_D, opt.model_save_path+"/last_D.pt")
+	print("D load")
 	if start_epochG is not start_epochD:
 		print("Error : G trained different times of D  !!")
 		exit(0)
