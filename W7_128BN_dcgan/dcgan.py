@@ -39,7 +39,7 @@ parser.add_argument("-s", "--sample_interval", type=int, default=10, help="inter
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
-parser.add_argument('--load_models', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
+parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
