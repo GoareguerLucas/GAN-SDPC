@@ -249,7 +249,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 # ----------
 
 start_epoch = 1
-if load_model == True:
+if opt.load_model == True:
 	print("Loading models...")
 	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
 	print("G load")
