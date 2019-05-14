@@ -65,7 +65,7 @@ def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_s
 		
 	return start_epoch+1 # La dernière epoch est déjà faite
 
-def plot_scores(D_x,D_G_z,start_epoch):
+def plot_scores(D_x,D_G_z,start_epoch,current_epoch):
 	#Plot game score
 	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator scores During Training")
@@ -77,7 +77,7 @@ def plot_scores(D_x,D_G_z,start_epoch):
 	# Gradutation
 	plt.yticks(np.arange(0.0,1.2,0.1))
 	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
-	labels = np.arange(start_epoch,end_epoch+1,int((len(D_x)+1)/6))
+	labels = np.arange(start_epoch,current_epoch+1,int((len(D_x)+1)/6))
 	print(labels)
 	print(len(labels))
 	print(positions)

@@ -397,7 +397,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		#Plot losses
 		plot_losses(G_losses,D_losses)
 		#Plot scores
-		plot_scores(D_x,D_G_z)
+		plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
