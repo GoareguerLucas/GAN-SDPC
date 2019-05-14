@@ -65,6 +65,9 @@ def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_s
 		
 	return start_epoch+1 # La dernière epoch est déjà faite
 
+def plot_scores(D_x,D_G_z):
+	plot_scores(D_x,D_G_z,0,len(D_x)*10)
+
 def plot_scores(D_x,D_G_z,start_epoch,current_epoch):
 	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
@@ -81,17 +84,16 @@ def plot_scores(D_x,D_G_z,start_epoch,current_epoch):
 	plt.yticks(np.arange(0.0,1.2,0.1))
 	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
 	labels = np.arange(start_epoch-1,current_epoch+1,int((len(D_x)+1)/6))
-	print(labels)
-	print(len(labels))
-	print(positions)
-	print(len(positions))
 	plt.xticks(positions, labels)
 	
 	plt.grid(True)
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
-def plot_losses(G_losses,D_losses):
+def plot_losses(G_losses,D_losses,start_epoch,current_epoch):
+	if len(G_losses) <= 0 or len(D_losses) <= 0:
+		return None
+	
 	#Plot losses
 	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator Loss During Training")
@@ -100,11 +102,19 @@ def plot_losses(G_losses,D_losses):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Loss")
 	plt.legend()
+	# Gradutation
+	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
+	labels = np.arange(start_epoch-1,current_epoch+1,int((len(D_x)+1)/6))
+	plt.xticks(positions, labels)
+	
 	plt.grid(True)
 	plt.savefig("losses.png",format="png")
 	plt.close(fig)
 
-def plot_began(M,k):
+def plot_began(M,k,start_epoch,current_epoch):
+	if len(M) <= 0 or len(k) <= 0:
+		return None
+	
 	#Plot M and k value
 	fig = plt.figure(figsize=(10,5))
 	plt.title("M and k Value During Training")
@@ -113,12 +123,20 @@ def plot_began(M,k):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
+	# Gradutation
 	plt.yticks(np.arange(0.0,1.2,0.1))
+	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
+	labels = np.arange(start_epoch-1,current_epoch+1,int((len(D_x)+1)/6))
+	plt.xticks(positions, labels)
+	
 	plt.grid(True)
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
-def plot_lr(lr):
+def plot_lr(lr,start_epoch,current_epoch):
+	if len(lr) <= 0:
+		return None
+	
 	#Plot lr
 	fig = plt.figure(figsize=(10,5))
 	plt.title("lr Value During Training")
@@ -126,6 +144,11 @@ def plot_lr(lr):
 	plt.xlabel("Epochs (/10)")
 	plt.ylabel("Value")
 	plt.legend()
+	# Gradutation
+	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
+	labels = np.arange(start_epoch-1,current_epoch+1,int((len(D_x)+1)/6))
+	plt.xticks(positions, labels)
+	
 	plt.grid(True)
 	plt.savefig("lr.png",format="png")
 	plt.close(fig)
