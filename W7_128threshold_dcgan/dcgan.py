@@ -395,7 +395,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses
-		plot_losses(G_losses,D_losses)
+		plot_losses(G_losses,D_losses,start_epoch,epoch)
 		#Plot scores
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 
@@ -404,10 +404,10 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
 #Plot losses
-plot_losses(G_losses,D_losses)
+plot_losses(G_losses,D_losses,start_epoch,epoch)
 
 #Plot game score
-plot_scores(D_x,D_G_z)#,start_epoch,epoch
+plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")

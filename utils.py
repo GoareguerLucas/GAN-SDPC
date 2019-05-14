@@ -65,7 +65,7 @@ def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_s
 		
 	return start_epoch+1 # La dernière epoch est déjà faite
 
-def plot_scores(D_x,D_G_z,start_epoch=0,current_epoch=-1):
+def plot_scores(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
 	
@@ -90,7 +90,7 @@ def plot_scores(D_x,D_G_z,start_epoch=0,current_epoch=-1):
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
-def plot_losses(G_losses,D_losses,start_epoch=0,current_epoch=-1):
+def plot_losses(G_losses,D_losses,start_epoch=1,current_epoch=-1):
 	if len(G_losses) <= 0 or len(D_losses) <= 0:
 		return None
 	
@@ -114,7 +114,7 @@ def plot_losses(G_losses,D_losses,start_epoch=0,current_epoch=-1):
 	plt.savefig("losses.png",format="png")
 	plt.close(fig)
 
-def plot_began(M,k,start_epoch=0,current_epoch=-1):
+def plot_began(M,k,start_epoch=1,current_epoch=-1):
 	if len(M) <= 0 or len(k) <= 0:
 		return None
 		
@@ -139,7 +139,7 @@ def plot_began(M,k,start_epoch=0,current_epoch=-1):
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
-def plot_lr(lr,start_epoch=0,current_epoch=-1):
+def plot_lr(lr,start_epoch=1,current_epoch=-1):
 	if len(lr) <= 0:
 		return None
 		
