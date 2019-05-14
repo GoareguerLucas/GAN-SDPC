@@ -407,7 +407,7 @@ print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_tota
 plot_losses(G_losses,D_losses)
 
 #Plot game score
-plot_scores(D_x,D_G_z)
+plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
