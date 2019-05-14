@@ -28,6 +28,9 @@ scp_gt0:
 weigth:
 	du -h . --max-depth=1
 
+count_file:
+	ls -Al | wc -l
+
 see_rsync:
 	rsync -avhuzn . albert@147.94.234.202:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
 
