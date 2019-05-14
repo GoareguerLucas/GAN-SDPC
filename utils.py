@@ -17,6 +17,8 @@ from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
 def load_data(path,img_size,batch_size,Fast=True):
 	print("Loading data...")
+	t_total = time.time()
+	
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 
 	if Fast:
@@ -25,7 +27,9 @@ def load_data(path,img_size,batch_size,Fast=True):
 		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
 
 	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-
+	
+	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
+	
 	return dataloader
 
 def save_model(model, optimizer, epoch, path):
