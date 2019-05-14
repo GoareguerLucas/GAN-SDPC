@@ -16,6 +16,7 @@ sys.path.append("../")#../../GAN-SDPC/
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
 def load_data(path,img_size,batch_size,Fast=True):
+	print("Loading data...")
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 
 	if Fast:
@@ -28,6 +29,7 @@ def load_data(path,img_size,batch_size,Fast=True):
 	return dataloader
 
 def save_model(model, optimizer, epoch, path):
+	print("Save model : ",model.type)
 	info = {
 		'epoch': epoch,
 		'model_state_dict': model.state_dict(),
@@ -36,6 +38,7 @@ def save_model(model, optimizer, epoch, path):
 	torch.save(info,path)
 
 def load_model(model, optimizer, path):
+	print("Load model : ",model.type)
 	checkpoint = torch.load(path)
 
 	model.load_state_dict(checkpoint['model_state_dict'])

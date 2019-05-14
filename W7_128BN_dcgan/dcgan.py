@@ -253,7 +253,7 @@ if load_model == True:
 	print("Loading models...")
 	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
 	print("G load")
-	start_epochD = load_model(generator, optimizer_D, opt.model_save_path+"/last_D.pt")
+	start_epochD = load_model(discriminator, optimizer_D, opt.model_save_path+"/last_D.pt")
 	print("D load")
 	if start_epochG is not start_epochD:
 		print("Error : G trained different times of D  !!")
