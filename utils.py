@@ -65,12 +65,12 @@ def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_s
 		
 	return start_epoch+1 # La dernière epoch est déjà faite
 
-def plot_scores(D_x,D_G_z):
-	plot_scores(D_x,D_G_z,0,len(D_x)*10)
-
-def plot_scores(D_x,D_G_z,start_epoch,current_epoch):
+def plot_scores(D_x,D_G_z,start_epoch=0,current_epoch=-1):
 	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
+	
+	if current_epoch == -1: # C'est pour surcharger la fonction pour les versions passer
+		current_epoch = len(D_x)*10
 	
 	#Plot game score
 	fig = plt.figure(figsize=(10,5))
@@ -90,9 +90,12 @@ def plot_scores(D_x,D_G_z,start_epoch,current_epoch):
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
-def plot_losses(G_losses,D_losses,start_epoch,current_epoch):
+def plot_losses(G_losses,D_losses,start_epoch=0,current_epoch=-1):
 	if len(G_losses) <= 0 or len(D_losses) <= 0:
 		return None
+	
+	if current_epoch == -1: # C'est pour surcharger la fonction pour les versions passer
+		current_epoch = len(D_losses)*10
 	
 	#Plot losses
 	fig = plt.figure(figsize=(10,5))
@@ -111,9 +114,12 @@ def plot_losses(G_losses,D_losses,start_epoch,current_epoch):
 	plt.savefig("losses.png",format="png")
 	plt.close(fig)
 
-def plot_began(M,k,start_epoch,current_epoch):
+def plot_began(M,k,start_epoch=0,current_epoch=-1):
 	if len(M) <= 0 or len(k) <= 0:
 		return None
+		
+	if current_epoch == -1: # C'est pour surcharger la fonction pour les versions passer
+		current_epoch = len(M)*10
 	
 	#Plot M and k value
 	fig = plt.figure(figsize=(10,5))
@@ -133,9 +139,12 @@ def plot_began(M,k,start_epoch,current_epoch):
 	plt.savefig("M_k.png",format="png")
 	plt.close(fig)
 
-def plot_lr(lr,start_epoch,current_epoch):
+def plot_lr(lr,start_epoch=0,current_epoch=-1):
 	if len(lr) <= 0:
 		return None
+		
+	if current_epoch == -1: # C'est pour surcharger la fonction pour les versions passer
+		current_epoch = len(lr)*10
 	
 	#Plot lr
 	fig = plt.figure(figsize=(10,5))
