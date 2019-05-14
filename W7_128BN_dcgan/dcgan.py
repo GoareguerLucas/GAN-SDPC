@@ -257,7 +257,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 start_epoch = 1
 if opt.load_model == True:
 	start_epochD = load_model(discriminator, optimizer_D, opt.model_save_path+"/last_D.pt")
-	#start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
+	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
 	if start_epochG is not start_epochD:
 		print("Error : G trained different times of D  !!")
 		exit(0)
