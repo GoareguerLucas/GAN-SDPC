@@ -283,7 +283,7 @@ batch_on_save_dot = save_dot*len(dataloader)
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 t_total = time.time()
-for epoch in range(1,opt.n_epochs+1):
+for epoch in range(start_epoch,opt.n_epochs+1):
 	t_epoch = time.time()
 	#scheduler_G.step()
 	#scheduler_D.step()
