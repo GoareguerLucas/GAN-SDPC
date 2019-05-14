@@ -11,7 +11,7 @@ stop_ssh:
 	sudo systemctl stop ssh
 
 connect_ssh:
-	ssh albert@147.94.234.179
+	ssh albert@147.94.234.202
 
 connect_gt2:
 	ssh -p8012 g14006889@gt-2.luminy.univ-amu.fr
@@ -29,7 +29,7 @@ weigth:
 	du -h . --max-depth=1
 
 see_rsync:
-	rsync -avhuzn . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuzn . albert@147.94.234.202:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
 
 rsync:
-	rsync -avhuz . albert@147.94.234.179:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuz . albert@147.94.234.202:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
