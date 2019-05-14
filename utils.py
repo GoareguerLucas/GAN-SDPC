@@ -29,7 +29,7 @@ def load_data(path,img_size,batch_size,Fast=True):
 
 	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 	
-	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
+	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
 	return dataloader
 
@@ -63,18 +63,27 @@ def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_s
 		print("Error : Nombre d'epochs demander inférieur au nombre d'epochs déjà effectuer !!")
 		exit(0)
 		
-	return start_epoch
+	return start_epoch+1 # La dernière epoch est déjà faite
 
-def plot_scores(D_x,D_G_z):
+def plot_scores(D_x,D_G_z,start_epoch):
 	#Plot game score
 	fig = plt.figure(figsize=(10,5))
 	plt.title("Generator and Discriminator scores During Training")
 	plt.plot(D_x,label="D(x)")
 	plt.plot(D_G_z,label="D(G(z))")
-	plt.xlabel("Epochs (/10)")
-	plt.ylabel("scores")
+	plt.xlabel("Epochs")
+	plt.ylabel("Scores")
 	plt.legend()
+	# Gradutation
 	plt.yticks(np.arange(0.0,1.2,0.1))
+	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
+	labels = np.arange(start_epoch,end_epoch+1,int((len(D_x)+1)/6))
+	print(labels)
+	print(len(labels))
+	print(positions)
+	print(len(positions))
+	plt.xticks(positions, labels)
+	
 	plt.grid(True)
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
