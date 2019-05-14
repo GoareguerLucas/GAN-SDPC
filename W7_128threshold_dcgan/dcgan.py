@@ -219,8 +219,8 @@ sigmoid = nn.Sigmoid()
 generator = Generator()
 discriminator = Discriminator()
 
-print(generator)
-print(discriminator)
+print_network(generator)
+print_network(discriminator)
 
 if cuda:
 	generator.cuda()

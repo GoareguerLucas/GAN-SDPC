@@ -145,6 +145,9 @@ class Generator(nn.Module):
 			# Dim : (opt.chanels, opt.img_size, opt.img_size)
 			
 		return img
+		
+	def _name(self):
+		return "Generator"
 
 
 class Discriminator(nn.Module):
@@ -209,6 +212,9 @@ class Discriminator(nn.Module):
 			# Dim : (1)
 		
 		return validity
+		
+	def _name(self):
+		return "Discriminator"
 
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
@@ -219,8 +225,8 @@ sigmoid = nn.Sigmoid()
 generator = Generator()
 discriminator = Discriminator()
 
-print(generator)
-print(discriminator)
+print_network(generator)
+print_network(discriminator)
 
 if cuda:
 	generator.cuda()
@@ -233,7 +239,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size)
+#dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
@@ -250,11 +256,8 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 start_epoch = 1
 if opt.load_model == True:
-	print("Loading models...")
-	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
-	print("G load")
 	start_epochD = load_model(discriminator, optimizer_D, opt.model_save_path+"/last_D.pt")
-	print("D load")
+	#start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
 	if start_epochG is not start_epochD:
 		print("Error : G trained different times of D  !!")
 		exit(0)

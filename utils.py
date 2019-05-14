@@ -29,7 +29,7 @@ def load_data(path,img_size,batch_size,Fast=True):
 	return dataloader
 
 def save_model(model, optimizer, epoch, path):
-	print("Save model : ",model.type)
+	print("Save model : ",model._name())
 	info = {
 		'epoch': epoch,
 		'model_state_dict': model.state_dict(),
@@ -38,7 +38,7 @@ def save_model(model, optimizer, epoch, path):
 	torch.save(info,path)
 
 def load_model(model, optimizer, path):
-	print("Load model : ",model.type)
+	print("Load model :",model._name())
 	checkpoint = torch.load(path)
 
 	model.load_state_dict(checkpoint['model_state_dict'])
