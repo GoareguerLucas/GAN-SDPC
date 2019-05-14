@@ -253,20 +253,10 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 # ----------
 #  Load models
 # ----------
-
 start_epoch = 1
 if opt.load_model == True:
-	start_epochD = load_model(discriminator, optimizer_D, opt.model_save_path+"/last_D.pt")
-	start_epochG = load_model(generator, optimizer_G, opt.model_save_path+"/last_G.pt")
-	if start_epochG is not start_epochD:
-		print("Error : G trained different times of D  !!")
-		exit(0)
-	start_epoch = start_epochD
-
-if start_epoch >= opt.n_epochs:
-	print("Error : Nombre d'epochs demander inférieur au nombre d'epochs déjà effectuer !!")
-	exit(0)
-
+	start_epoch = load_models(discriminator, optimizer_D, generator, optimizer_G, opt.n_epochs, opt.model_save_path)
+	
 # ----------
 #  Training
 # ----------

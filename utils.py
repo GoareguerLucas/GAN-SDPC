@@ -46,6 +46,20 @@ def load_model(model, optimizer, path):
 
 	return checkpoint['epoch']
 
+def load_models(discriminator,optimizer_D,generator,optimizer_G,n_epochs,model_save_path):
+	start_epochD = load_model(discriminator, optimizer_D, model_save_path+"/last_D.pt")
+	start_epochG = load_model(generator, optimizer_G, model_save_path+"/last_G.pt")
+	
+	if start_epochG is not start_epochD:
+		print("Error : G trained different times of D  !!")
+		exit(0)
+	start_epoch = start_epochD
+	if start_epoch >= n_epochs:
+		print("Error : Nombre d'epochs demander inférieur au nombre d'epochs déjà effectuer !!")
+		exit(0)
+		
+	return start_epoch
+
 def plot_scores(D_x,D_G_z):
 	#Plot game score
 	fig = plt.figure(figsize=(10,5))

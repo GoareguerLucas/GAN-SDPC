@@ -39,6 +39,7 @@ parser.add_argument("-s", "--sample_interval", type=int, default=10, help="inter
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
 parser.add_argument('--model_save_path', type=str, default='models')
+parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-t","--treshold", type=float, default=0.25, help="Seuil de renforcement [0.0-0.5]")
 opt = parser.parse_args()
@@ -145,7 +146,9 @@ class Generator(nn.Module):
 			# Dim : (opt.chanels, opt.img_size, opt.img_size)
 
 		return img
-
+		
+	def _name(self):
+		return "Generator"
 
 class Discriminator(nn.Module):
 	def __init__(self,verbose=False):
@@ -209,7 +212,10 @@ class Discriminator(nn.Module):
 			# Dim : (1)
 
 		return validity
-
+		
+	def _name(self):
+		return "Discriminator"
+		
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
 #pixelwise_loss = torch.nn.L1Loss()
@@ -244,6 +250,13 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(op
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
+# ----------
+#  Load models
+# ----------
+start_epoch = 1
+if opt.load_model == True:
+	start_epoch = load_models(discriminator, optimizer_D, generator, optimizer_G, opt.n_epochs, opt.model_save_path)
+	
 # ----------
 #  Training
 # ----------
