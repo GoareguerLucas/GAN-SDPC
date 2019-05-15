@@ -87,7 +87,7 @@ class FastSimpsonsDataset(Dataset):
 	def __getitem__(self, index):
 		single_image_label = self.labels[index]
 		img_as_tensor = self.tensors[index]
-		print(img_as_tensor.shape)
+		
 		if self.rand_hflip:
 			img_as_tensor = img_as_tensor.flip(2)
 
