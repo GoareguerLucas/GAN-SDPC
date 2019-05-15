@@ -79,7 +79,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=False):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -153,7 +153,7 @@ class Generator(nn.Module):
 		return "Generator"
 
 class Discriminator(nn.Module):
-	def __init__(self,verbose=True):
+	def __init__(self,verbose=False):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
@@ -318,9 +318,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		# Fake batch
 		#Discriminator descision
-		d_g_x = discriminator(gen_imgs.detach())
+		d_g_z = discriminator(gen_imgs.detach())
 		# Measure discriminator's ability to classify real from generated samples
-		fake_loss = adversarial_loss(d_g_x, fake)
+		fake_loss = adversarial_loss(d_g_z, fake)
 		# Backward
 		fake_loss.backward()
 		
@@ -335,9 +335,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		optimizer_G.zero_grad()
 		
 		# New discriminator descision, Since we just updated D
-		d_g_x = discriminator(gen_imgs)
+		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(d_g_x, valid)
+		g_loss = adversarial_loss(d_g_z, valid)
 		# Backward
 		g_loss.backward()
 		
@@ -351,13 +351,13 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		# Compensation pour le BCElogits
 		d_x = sigmoid(d_x)
-		d_g_x = sigmoid(d_g_x)
+		d_g_z = sigmoid(d_g_z)
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
 		d_x_mean.append(torch.sum(d_x).item()/imgs.size(0))
-		d_g_z_mean.append(torch.sum(d_g_x).item()/imgs.size(0))
+		d_g_z_mean.append(torch.sum(d_g_z).item()/imgs.size(0))
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
