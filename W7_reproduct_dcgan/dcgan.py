@@ -142,7 +142,9 @@ class Generator(nn.Module):
 			out = self.conv2(out)
 			# Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
 			out = self.conv3(out)
-			# Dim : (self.max_filters/8, opt.img_size, opt.img_size)
+			# Dim : (self.max_filters/8, opt.img_size/2, opt.img_size/2)
+			out = self.conv4(out)
+			# Dim : (self.max_filters/16, opt.img_size, opt.img_size)
 		
 			img = self.conv_blocks(out)
 			# Dim : (opt.chanels, opt.img_size, opt.img_size)
@@ -210,6 +212,8 @@ class Discriminator(nn.Module):
 			out = self.conv3(out)
 			# Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
 			out = self.conv4(out)
+			# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
+			out = self.conv5(out)
 			# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
 			
 			out = out.view(out.shape[0], -1)
