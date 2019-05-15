@@ -270,8 +270,8 @@ d_x_mean = []
 d_g_z_mean = []
 
 # Gestion du seuil
-if opt.treshold > 0.5 or opt.treshold < 0:
-	print("Attention le treshold choisi doit être compris entre 0 et 0.5.")
+if opt.treshold > 1 or opt.treshold < 0:
+	print("Attention le treshold choisi doit être compris entre 0 et 1.")
 	exit(0)
 T = int(opt.treshold * opt.batch_size) # Taille des quantils
 
