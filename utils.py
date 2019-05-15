@@ -82,8 +82,8 @@ def plot_scores(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	plt.legend()
 	# Gradutation
 	plt.yticks(np.arange(0.0,1.2,0.1))
-	positions = np.arange(0,len(D_x)+1,int((len(D_x)+1)/6))
-	labels = np.arange(start_epoch-1,current_epoch+1,int((len(D_x)+1)/6))
+	positions = np.linspace(0,len(D_x),num=6)
+	labels = np.linspace(start_epoch-1,current_epoch,num=6)
 	plt.xticks(positions, labels)
 	
 	plt.grid(True)

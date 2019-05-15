@@ -276,7 +276,7 @@ if opt.treshold > 0.5 or opt.treshold < 0:
 	exit(0)
 T = int(opt.treshold * opt.batch_size) # Taille des quantils
 
-save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
+save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 # Vecteur z fixe pour faire les samples
