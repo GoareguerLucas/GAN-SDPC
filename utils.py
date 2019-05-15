@@ -16,14 +16,14 @@ sys.path.append("../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
-def load_data(path,img_size,batch_size,Fast=True):
+def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False):
 	print("Loading data...")
 	t_total = time.time()
 	
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 
 	if Fast:
-		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, rand_hflip) #../../../Dataset/
 	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
 
@@ -206,5 +206,4 @@ if __name__ == "__main__":
 
 	print("test")"""
 	
-	generate_animation("W7_128_dcgan/gif/")
-	
+	#generate_animation("W7_128_dcgan/gif/")

@@ -11,7 +11,6 @@ INPUT_DATA_DIR = "../Dataset/cropped/"
 IMAGE_SIZE = 32
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
 
-
 def show_tensor(sample_tensor, epoch):
 	#figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
 	#for index, axis in enumerate(axes):
@@ -58,7 +57,7 @@ class SimpsonsDataset(Dataset):
 		return len(self.files)
 		
 class FastSimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transforms=None):
+	def __init__(self, dir_path, height, width, transforms=None, rand_hflip=False):
 		"""
 		Args:
 			dir_path (string): path to dir conteint exclusively images png
@@ -71,6 +70,7 @@ class FastSimpsonsDataset(Dataset):
 		self.height = height
 		self.width = width
 		self.transforms = transforms
+		self.rand_hflip = rand_hflip
 		
 		# Chargement des images
 		self.tensors = list()
@@ -87,7 +87,10 @@ class FastSimpsonsDataset(Dataset):
 	def __getitem__(self, index):
 		single_image_label = self.labels[index]
 		img_as_tensor = self.tensors[index]
-
+		print (img_as_tensor)
+		if self.rand_hflip:
+			img_as_tensor = img_as_tensor.flip(2)
+		print (img_as_tensor)
 		# Return image and the label
 		return (img_as_tensor, single_image_label)
 
