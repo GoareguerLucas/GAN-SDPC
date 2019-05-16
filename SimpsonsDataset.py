@@ -111,6 +111,3 @@ if __name__ == "__main__":
 	
 	
 	show_tensor(item[0],0)
-
-
-	
