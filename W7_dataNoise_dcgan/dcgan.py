@@ -265,6 +265,9 @@ Nombre de pixels remplacer = nombre de pixels total * taux, Avec 1 => taux >= 0.
 Renvoie le batch bruité.
 """
 def noised_batch(batch,bag,taux=0.1):
+	if taux == 0:
+		return batch
+	
 	# Info
 	batch_size = batch.shape[0]
 	channels = batch.shape[1]
