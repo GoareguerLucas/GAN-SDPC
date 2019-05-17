@@ -322,7 +322,7 @@ def noised_batch(batch,bag,taux=0.1):
 if opt.bag_size < opt.batch_size*opt.taux:
 	print("Error : bag_size < batch_size*opt.taux, le sac doit contenir assez de pixels pour remplacer les pixels à bruitée !")
 	exit(0)
-pixels_bag = build_pixels_bag(dataset,size=opt.bag_size,channels=opt.channels)
+pixels_bag = build_pixels_bag(dataset,bag_size=opt.bag_size,channels=opt.channels)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
