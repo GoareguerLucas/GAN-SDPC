@@ -240,7 +240,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader, dataset = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size,rand_hflip=True,return_dataset=True,Fast=False)
+dataloader, dataset = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size,rand_hflip=True,return_dataset=True)
 
 # Configure data noise
 """
