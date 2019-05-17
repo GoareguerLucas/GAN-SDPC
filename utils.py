@@ -32,7 +32,6 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
 	if return_dataset == True:
-		print(dataloader, dataset)
 		return dataloader, dataset
 	return dataloader
 
