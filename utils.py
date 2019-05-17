@@ -105,7 +105,7 @@ def plot_losses(G_losses,D_losses,start_epoch=1,current_epoch=-1):
 	plt.title("Generator and Discriminator Loss During Training")
 	plt.plot(G_losses,label="G")
 	plt.plot(D_losses,label="D")
-	plt.xlabel("Epochs (/10)")
+	plt.xlabel("Epochs")
 	plt.ylabel("Loss")
 	plt.legend()
 	# Gradutation
@@ -129,7 +129,7 @@ def plot_began(M,k,start_epoch=1,current_epoch=-1):
 	plt.title("M and k Value During Training")
 	plt.plot(M,label="M")
 	plt.plot(k,label="k")
-	plt.xlabel("Epochs (/10)")
+	plt.xlabel("Epochs")
 	plt.ylabel("Value")
 	plt.legend()
 	# Gradutation
@@ -153,7 +153,7 @@ def plot_lr(lr,start_epoch=1,current_epoch=-1):
 	fig = plt.figure(figsize=(10,5))
 	plt.title("lr Value During Training")
 	plt.plot(lr,label="lr")
-	plt.xlabel("Epochs (/10)")
+	plt.xlabel("Epochs")
 	plt.ylabel("Value")
 	plt.legend()
 	# Gradutation
