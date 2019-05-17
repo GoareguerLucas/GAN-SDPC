@@ -41,6 +41,8 @@ parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help=
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
+parser.add_argument("--taux", type=int, default=0.1, help="Taux de pixels bruitée dans les batchs")
+parser.add_argument("--bag_size", type=int, default=640, help="Nombre d'images qui composent le sac de pixels (au moin égale à batch_size)")
 opt = parser.parse_args()
 print(opt)
 
@@ -238,7 +240,89 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size,rand_hflip=True)
+dataloader, dataset = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size,rand_hflip=True,return_dataset=True,Fast=False)
+
+# Configure data noise
+"""
+Renvoie un sac de pixels venus des @size premières images de @dataset 
+"""
+def build_pixels_bag(dataset,bag_size=200,channels=3):
+	images = []
+	for i in range(bag_size):
+		images.append(np.asarray(dataset.__getitem__(i)[0].permute(1, 2, 0)))
+	images = np.asarray(images)
+	#print(images.shape)
+	
+	bag = np.reshape(images,(-1,channels))
+	#print("bag shape :",bag.shape)
+	#print(bag[0])
+	
+	return bag
+
+"""
+Remplace les pixels de batch par des pixels piocher aléatoirement dans bag. 
+Nombre de pixels remplacer = nombre de pixels total * taux, Avec 1 => taux >= 0.
+Renvoie le batch bruité.
+"""
+def noised_batch(batch,bag,taux=0.1):
+	# Info
+	batch_size = batch.shape[0]
+	channels = batch.shape[1]
+	image_size = batch.shape[3]
+	nb_by_batch = batch_size*image_size**2
+	#print("Pixels par batch :",nb_by_batch)
+	nb_pixels = int(batch_size* (image_size**2) * taux)
+	#print("Pixels à bruiter :",nb_pixels)
+	
+	# Index pixels on bag
+	idx = np.random.permutation(np.arange(len(bag)))[:nb_pixels]
+	#print("Index du bruit dans bag:")
+	#print(idx.shape)
+	#print(idx)
+	pixels = bag[idx]
+	#print("Pixels bruitées choisis")
+	#print(pixels.shape)
+	#print(pixels)
+	
+	# Construction
+	mask = np.ones((nb_by_batch,channels))
+	#print("Mask shape :",mask.shape)
+	noise = np.zeros((nb_by_batch,channels))
+	#print("Noise shape :",noise.shape)
+	
+	# Random pixels idx
+	pixels_idx = np.random.permutation(np.arange(nb_by_batch))[:nb_pixels]
+	#print("Pixels idx shape :",pixels_idx.shape)
+	
+	# Remplissage
+	mask[pixels_idx] = 0
+	noise[pixels_idx] += pixels
+	#print("mask")
+	#print(mask)
+	#print("noise")
+	#print(noise)
+	 
+	# Reshape (image_size**2,channels)=>(image_size,image_size,channels) / Transpose (image_size,image_size,channels)=>(channels,image_size,image_size)
+	array_shape = (batch_size,image_size,image_size,channels)
+	mask = mask.reshape(array_shape).transpose(0,-1,1,2)
+	noise = noise.reshape(array_shape).transpose(0,-1,1,2)
+	#print("Noise shape :",noise.shape)
+	#print("Mask shape :",mask.shape)
+	
+	# Ajout dans l'image
+	clear_batch = batch * torch.tensor(mask).float()
+	noised_batch = clear_batch + torch.tensor(noise).float()
+	
+	#print(batch[1][1])
+	#print(clear_batch[1][1])
+	#print(noised_batch[1][1])
+	
+	return noised_batch
+
+if opt.bag_size < opt.batch_size*opt.taux:
+	print("Error : bag_size < batch_size*opt.taux, le sac doit contenir assez de pixels pour remplacer les pixels à bruitée !")
+	exit(0)
+pixels_bag = build_pixels_bag(dataset,size=opt.bag_size,channels=opt.channels)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
@@ -302,9 +386,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		# Real batch
 		# Ajout d'un bruit au image  réels 
-		rand = Tensor(imgs.shape).normal_(0.0, random.uniform(0.0, 0.1))
+		noised_imgs = noised_batch(real_imgs,pixels_bag,taux=opt.taux)
 		#Discriminator descision
-		d_x = discriminator(real_imgs+rand)
+		d_x = discriminator(noised_imgs)
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid_smooth)
 		# Backward

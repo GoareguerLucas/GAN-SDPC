@@ -16,7 +16,7 @@ sys.path.append("../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
-def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False):
+def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset=False):
 	print("Loading data...")
 	t_total = time.time()
 	
@@ -31,6 +31,9 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False):
 	
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
+	if return_dataset == True:
+		print(dataloader, dataset)
+		return dataloader, dataset
 	return dataloader
 
 def save_model(model, optimizer, epoch, path):
