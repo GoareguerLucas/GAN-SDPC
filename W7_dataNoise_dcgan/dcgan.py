@@ -41,7 +41,7 @@ parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help=
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
-parser.add_argument("--taux", type=int, default=0.1, help="Taux de pixels bruitée dans les batchs")
+parser.add_argument("--taux", type=float, default=0.1, help="Taux de pixels bruitée dans les batchs")
 parser.add_argument("--bag_size", type=int, default=640, help="Nombre d'images qui composent le sac de pixels (au moin égale à batch_size)")
 opt = parser.parse_args()
 print(opt)
