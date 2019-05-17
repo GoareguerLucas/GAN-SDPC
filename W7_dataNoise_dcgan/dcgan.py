@@ -310,8 +310,8 @@ def noised_batch(batch,bag,taux=0.1):
 	#print("Mask shape :",mask.shape)
 	
 	# Ajout dans l'image
-	clear_batch = batch * torch.tensor(mask)
-	noised_batch = clear_batch + torch.tensor(noise)
+	clear_batch = batch * torch.tensor(mask).cuda()
+	noised_batch = clear_batch + torch.tensor(noise).cuda()
 	
 	#print(batch[1][1])
 	#print(clear_batch[1][1])
