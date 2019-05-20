@@ -205,7 +205,6 @@ def histogram(D_x,D_G_z,epoch):
 	plt.hist(D_x,bins='auto')
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
-	plt.legend()
 	
 	plt.grid(True)
 	plt.savefig("hist/dx_"+str(epoch)+".png",format="png")
@@ -216,7 +215,6 @@ def histogram(D_x,D_G_z,epoch):
 	plt.hist(D_G_z,bins='auto')
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
-	plt.legend()
 	
 	plt.grid(True)
 	plt.savefig("hist/dgz_"+str(epoch)+".png",format="png")
