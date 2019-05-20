@@ -199,6 +199,29 @@ def generate_animation(path):
 		images.append(imageio.imread(i))
 	imageio.mimsave(path + 'training.gif', images, fps=1)
 
+def histogram(D_x,D_G_z,epoch):
+	fig = plt.figure(figsize=(10,5))
+	plt.title("D(x) réponse pour l'epochs "+str(epoch))
+	plt.hist(D_x)
+	plt.xlabel("Value")
+	plt.ylabel("Frequency")
+	plt.legend()
+	
+	plt.grid(True)
+	plt.savefig("hist/dx_"+str(epoch)+".png",format="png")
+	plt.close(fig)
+
+	fig = plt.figure(figsize=(10,5))
+	plt.title("D(G(z)) réponse pour l'epochs "+str(epoch))
+	plt.hist(D_G_z)
+	plt.xlabel("Value")
+	plt.ylabel("Frequency")
+	plt.legend()
+	
+	plt.grid(True)
+	plt.savefig("hist/dgz_"+str(epoch)+".png",format="png")
+	plt.close(fig)
+
 if __name__ == "__main__":
 
 	"""D_G_z = np.random.normal(0.5,0.5,100)
