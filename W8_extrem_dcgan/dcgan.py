@@ -359,7 +359,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		sampling(fixed_noise, generator, opt.sample_path, epoch)
 		
 		# Save D responce histogram 
-		histogram(d_x.detach().device("cpu").numpy(),d_g_z.detach().device("cpu").numpy(),epoch)
+		histogram(d_x.cpu().numpy(),d_g_z.cpu().numpy(),epoch)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
