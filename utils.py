@@ -202,7 +202,7 @@ def generate_animation(path):
 def histogram(D_x,D_G_z,epoch):
 	fig = plt.figure(figsize=(10,5))
 	plt.title("D(x) réponse pour l'epochs "+str(epoch))
-	plt.hist(D_x)
+	plt.hist(D_x,bins='auto')
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 	plt.legend()
@@ -213,7 +213,7 @@ def histogram(D_x,D_G_z,epoch):
 
 	fig = plt.figure(figsize=(10,5))
 	plt.title("D(G(z)) réponse pour l'epochs "+str(epoch))
-	plt.hist(D_G_z)
+	plt.hist(D_G_z,bins='auto')
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 	plt.legend()
