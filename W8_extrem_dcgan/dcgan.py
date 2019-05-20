@@ -359,7 +359,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		sampling(fixed_noise, generator, opt.sample_path, epoch)
 		
 		# Save D responce histogram 
-		histogram(d_x.item(),d_g_z.item(),epoch)
+		histogram(d_x.numpy(),d_g_z.numpy(),epoch)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
