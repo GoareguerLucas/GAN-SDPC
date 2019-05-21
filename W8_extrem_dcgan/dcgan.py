@@ -364,12 +364,14 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_x_mean.append(torch.sum(d_x).item()/imgs.size(0))
 		d_g_z_mean.append(torch.sum(d_g_z).item()/imgs.size(0))
 	
+	# Save hist
+	if i % opt.sample_interval == 0:
+		# Save D responce histogram 
+		histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch)
+	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
 		sampling(fixed_noise, generator, opt.sample_path, epoch)
-		
-		# Save D responce histogram 
-		histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
