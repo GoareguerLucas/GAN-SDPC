@@ -337,7 +337,16 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		g_loss.backward()
 		
 		optimizer_G.step()
-
+		
+		print(
+			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
+			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
+		)
+		
+		# Compensation pour le BCElogits
+		d_x = sigmoid(d_x)
+		d_g_z = sigmoid(d_g_z)
+		
 		# Variance des réponses de D
 		var_dx = torch.log(d_x).var()
 		var_d_g_z = torch.log(d_g_z).var()
@@ -345,13 +354,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		print(d_x)
 		
 		print(
-			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs] [Var log10(D(x)): %f] [Var log10(D(G(z))): %f]"
-			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch, var_dx, var_d_g_z)
+			"[Var log10(D(x)): %f] [Var log10(D(G(z))): %f]"
+			% (var_dx, var_d_g_z)
 		)
-		
-		# Compensation pour le BCElogits
-		d_x = sigmoid(d_x)
-		d_g_z = sigmoid(d_g_z)
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
