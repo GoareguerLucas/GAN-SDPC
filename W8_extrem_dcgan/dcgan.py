@@ -365,7 +365,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_g_z_mean.append(torch.sum(d_g_z).item()/imgs.size(0))
 	
 	# Save hist
-	print(i)	
+	print("frefr ",i)	
 	if i % opt.sample_interval == 0:
 		print(i)
 		# Save D responce histogram 
