@@ -220,14 +220,14 @@ def histogram(D_x,D_G_z,epoch):
 	plt.close(fig)
 
 def plot_extrem(D_x,D_G_z,start_epoch=1,current_epoch=-1):
-	if len(M) <= 0 or len(k) <= 0:
+	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
 	
 	#Plot D_x and D_x value
 	fig = plt.figure(figsize=(10,5))
 	plt.title("Log10(D_x.min()) and Log10(D_G_x.min()) Value During Training")
-	plt.plot(M,label="Log10(D_x.min())")
-	plt.plot(k,label="Log10(D_G_z.min())")
+	plt.plot(D_x,label="Log10(D_x.min())")
+	plt.plot(D_G_z,label="Log10(D_G_z.min())")
 	plt.xlabel("Epochs")
 	plt.ylabel("Value")
 	plt.legend()
@@ -237,7 +237,7 @@ def plot_extrem(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	plt.xticks(positions, labels)
 	
 	plt.grid(True)
-	plt.savefig("M_k.png",format="png")
+	plt.savefig("extremum.png",format="png")
 	plt.close(fig)
 
 if __name__ == "__main__":
