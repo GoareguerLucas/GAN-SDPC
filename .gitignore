@@ -11,6 +11,7 @@ save/
 test*
 Nouveau*
 */(*)/
+*/hist/
 
 # C extensions
 *.so

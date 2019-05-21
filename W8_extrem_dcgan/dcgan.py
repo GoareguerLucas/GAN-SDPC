@@ -338,10 +338,13 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		optimizer_G.step()
 
-
+		# Variance des réponses de D
+		var_dx = d_x.log10().var()
+		var_d_g_z = d_g_z.log10().var()
+		
 		print(
-			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
-			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
+			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs] [Var log10(D(x)): %f] [Var log10(D(G(z))): %f]"
+			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch, var_dx, var_d_g_z)
 		)
 		
 		# Compensation pour le BCElogits
