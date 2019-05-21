@@ -232,7 +232,7 @@ def plot_extrem(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	plt.ylabel("Value")
 	plt.legend()
 	# Gradutation
-	positions = np.linspace(0,epoch,num=6)
+	positions = np.linspace(0,current_epoch,num=6)
 	labels = np.linspace(start_epoch-1,current_epoch,num=6)
 	plt.xticks(positions, labels)
 	
