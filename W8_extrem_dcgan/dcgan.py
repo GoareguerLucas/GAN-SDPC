@@ -339,8 +339,8 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		optimizer_G.step()
 
 		# Variance des réponses de D
-		var_dx = d_x.log10().var()
-		var_d_g_z = d_g_z.log10().var()
+		var_dx = d_x.log().var()
+		var_d_g_z = d_g_z.log().var()
 		
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs] [Var log10(D(x)): %f] [Var log10(D(G(z))): %f]"
