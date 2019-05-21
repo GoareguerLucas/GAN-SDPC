@@ -402,7 +402,7 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 #Plot extremum
-plot_extrem(extrem_D_x,extrem_D_G_z,start_epoch,epoch)
+plot_extrem(extrem_D_x,extrem_D_G_z,len(dataloader),start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")

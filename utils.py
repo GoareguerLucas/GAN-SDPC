@@ -219,7 +219,7 @@ def histogram(D_x,D_G_z,epoch):
 	plt.savefig("hist/dgz_"+str(epoch)+".png",format="png")
 	plt.close(fig)
 
-def plot_extrem(D_x,D_G_z,start_epoch=1,current_epoch=-1):
+def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1):
 	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
 	
@@ -232,7 +232,7 @@ def plot_extrem(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	plt.ylabel("Value")
 	plt.legend()
 	# Gradutation
-	positions = np.linspace(0,current_epoch,num=6)
+	positions = np.linspace(0,current_epoch*nb_batch,num=6)
 	labels = np.linspace(start_epoch-1,current_epoch,num=6)
 	plt.xticks(positions, labels)
 	
