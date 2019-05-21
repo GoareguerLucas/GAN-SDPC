@@ -225,7 +225,7 @@ def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1):
 	
 	#Plot D_x and D_x value
 	fig = plt.figure(figsize=(10,5))
-	plt.title("Log10(D_x.min()) and Log10(D_G_x.min()) Value During Training")
+	plt.title("Extrem response of D During Training")
 	plt.plot(D_x,label="Log10(D_x.min())")
 	plt.plot(D_G_z,label="Log10(D_G_z.min())")
 	plt.xlabel("Epochs")
