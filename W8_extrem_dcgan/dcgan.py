@@ -15,10 +15,6 @@ import torch.nn.functional as F
 import torch
 
 import sys
-sys.path.append("../")#../../GAN-SDPC/
-
-from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
-from utils import *
 
 import matplotlib.pyplot as plt
 import time
@@ -49,6 +45,10 @@ depth = ""
 if opt.depth == True:
 	depth = "../"
 sys.path.append(depth+"../")#../../GAN-SDPC/
+
+from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+from utils import *
+
 
 # Dossier de sauvegarde
 os.makedirs("hist", exist_ok=True)
@@ -270,8 +270,10 @@ D_G_z = []
 d_x_mean = []
 d_g_z_mean = []
 
-extrem_D_x = []
-extrem_D_G_z = []
+min_D_x = []
+min_D_G_z = []
+mean_D_x = []
+mean_D_G_z = []
 
 save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
@@ -351,8 +353,10 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_g_z = sigmoid(d_g_z)
 		
 		# Extremum des réponses de D
-		extrem_D_x.append(torch.log10(d_x.min()))
-		extrem_D_G_z.append(torch.log10(d_g_z.min()))
+		min_D_x.append(torch.log10(d_x.min()))
+		min_D_G_z.append(torch.log10(d_g_z.min()))
+		mean_D_x.append(torch.log10(d_x.mean()))
+		mean_D_G_z.append(torch.log10(d_g_z.mean()))
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
@@ -365,7 +369,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		sampling(fixed_noise, generator, opt.sample_path, epoch)
 		
 		# Save D responce histogram 
-		#histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch)
+		histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch)
 	
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
@@ -391,7 +395,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		#Plot scores
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 		#Plot extremum
-		plot_extrem(extrem_D_x,extrem_D_G_z,len(dataloader),start_epoch,epoch)
+		plot_extrem(min_D_x,min_D_G_z,len(dataloader),start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 

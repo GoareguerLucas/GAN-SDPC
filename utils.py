@@ -11,6 +11,7 @@ import torch
 import imageio
 import time
 
+
 import sys
 sys.path.append("../")#../../GAN-SDPC/
 
@@ -202,24 +203,25 @@ def generate_animation(path):
 def histogram(D_x,D_G_z,epoch):
 	fig = plt.figure(figsize=(10,5))
 	plt.title("D(x) réponse pour l'epochs "+str(epoch))
-	plt.hist(D_x,bins='auto')
+	plt.hist(D_x,bins=16)
+	plt.scatter(D_x,np.zeros(64),s=60,color='r',marker="|")
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 	
-	plt.grid(True)
 	plt.savefig("hist/dx_"+str(epoch)+".png",format="png")
 	plt.close(fig)
 
 	fig = plt.figure(figsize=(10,5))
 	plt.title("D(G(z)) réponse pour l'epochs "+str(epoch))
-	plt.hist(D_G_z,bins='auto')
+	plt.hist(D_G_z,bins=16)
+	plt.scatter(D_G_z,np.zeros(64),s=60,color='r',marker="|")
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 
 	plt.savefig("hist/dgz_"+str(epoch)+".png",format="png")
 	plt.close(fig)
 
-def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1):
+def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1,name="extremum.png"):
 	if len(D_x) <= 0 or len(D_G_z) <= 0:
 		return None
 	
@@ -237,7 +239,7 @@ def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1):
 	plt.xticks(positions, labels)
 	
 	plt.grid(True)
-	plt.savefig("extremum.png",format="png")
+	plt.savefig(name,format="png")
 	plt.close(fig)
 
 if __name__ == "__main__":
