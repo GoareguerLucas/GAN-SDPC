@@ -200,7 +200,7 @@ def generate_animation(path):
 		images.append(imageio.imread(i))
 	imageio.mimsave(path + 'training.gif', images, fps=1)
 
-def histogram(D_x,D_G_z,epoch):
+def histogram(D_x,D_G_z,epoch,i):
 	fig = plt.figure(figsize=(10,5))
 	plt.title("D(x) réponse pour l'epochs "+str(epoch))
 	plt.hist(D_x,bins=16)
@@ -208,7 +208,7 @@ def histogram(D_x,D_G_z,epoch):
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 	
-	plt.savefig("hist/dx_"+str(epoch)+".png",format="png")
+	plt.savefig("hist/dx_"+str(epoch)+"_"+str(i)+".png",format="png")
 	plt.close(fig)
 
 	fig = plt.figure(figsize=(10,5))
@@ -218,7 +218,7 @@ def histogram(D_x,D_G_z,epoch):
 	plt.xlabel("Value")
 	plt.ylabel("Frequency")
 
-	plt.savefig("hist/dgz_"+str(epoch)+".png",format="png")
+	plt.savefig("hist/dgz_"+str(epoch)+"_"+str(i)+".png",format="png")
 	plt.close(fig)
 
 def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1,name="extremum.png"):

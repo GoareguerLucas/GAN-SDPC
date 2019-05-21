@@ -367,7 +367,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Save hist
 	if i % opt.sample_interval == 0:
 		# Save D responce histogram 
-		histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch)
+		histogram(d_x.detach().cpu().numpy(),d_g_z.detach().cpu().numpy(),epoch,i)
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
