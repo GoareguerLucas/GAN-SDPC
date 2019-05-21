@@ -395,7 +395,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		#Plot scores
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 		#Plot extremum
-		plot_extrem(min_D_x,min_D_G_z,len(dataloader),start_epoch,epoch)
+		plot_extrem(min_D_x,min_D_G_z,len(dataloader),start_epoch,epoch,name="min.png")
+		#Plot extremum
+		plot_extrem(mean_D_x,mean_D_G_z,len(dataloader),start_epoch,epoch,name="mean.png")
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
@@ -407,8 +409,11 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 #Plot game score
 plot_scores(D_x,D_G_z,start_epoch,epoch)
 
-#Plot extremum
-plot_extrem(extrem_D_x,extrem_D_G_z,len(dataloader),start_epoch,epoch)
+#Plot min
+plot_extrem(min_D_x,min_D_G_z,len(dataloader),start_epoch,epoch,name="min.png")
+
+#Plot mean
+plot_extrem(mean_D_x,mean_D_G_z,len(dataloader),start_epoch,epoch,name="mean.png")
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
