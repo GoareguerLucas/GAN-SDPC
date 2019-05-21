@@ -342,7 +342,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		var_dx = torch.log(d_x).var()
 		var_d_g_z = torch.log(d_g_z).var()
 		print(torch.log10(d_x))
-		print(torch.log10(d_g_z))
+		print(d_x)
 		
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs] [Var log10(D(x)): %f] [Var log10(D(G(z))): %f]"
