@@ -305,7 +305,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		# New discriminator descision, Since we just updated D
 		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(d_g_z, fake)
+		g_loss = adversarial_loss(d_g_z, valid)
 		# Backward
 		g_loss.backward()
 		
@@ -327,14 +327,15 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_x_mean.append(d_x.mean().item())
 		d_g_z_mean.append(d_g_z.mean().item())
 		
-	
+	print(len(dataloader))
+	print(len(g_losses))
 	# Save Losses and scores for plotting later
-	G_losses.append(sum(g_losses)/len(g_losses))
-	D_losses.append(sum(d_losses)/len(d_losses))
+	G_losses.append(sum(g_losses)/len(dataloader))
+	D_losses.append(sum(d_losses)/len(dataloader))
 	g_losses = []
 	d_losses = []
-	D_x.append(sum(d_x_mean)/len(d_x_mean))
-	D_G_z.append(sum(d_g_z_mean)/len(d_g_z_mean))
+	D_x.append(sum(d_x_mean)/len(dataloader))
+	D_G_z.append(sum(d_g_z_mean)/len(dataloader))
 	d_x_mean = []
 	d_g_z_mean = []
 		
