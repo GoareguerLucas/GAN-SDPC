@@ -361,8 +361,8 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x_mean.append(torch.sum(d_x).item()/imgs.size(0))
-		d_g_z_mean.append(torch.sum(d_g_z).item()/imgs.size(0))
+		d_x_mean.append(d_x.mean().item())
+		d_g_z_mean.append(d_g_z.mean().item())
 	
 		# Save hist
 		if i % opt.sample_interval == 0:

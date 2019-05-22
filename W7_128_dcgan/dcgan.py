@@ -272,7 +272,7 @@ d_g_z_mean = []
 save_dot = 10 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
-# Vecteur z fixe pour faire les samples 
+# Vecteur z fixe pour faire les samples
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 t_total = time.time()
@@ -312,9 +312,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		# Fake batch
 		#Discriminator descision
-		d_g_x = discriminator(gen_imgs.detach())
+		d_g_z = discriminator(gen_imgs.detach())
 		# Measure discriminator's ability to classify real from generated samples
-		fake_loss = adversarial_loss(d_g_x, fake)
+		fake_loss = adversarial_loss(d_g_z, fake)
 		# Backward
 		fake_loss.backward()
 		
@@ -329,9 +329,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		optimizer_G.zero_grad()
 		
 		# New discriminator descision, Since we just updated D
-		d_g_x = discriminator(gen_imgs)
+		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(d_g_x, valid)
+		g_loss = adversarial_loss(d_g_z, valid)
 		# Backward
 		g_loss.backward()
 		
@@ -345,13 +345,13 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		
 		# Compensation pour le BCElogits
 		d_x = sigmoid(d_x)
-		d_g_x = sigmoid(d_g_x)
+		d_g_z = sigmoid(d_g_z)
 		
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
 		d_losses.append(d_loss.item())
-		d_x_mean.append(torch.sum(d_x).item()/imgs.size(0))
-		d_g_z_mean.append(torch.sum(d_g_x).item()/imgs.size(0))
+		d_x_mean.append(d_x.mean().item())
+		d_g_z_mean.append(d_g_z.mean().item())
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
@@ -377,19 +377,19 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses			
-		plot_losses(G_losses,D_losses)
+		plot_losses(G_losses,D_losses,start_epoch,epoch)
 		#Plot scores
-		plot_scores(D_x,D_G_z)
+		plot_scores(D_x,D_G_z,start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
 #Plot losses			
-plot_losses(G_losses,D_losses)
+plot_losses(G_losses,D_losses,start_epoch,epoch)
 
 #Plot game score
-plot_scores(D_x,D_G_z)
+plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
