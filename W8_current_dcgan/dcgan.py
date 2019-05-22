@@ -239,14 +239,18 @@ if opt.load_model == True:
 #  Training
 # ----------
 
-G_losses = []
-D_losses = []
-g_losses = []
-d_losses = []
-D_x = []
-D_G_z = []
-d_x_mean = []
-d_g_z_mean = []
+nb_batch = len(dataloader)
+nb_epochs = 1 + opt.n_epochs - start_epoch
+
+# Container for ploting
+G_losses = np.array(range(nb_epochs))
+D_losses = np.array(range(nb_epochs))
+g_losses = np.array(range(nb_batch))
+d_losses = np.array(range(nb_batch))
+D_x = np.array(range(nb_epochs))
+D_G_z = np.array(range(nb_epochs))
+d_x_mean = np.array(range(nb_batch))
+d_g_z_mean = np.array(range(nb_batch))
 
 #save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 #batch_on_save_dot = save_dot*len(dataloader)
@@ -255,7 +259,7 @@ d_g_z_mean = []
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 t_total = time.time()
-for epoch in range(start_epoch,opt.n_epochs+1):
+for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
@@ -322,22 +326,17 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_g_z = sigmoid(d_g_z)
 		
 		# Save Losses and scores for plotting later
-		g_losses.append(g_loss.item())
-		d_losses.append(d_loss.item())
-		d_x_mean.append(d_x.mean().item())
-		d_g_z_mean.append(d_g_z.mean().item())
+		g_losses[i] = g_loss.item()
+		d_losses[i] = d_loss.item()
+		d_x_mean[i] = d_x.mean().item()
+		d_g_z_mean[i] = d_g_z.mean().item()
 		
-	print(len(dataloader))
-	print(len(g_losses))
+	
 	# Save Losses and scores for plotting later
-	G_losses.append(sum(g_losses)/len(dataloader))
-	D_losses.append(sum(d_losses)/len(dataloader))
-	g_losses = []
-	d_losses = []
-	D_x.append(sum(d_x_mean)/len(dataloader))
-	D_G_z.append(sum(d_g_z_mean)/len(dataloader))
-	d_x_mean = []
-	d_g_z_mean = []
+	G_losses[j] = g_losses.mean()
+	D_losses[j] = d_losses.mean()
+	D_x[j] = d_x_mean.mean()
+	D_G_z[j] = d_g_z_mean.mean()
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
