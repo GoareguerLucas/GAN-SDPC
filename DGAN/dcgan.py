@@ -35,7 +35,7 @@ parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads 
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
 parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=1, help="number of image channels")
-parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
+parser.add_argument("--sample_interval", type=int, default=4000, help="interval between image sampling")
 opt = parser.parse_args()
 print(opt)
 
@@ -150,7 +150,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 # ----------
 
 nb_batch = len(dataloader)
-nb_epochs = 1 + opt.n_epochs
+nb_epochs = opt.n_epochs
 
 # Container for ploting
 G_losses = np.zeros(nb_epochs)
@@ -163,7 +163,7 @@ d_x_mean = np.zeros(nb_batch)
 d_g_z_mean = np.zeros(nb_batch)
 
 t_total = time.time()
-for j, epoch in enumerate(range(1,opt.n_epochs+1)):
+for epoch in range(1,opt.n_epochs+1):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
@@ -227,17 +227,10 @@ for j, epoch in enumerate(range(1,opt.n_epochs+1)):
 		
 	
 	# Save Losses and scores for plotting later
-	G_losses[j] = g_losses.mean()
-	D_losses[j] = d_losses.mean()
-	D_x[j] = d_x_mean.mean()
-	D_G_z[j] = d_g_z_mean.mean()
-	
-	# Intermediate plot
-	if epoch % (opt.n_epochs/4) == 0:
-		#Plot losses			
-		plot_losses(G_losses,D_losses,1,epoch)
-		#Plot scores
-		plot_scores(D_x,D_G_z,1,epoch)
+	G_losses[epoch-1] = g_losses.mean()
+	D_losses[epoch-1] = d_losses.mean()
+	D_x[epoch-1] = d_x_mean.mean()
+	D_G_z[epoch-1] = d_g_z_mean.mean()
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 

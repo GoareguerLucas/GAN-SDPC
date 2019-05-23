@@ -307,8 +307,6 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		optimizer_G.zero_grad()
 		
 		# New discriminator descision, Since we just updated D
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-		gen_imgs = generator(z)
 		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(d_g_z, valid)
@@ -335,10 +333,10 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 	
 	# Save Losses and scores for plotting later
-	G_losses[j] = g_losses.mean()
-	D_losses[j] = d_losses.mean()
-	D_x[j] = d_x_mean.mean()
-	D_G_z[j] = d_g_z_mean.mean()
+	G_losses[j-1] = g_losses.mean()
+	D_losses[j-1] = d_losses.mean()
+	D_x[j-1] = d_x_mean.mean()
+	D_G_z[j-1] = d_g_z_mean.mean()
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
