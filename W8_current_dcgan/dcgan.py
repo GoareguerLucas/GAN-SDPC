@@ -307,6 +307,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		optimizer_G.zero_grad()
 		
 		# New discriminator descision, Since we just updated D
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		gen_imgs = generator(z)
 		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(d_g_z, valid)
