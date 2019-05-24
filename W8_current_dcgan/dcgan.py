@@ -337,7 +337,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		d_x_mean[i] = d_x.mean().item()
 		d_g_z_mean[i] = d_g_z.mean().item()
 		
-		if 0 is in g_losses:
+		if 0.0 in g_losses:
 			print("00000000000000")
 		
 	
