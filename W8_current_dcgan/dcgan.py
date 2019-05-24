@@ -255,6 +255,8 @@ D_G_z = np.zeros(nb_epochs)
 d_x_mean = np.zeros(nb_batch)
 d_g_z_mean = np.zeros(nb_batch)
 
+print("Shape batch : ",d_g_z_mean.shape)
+
 #save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 #batch_on_save_dot = save_dot*len(dataloader)
 
@@ -265,6 +267,7 @@ t_total = time.time()
 for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
+		print(i," ",j)
 		t_batch = time.time()
 		
 		# Adversarial ground truths
@@ -334,13 +337,19 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		d_x_mean[i] = d_x.mean().item()
 		d_g_z_mean[i] = d_g_z.mean().item()
 		
+		print("g_losses",g_losses[i])
+		print("d_g_z_mean",d_g_z_mean[i])
+		
 	
 	# Save Losses and scores for plotting later
 	G_losses[j] = g_losses.mean()
 	D_losses[j] = d_losses.mean()
 	D_x[j] = d_x_mean.mean()
 	D_G_z[j] = d_g_z_mean.mean()
-		
+	
+	print("D_losses",D_losses[j])
+	print("D_G_z",D_G_z[j])
+	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
 		sampling(fixed_noise, generator, opt.sample_path, epoch)
