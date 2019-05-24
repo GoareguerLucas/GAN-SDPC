@@ -37,6 +37,7 @@ parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help=
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
+parser.add_argument("--bascule", type=int, default=150, help="Point à partir du quel G(z) devient x+noise")
 opt = parser.parse_args()
 print(opt)
 
@@ -271,7 +272,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		
-		if epoch < 150:
+		if epoch < opt.bascule:
 			# Generate a batch of images
 			z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 			gen_imgs = generator(z)
@@ -310,7 +311,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		#  Train Generator
 		# -----------------
 
-		if epoch < 150:
+		if epoch < opt.bascule:
 			optimizer_G.zero_grad()
 			
 			# New discriminator descision, Since we just updated D
