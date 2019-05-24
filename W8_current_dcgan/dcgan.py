@@ -243,14 +243,22 @@ nb_batch = len(dataloader)
 nb_epochs = 1 + opt.n_epochs - start_epoch
 
 # Container for ploting
-G_losses = np.zeros(nb_epochs)
+""""G_losses = np.zeros(nb_epochs)
 D_losses = np.zeros(nb_epochs)
 g_losses = np.zeros(nb_batch)
 d_losses = np.zeros(nb_batch)
 D_x = np.zeros(nb_epochs)
 D_G_z = np.zeros(nb_epochs)
 d_x_mean = np.zeros(nb_batch)
-d_g_z_mean = np.zeros(nb_batch)
+d_g_z_mean = np.zeros(nb_batch)"""
+G_losses = []
+D_losses = []
+g_losses = []
+d_losses = []
+D_x = []
+D_G_z = []
+d_x_mean = []
+d_g_z_mean = []
 
 #save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 #batch_on_save_dot = save_dot*len(dataloader)
@@ -322,21 +330,32 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		)
 		
 		# Compensation pour le BCElogits
-		d_x = sigmoid(d_x.detach())
-		d_g_z = sigmoid(d_g_z.detach())
+		d_x = sigmoid(d_x)
+		d_g_z = sigmoid(d_g_z)
 		
 		# Save Losses and scores for plotting later
-		g_losses[i] = g_loss.item()
+		""""g_losses[i] = g_loss.item()
 		d_losses[i] = d_loss.item()
 		d_x_mean[i] = d_x.mean().item()
-		d_g_z_mean[i] = d_g_z.mean().item()
-		
+		d_g_z_mean[i] = d_g_z.mean().item()"""
+		g_losses.append(g_loss.item())
+		d_losses.append(d_loss.item())
+		d_x_mean.append(d_x.mean().item())
+		d_g_z_mean.append(d_g_z.mean().item())
 	
 	# Save Losses and scores for plotting later
-	G_losses[j] = g_losses.mean()
+	""""G_losses[j] = g_losses.mean()
 	D_losses[j] = d_losses.mean()
 	D_x[j] = d_x_mean.mean()
-	D_G_z[j] = d_g_z_mean.mean()
+	D_G_z[j] = d_g_z_mean.mean()"""
+	G_losses.append(sum(g_losses)/len(g_losses))
+	D_losses.append(sum(d_losses)/len(d_losses))
+	g_losses = []
+	d_losses = []
+	D_x.append(sum(d_x_mean)/len(d_x_mean))
+	D_G_z.append(sum(d_g_z_mean)/len(d_g_z_mean))
+	d_x_mean = []
+	d_g_z_mean = []
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
