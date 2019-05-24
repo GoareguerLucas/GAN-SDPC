@@ -11,3 +11,6 @@ test.py
 .git*
 ExlusionRSync
 Makefile
+*.pkl
+*ubyte
+data
