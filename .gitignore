@@ -10,8 +10,12 @@ save/
 */*/models/
 test*
 Nouveau*
+*/*/(*)/
 */(*)/
+(*)/
+
 */hist/
+
 
 # C extensions
 *.so
