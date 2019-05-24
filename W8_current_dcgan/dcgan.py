@@ -242,6 +242,9 @@ if opt.load_model == True:
 nb_batch = len(dataloader)
 nb_epochs = 1 + opt.n_epochs - start_epoch
 
+print("EPOCHS : ",nb_epochs)
+print("Batch : ",nb_batch)
+
 # Container for ploting
 G_losses = np.zeros(nb_epochs)
 D_losses = np.zeros(nb_epochs)
@@ -333,10 +336,10 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 	
 	# Save Losses and scores for plotting later
-	G_losses[j-1] = g_losses.mean()
-	D_losses[j-1] = d_losses.mean()
-	D_x[j-1] = d_x_mean.mean()
-	D_G_z[j-1] = d_g_z_mean.mean()
+	G_losses[j] = g_losses.mean()
+	D_losses[j] = d_losses.mean()
+	D_x[j] = d_x_mean.mean()
+	D_G_z[j] = d_g_z_mean.mean()
 		
 	# Save samples
 	if epoch % opt.sample_interval == 0:
