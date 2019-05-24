@@ -337,8 +337,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		d_x_mean[i] = d_x.mean().item()
 		d_g_z_mean[i] = d_g_z.mean().item()
 		
-		print("g_losses",g_losses[i])
-		print("d_g_z_mean",d_g_z_mean[i])
+		if 0 is in g_losses:
+			print("00000000000000")
 		
 	
 	# Save Losses and scores for plotting later
@@ -346,9 +346,6 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	D_losses[j] = d_losses.mean()
 	D_x[j] = d_x_mean.mean()
 	D_G_z[j] = d_g_z_mean.mean()
-	
-	print("D_losses",D_losses[j])
-	print("D_G_z",D_G_z[j])
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
