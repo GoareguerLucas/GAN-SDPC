@@ -112,7 +112,9 @@ def loss_plot(hist, path = 'Train_hist.png', model_name = ''):
 
 	y1 = hist['D_loss']
 	y2 = hist['G_loss']
-
+	
+	plt.figure(figsize=(10,5))
+	
 	plt.plot(x, y1, label='D_loss')
 	plt.plot(x, y2, label='G_loss')
 
