@@ -242,9 +242,6 @@ if opt.load_model == True:
 nb_batch = len(dataloader)
 nb_epochs = 1 + opt.n_epochs - start_epoch
 
-print("EPOCHS : ",nb_epochs)
-print("Batch : ",nb_batch)
-
 # Container for ploting
 G_losses = np.zeros(nb_epochs)
 D_losses = np.zeros(nb_epochs)
@@ -254,8 +251,6 @@ D_x = np.zeros(nb_epochs)
 D_G_z = np.zeros(nb_epochs)
 d_x_mean = np.zeros(nb_batch)
 d_g_z_mean = np.zeros(nb_batch)
-
-print("Shape batch : ",d_g_z_mean.shape)
 
 #save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 #batch_on_save_dot = save_dot*len(dataloader)
@@ -267,7 +262,6 @@ t_total = time.time()
 for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
-		print(i," ",j)
 		t_batch = time.time()
 		
 		# Adversarial ground truths
@@ -328,17 +322,14 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		)
 		
 		# Compensation pour le BCElogits
-		d_x = sigmoid(d_x)
-		d_g_z = sigmoid(d_g_z)
+		d_x = sigmoid(d_x.detach())
+		d_g_z = sigmoid(d_g_z.detach())
 		
 		# Save Losses and scores for plotting later
 		g_losses[i] = g_loss.item()
 		d_losses[i] = d_loss.item()
 		d_x_mean[i] = d_x.mean().item()
 		d_g_z_mean[i] = d_g_z.mean().item()
-		
-		if 0.0 in g_losses:
-			print("00000000000000")
 		
 	
 	# Save Losses and scores for plotting later
