@@ -28,4 +28,4 @@ def dataloader(dataset, input_size, batch_size, split='train'):
 			datasets.LSUN('data/lsun', classes=['bedroom_train'], transform=transform),
 			batch_size=batch_size, shuffle=True)
 
-return data_loader
+	return data_loader
