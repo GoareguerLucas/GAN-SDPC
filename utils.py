@@ -189,7 +189,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 		print(type(batch))
 		print(batch.shape)
 		gen_imgs = torch.from_numpy(batch)
-			
+		print(gen_imgs.shape)	
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
 
