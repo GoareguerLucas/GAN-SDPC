@@ -189,7 +189,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 			batch.append(np.asarray(tensor))
 			print(len(batch))
 		batch = np.asarray(batch)
-		print(batch.type)
+		print(type(batch))
 		print(batch.shape)
 		gen_imgs = torchvision.transforms.ToTensor()(batch)
 			
