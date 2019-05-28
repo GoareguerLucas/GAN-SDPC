@@ -11,20 +11,19 @@ import torch
 import imageio
 import time
 
-
 import sys
 sys.path.append("../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 
-def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset=False):
+def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset=False, mode='RGB'):
 	print("Loading data...")
 	t_total = time.time()
 	
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 
 	if Fast:
-		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, rand_hflip) #../../../Dataset/
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, mode=mode, rand_hflip) #../../../Dataset/
 	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
 
@@ -241,6 +240,8 @@ def plot_extrem(D_x,D_G_z,nb_batch,start_epoch=1,current_epoch=-1,name="extremum
 	plt.grid(True)
 	plt.savefig(name,format="png")
 	plt.close(fig)
+
+
 
 if __name__ == "__main__":
 

@@ -57,7 +57,7 @@ class SimpsonsDataset(Dataset):
 		return len(self.files)
 		
 class FastSimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transforms=None, rand_hflip=False):
+	def __init__(self, dir_path, height, width, transforms=None, mode='RGB', rand_hflip=False):
 		"""
 		Args:
 			dir_path (string): path to dir conteint exclusively images png
@@ -78,7 +78,14 @@ class FastSimpsonsDataset(Dataset):
 			img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
 			# Convert image from numpy array to PIL image
 			img_as_img = Image.fromarray(img_as_np)
-			img_as_img = img_as_img.convert('RGB')
+			
+			if mode == 'RGB':
+				img_as_img = img_as_img.convert('RGB')
+			elif mode == 'HSV':
+				img_as_img = img_as_img.convert('HSV')
+			else:
+				print("Error : Image mode unknow in dataset !")
+				
 			# Transform image to tensor
 			if self.transforms is not None:
 				img_as_tensor = self.transforms(img_as_img)
