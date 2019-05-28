@@ -184,7 +184,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 			RGB = img.convert('RGB')
 			print(RGB.size)
 			tensor = torchvision.transforms.ToTensor()(RGB)
-			batch.append(tensor)
+			batch.append(np.asarray(tensor))
 		gen_imgs = torchvision.transforms.ToTensor()(batch)
 			
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
