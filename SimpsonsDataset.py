@@ -87,7 +87,7 @@ class FastSimpsonsDataset(Dataset):
 			
 			# Use HSV format
 			if mode == "HSV":
-				array = img_as_tensor.numpy().permute(1, 2, 0)
+				array = img_as_tensor.permute(1, 2, 0).numpy()
 				img = Image.fromarray(array,mode='RGB')
 				HSV = img.convert('HSV')
 				array = np.array(HSV)
