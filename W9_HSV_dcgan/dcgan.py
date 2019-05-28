@@ -358,7 +358,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 	
 durer = time.gmtime(time.time()-t_total)
-print("[Total Time: ",durer.tm_day-1,"j:",time.strftime("%Hh:%Mm:%Ss",durer),"]")
+print("[Total Time: ",durer.tm_mday-1,"j:",time.strftime("%Hh:%Mm:%Ss",durer),"]")
 
 #Plot losses
 plot_losses(G_losses,D_losses,start_epoch,epoch)
