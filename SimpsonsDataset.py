@@ -85,9 +85,9 @@ class FastSimpsonsDataset(Dataset):
 				img_as_tensor = self.transforms(img_as_img)
 			
 			if mode == "HSV":
-				img_as_img = transforms.ToPILImage(img_as_tensor)
+				img_as_img = img_as_tensor.ToPILImage()
 				HSV = img_as_img.convert('HSV')
-				img_as_tensor = transforms.ToTensor(HSV)
+				img_as_tensor = HSV.ToTensor()
 			
 			self.tensors.append(img_as_tensor)
 
