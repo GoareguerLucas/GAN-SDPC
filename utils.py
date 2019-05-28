@@ -171,7 +171,7 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 """
 def sampling(noise, generator, path, epoch, HSV=False):
 	generator.eval()
-	gen_imgs = generator(noise)
+	gen_imgs = generator(noise).detach()
 	
 	if HSV == True:
 		batch = list()
