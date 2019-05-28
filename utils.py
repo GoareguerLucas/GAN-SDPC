@@ -174,19 +174,13 @@ def sampling(noise, generator, path, epoch, HSV=False):
 	gen_imgs = generator(noise)
 	
 	if HSV == True:
-		gen_imgs = gen_imgs.detach().cpu()
+		gen_imgs = gen_imgs.detach().cpu().permute(0, 2, 3, 1)
 		batch = list()
 		for tensor in gen_imgs:
-			print(tensor.shape)
-			print(tensor.type)
-			img = torchvision.transforms.ToPILImage()(tensor)
-			print(img.size)
-			RGB = img.convert('RGB')
+			array = np.asarray(tensor)
+			RGB = array.convert('RGB')
 			print(RGB.size)
-			tensor = torchvision.transforms.ToTensor()(RGB)
-			print(tensor.shape)
-			print(tensor.type)
-			batch.append(np.asarray(tensor))
+			batch.append(RGB)
 			print(len(batch))
 		batch = np.asarray(batch)
 		print(type(batch))
