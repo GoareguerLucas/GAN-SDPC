@@ -86,7 +86,7 @@ class FastSimpsonsDataset(Dataset):
 				img_as_tensor = self.transforms(img_as_img)
 			
 			if mode == "HSV":
-				img_as_img = img_as_tensor.torchvision.transforms.ToPILImage()
+				img_as_img = img_as_tensor.ToPILImage()
 				HSV = img_as_img.convert('HSV')
 				img_as_tensor = torchvision.transforms.ToTensor(HSV)
 			
