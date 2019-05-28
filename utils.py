@@ -23,7 +23,7 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset
 	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
 
 	if Fast:
-		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, mode=mode, rand_hflip) #../../../Dataset/
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, rand_hflip, mode) #../../../Dataset/
 	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
 
