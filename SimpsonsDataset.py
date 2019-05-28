@@ -7,6 +7,7 @@ from glob import glob
 import datetime
 import numpy as np
 import random
+import torch
 
 INPUT_DATA_DIR = "../cropped/cp/"
 IMAGE_SIZE = 200
