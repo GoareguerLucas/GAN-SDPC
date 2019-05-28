@@ -92,6 +92,7 @@ class FastSimpsonsDataset(Dataset):
 				img = Image.fromarray(array,mode='RGB')
 				HSV = img.convert('HSV')
 				array = np.array(HSV)
+				print(array.shape)
 				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
 				
 				""""img_as_img = torchvision.transforms.ToPILImage()(img_as_tensor)
