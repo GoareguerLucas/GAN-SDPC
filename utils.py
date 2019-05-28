@@ -177,6 +177,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 		gen_imgs = gen_imgs.detach().cpu().permute(0, 2, 3, 1)
 		batch = list()
 		for tensor in gen_imgs:
+			print(tensor.shape)
 			img = Image.fromarray(tensor.numpy())
 			RGB = img.convert('RGB')
 			print(RGB.size)
