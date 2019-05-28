@@ -32,7 +32,7 @@ count_file:
 	ls -Al | wc -l
 
 see_rsync:
-	rsync -avhuzn . albert@147.94.234.202:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuzn . albert@147.94.234.38:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
 
 rsync:
-	rsync -avhuz . albert@147.94.234.202:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuz . albert@147.94.234.38:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
