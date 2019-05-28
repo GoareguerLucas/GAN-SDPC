@@ -340,7 +340,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		sampling(fixed_noise, generator, opt.sample_path, epoch)
+		sampling(fixed_noise, generator, opt.sample_path, epoch, HSV=True)
 	
 	# Save models
 	if epoch % opt.model_save_interval == 0:

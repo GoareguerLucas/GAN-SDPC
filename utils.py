@@ -1,5 +1,6 @@
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
+import torchvision  
 from torchvision.utils import save_image
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -174,11 +175,11 @@ def sampling(noise, generator, path, epoch, HSV=False):
 	
 	if HSV == True:
 		batch = list()
-		for img in gen_imgs:
-			torchvision.transforms.ToPILImage(img)
-			RGB = img_as_img.convert('RGB')
-			batch.append(torchvision.transforms.ToTensor(RGB))
-		gen_imgs = torchvision.transforms.ToTensor(batch)
+		for tensor in gen_imgs:
+			img = torchvision.transforms.ToPILImage()(tensor)
+			RGB = img.convert('RGB')
+			batch.append(torchvision.transforms.ToTensor()(RGB))
+		gen_imgs = torchvision.transforms.ToTensor()(batch)
 			
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
