@@ -87,9 +87,15 @@ class FastSimpsonsDataset(Dataset):
 			
 			# Use HSV format
 			if mode == "HSV":
-				img_as_img = torchvision.transforms.ToPILImage()(img_as_tensor)
+				array = img_as_tensor.numpy().permute(1, 2, 0)
+				img = Image.fromarray(array,mode='RGB')
+				HSV = img.convert('HSV')
+				array = np.array(HSV)
+				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
+				
+				""""img_as_img = torchvision.transforms.ToPILImage()(img_as_tensor)
 				HSV = img_as_img.convert('HSV')
-				img_as_tensor = torchvision.transforms.ToTensor()(HSV)
+				img_as_tensor = torchvision.transforms.ToTensor()(HSV)"""
 			
 			self.tensors.append(img_as_tensor)
 
