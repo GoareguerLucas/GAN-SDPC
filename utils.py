@@ -171,9 +171,10 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 """
 def sampling(noise, generator, path, epoch, HSV=False):
 	generator.eval()
-	gen_imgs = generator(noise).detach()
+	gen_imgs = generator(noise)
 	
 	if HSV == True:
+		gen_imgs = gen_imgs.detach().cpu()
 		batch = list()
 		for tensor in gen_imgs:
 			img = torchvision.transforms.ToPILImage()(tensor)
