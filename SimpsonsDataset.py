@@ -78,17 +78,17 @@ class FastSimpsonsDataset(Dataset):
 			img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
 			# Convert image from numpy array to PIL image
 			img_as_img = Image.fromarray(img_as_np)
-			
-			if mode == "RGB":
-				img_as_img = img_as_img.convert('RGB')
-			elif mode == "HSV":
-				img_as_img = img_as_img.convert('HSV')
-			else:
-				print("Error : Image mode unknow in dataset !")
+			img_as_img = img_as_img.convert('RGB')
 				
 			# Transform image to tensor
 			if self.transforms is not None:
 				img_as_tensor = self.transforms(img_as_img)
+			
+			if mode == "HSV"
+				img_as_img = transforms.ToPILImage(img_as_tensor)
+				HSV = img_as_img.convert('HSV')
+				img_as_tensor = transforms.ToTensor(HSV)
+			
 			self.tensors.append(img_as_tensor)
 
 	def __getitem__(self, index):
