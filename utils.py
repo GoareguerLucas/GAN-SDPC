@@ -182,6 +182,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 			img = Image.fromarray(array,mode='HSV')
 			RGB = img.convert('RGB')
 			print(RGB.size)
+			print(RGB[0][0])
 			batch.append(RGB)
 			print(len(batch))
 		batch = np.asarray(batch)
