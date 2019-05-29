@@ -272,8 +272,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 		
 		# Configure input
-		rand = Tensor(imgs.shape).normal_(0.0, random.uniform(0.0, 0.1))
-		real_imgs = Variable(imgs.type(Tensor)) + rand
+		real_imgs = Variable(imgs.type(Tensor))
 		# Generate a batch of images
 		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 		gen_imgs = generator(z)
@@ -291,7 +290,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 		# Real batch
 		#Discriminator descision
-		d_x = discriminator(real_imgs)
+		rand = Tensor(imgs.shape).normal_(0.0, random.uniform(0.0, 0.1))
+		d_x = discriminator(real_imgs+rand)
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid)
 		# Backward
