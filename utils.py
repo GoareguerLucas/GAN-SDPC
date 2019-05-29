@@ -12,6 +12,8 @@ import torch
 import imageio
 import time
 
+from skimage.color import hsv2rgb
+
 import sys
 sys.path.append("../")#../../GAN-SDPC/
 
@@ -179,7 +181,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 		for tensor in gen_imgs:
 			#print(tensor.shape)
 			array = tensor.numpy()
-			img = rgb2hsv(array)
+			img = hsv2rgb(array)
 			RGB = img.convert('RGB')
 			#print(RGB.size)
 			#print(RGB)
