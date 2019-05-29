@@ -173,13 +173,13 @@ def sampling(noise, generator, path, epoch, HSV=False):
 	generator.eval()
 	gen_imgs = generator(noise)
 	
-	if HSV == True:
+	""""if HSV == True:
 		gen_imgs = gen_imgs.detach().cpu().permute(0, 2, 3, 1)
 		batch = list()
 		for tensor in gen_imgs:
 			#print(tensor.shape)
 			array = tensor.numpy()
-			img = Image.fromarray(array,mode='HSV')
+			img = rgb2hsv(array)
 			RGB = img.convert('RGB')
 			#print(RGB.size)
 			#print(RGB)
@@ -189,7 +189,7 @@ def sampling(noise, generator, path, epoch, HSV=False):
 		#print(type(batch))
 		#print(batch.shape)
 		gen_imgs = torch.from_numpy(batch).permute(0, 3, 2, 1)
-		#print(gen_imgs.shape)	
+		#print(gen_imgs.shape)	"""
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
 

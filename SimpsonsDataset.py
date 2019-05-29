@@ -9,6 +9,8 @@ import numpy as np
 import random
 import torch
 
+from skimage.color import rgb2hsv
+
 INPUT_DATA_DIR = "../cropped/cp/"
 IMAGE_SIZE = 200
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
@@ -28,7 +30,7 @@ def show_tensor(sample_tensor, epoch):
 
 
 class SimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transforms=None):
+	def __init__(self, dir_path, height, width, transforms=None, mode="RGB"):
 		"""
 		Args:
 			dir_path (string): path to dir conteint exclusively images png
@@ -41,6 +43,7 @@ class SimpsonsDataset(Dataset):
 		self.height = height
 		self.width = width
 		self.transforms = transforms
+		self.mode = mode
 
 	def __getitem__(self, index):
 		single_image_label = self.labels[index]
@@ -52,6 +55,16 @@ class SimpsonsDataset(Dataset):
 		# Transform image to tensor
 		if self.transforms is not None:
 			img_as_tensor = self.transforms(img_as_img)
+			
+		# Use HSV format
+		if self.mode == "HSV":
+			array = img_as_tensor.permute(2, 1, 0).numpy()
+			print(array.shape)
+			HSV = rgb2hsv(array)
+			print(HSV.shape)
+			img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
+			print(img_as_tensor.shape)
+			
 		# Return image and the label
 		return (img_as_tensor, single_image_label)
 
@@ -73,6 +86,7 @@ class FastSimpsonsDataset(Dataset):
 		self.width = width
 		self.transforms = transforms
 		self.rand_hflip = rand_hflip
+		self.mode = mode
 		
 		# Chargement des images
 		self.tensors = list()
@@ -87,7 +101,7 @@ class FastSimpsonsDataset(Dataset):
 				img_as_tensor = self.transforms(img_as_img)
 			
 			# Use HSV format
-			if mode == "HSV":
+			if self.mode == "HSV":
 				array = img_as_tensor.permute(1, 2, 0).numpy()
 				img = Image.fromarray(array,mode='RGB')
 				HSV = img.convert('HSV')
@@ -116,12 +130,15 @@ class FastSimpsonsDataset(Dataset):
 
 if __name__ == "__main__":
 	
-	
+	# HSV test
 	transformations = transforms.Compose([transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5],[0.5])])
-	simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations)
+	simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations, mode="HSV")
 	
 	print(type(simpsonsDataset), len(simpsonsDataset))
 	
+	show_tensor(simpsonsDataset.__getitem__(1)[0],1)
+	
+	""""DataNoise test
 	nb_images = 100
 	
 	images = []
@@ -129,6 +146,7 @@ if __name__ == "__main__":
 		images.append(np.asarray(simpsonsDataset.__getitem__(i)[0].permute(1, 2, 0)))
 	images = np.asarray(images)
 	print(images.shape)
+	
 	
 	bags = np.reshape(images,(-1,3))
 	print("Bags shape :",bags.shape)
@@ -203,4 +221,4 @@ if __name__ == "__main__":
 	
 	save_image(noised_image, "test_fin.png", nrow=1, normalize=False)
 	 
-	#show_tensor(item[0],0)
+	#show_tensor(item[0],0)"""
