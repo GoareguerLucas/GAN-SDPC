@@ -280,10 +280,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 		# Batch composition
 		rand = Tensor(imgs.shape).normal_(0.0, random.uniform(0.0, 0.1))
-		tmp = real_imgs[:t]
-		print(tmp.shape)
-		gen_imgs = torch.cat((gen_imgs[t:],tmp),dim=0) + rand
-		print(gen_imgs.shape)
+		gen_imgs = torch.cat((gen_imgs[t:],real_imgs[:t]),dim=0) + rand
+		#print(gen_imgs.shape)
 		
 		# ---------------------
 		#  Train Discriminator
