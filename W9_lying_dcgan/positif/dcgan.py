@@ -304,7 +304,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid)
 		# Backward
-		real_loss.backward()
+		real_loss.backward(,opt.img_size)
 
 		d_loss = real_loss + fake_loss
 
