@@ -59,11 +59,11 @@ class SimpsonsDataset(Dataset):
 		# Use HSV format
 		if self.mode == "HSV":
 			array = img_as_tensor.permute(2, 1, 0).numpy()
-			print(array.shape)
+			#print(array.shape)
 			HSV = rgb2hsv(array)
-			print(HSV.shape)
+			#print(HSV.shape)
 			img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
-			print(img_as_tensor.shape)
+			#print(img_as_tensor.shape)
 			
 		# Return image and the label
 		return (img_as_tensor, single_image_label)
@@ -102,15 +102,12 @@ class FastSimpsonsDataset(Dataset):
 			
 			# Use HSV format
 			if self.mode == "HSV":
-				array = img_as_tensor.permute(1, 2, 0).numpy()
-				img = Image.fromarray(array,mode='RGB')
-				HSV = img.convert('HSV')
-				array = np.array(HSV)
+				array = img_as_tensor.permute(2, 1, 0).numpy()
+				#print(array.shape)
+				HSV = rgb2hsv(array)
+				#print(HSV.shape)
 				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
-				
-				""""img_as_img = torchvision.transforms.ToPILImage()(img_as_tensor)
-				HSV = img_as_img.convert('HSV')
-				img_as_tensor = torchvision.transforms.ToTensor()(HSV)"""
+				#print(img_as_tensor.shape)
 			
 			self.tensors.append(img_as_tensor)
 
