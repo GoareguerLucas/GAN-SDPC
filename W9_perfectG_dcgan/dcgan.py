@@ -289,7 +289,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 		# Real batch
 		#Discriminator descision
-		d_x = discriminator(real_imgs)
+		rand = Tensor(imgs.shape).normal_(0.0, random.uniform(0.0, 0.1))
+		d_x = discriminator(real_imgs+rand)
 		# Measure discriminator's ability to classify real from generated samples
 		real_loss = adversarial_loss(d_x, valid)
 		# Backward

@@ -171,7 +171,7 @@ def plot_lr(lr,start_epoch=1,current_epoch=-1):
 Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
 Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
 """
-def sampling(noise, generator, path, epoch, HSV=False):
+def sampling(noise, generator, path, epoch):
 	generator.eval()
 	gen_imgs = generator(noise)
 	
