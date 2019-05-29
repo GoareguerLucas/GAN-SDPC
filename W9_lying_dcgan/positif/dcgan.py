@@ -294,9 +294,9 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		#Fake on real batch
 		_, idx_best = torch.topk(d_g_z, t, dim=0,largest=True)
 		best = gen_imgs[idx_best].reshape((t,opt.channels,opt.img_size,opt.img_size))
-		print(best.shape)
+		#print(best.shape)
 		half_real_images = torch.cat((best,real_imgs[t:]),dim=0)
-		print(half_real_images.shape)
+		#print(half_real_images.shape)
 		
 		# Real batch
 		#Discriminator descision
