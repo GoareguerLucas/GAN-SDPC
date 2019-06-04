@@ -184,7 +184,7 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 def sampling(noise, generator, path, epoch):
 	generator.eval()
 	gen_imgs = generator(noise)
-	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
+	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=False)
 	generator.train()
 
 def print_network(net):
