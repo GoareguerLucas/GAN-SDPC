@@ -93,7 +93,8 @@ class FastSimpsonsDataset(Dataset):
 		# Chargement des images
 		self.tensors = list()
 		for img in self.files:
-			img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
+			#img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
+			img_as_np = Image.open(img).resize((self.height, self.width))
 			# Convert image from numpy array to PIL image
 			#img_as_img = Image.fromarray(img_as_np)
 			#img_as_img = img_as_img.convert('RGB')
