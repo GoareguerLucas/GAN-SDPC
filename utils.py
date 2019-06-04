@@ -17,20 +17,30 @@ from skimage.color import hsv2rgb
 import sys
 sys.path.append("../")#../../GAN-SDPC/
 
-from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
+from SimpsonsDataset import *
 
-def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,return_dataset=False, mode='RGB'):
+def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,rand_affine=None,return_dataset=False, mode='RGB'):
 	print("Loading data...")
 	t_total = time.time()
 	
-	transformations = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])])
-
+	# Transformation appliquer avant et pendant l'entraînement
+	transform_constante = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5]), transforms.ToPILImage(mode="RGB")])
+	transform_tmp = list()
+	if rand_hflip:
+		transform_tmp.append(transforms.RandomHorizontalFlip(p=0.5))
+	if rand_affine != None:
+		transform_tmp.append(transforms.RandomAffine(degrees=rand_affine[0],scale=rand_affine[1]))
+	transform_tmp.append(transforms.ToTensor())
+	transform_tmp = transforms.Compose(transform_tmp)
+	transform = transforms.Compose([transform_constante, transform_tmp])
+	
+	
 	if Fast:
-		dataset = FastSimpsonsDataset(path, img_size, img_size, transformations, rand_hflip, mode) #../../../Dataset/
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transform_constante, transform_tmp, mode) #../../../Dataset/
 	else:
-		dataset = SimpsonsDataset(path, img_size, img_size, transformations) #../../../Dataset/
+		dataset = SimpsonsDataset(path, img_size, img_size, transform) #../../../Dataset/
 
-	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True)
 	
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
@@ -174,24 +184,6 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 def sampling(noise, generator, path, epoch):
 	generator.eval()
 	gen_imgs = generator(noise)
-	
-	""""if HSV == True:
-		gen_imgs = gen_imgs.detach().cpu().permute(0, 2, 3, 1)
-		batch = list()
-		for tensor in gen_imgs:
-			#print(tensor.shape)
-			array = tensor.numpy()
-			img = hsv2rgb(array)
-			RGB = img.convert('RGB')
-			#print(RGB.size)
-			#print(RGB)
-			batch.append(np.array(RGB))
-			#print(len(batch))
-		batch = np.asarray(batch)
-		#print(type(batch))
-		#print(batch.shape)
-		gen_imgs = torch.from_numpy(batch).permute(0, 3, 2, 1)
-		#print(gen_imgs.shape)	"""
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
 
@@ -274,3 +266,14 @@ if __name__ == "__main__":
 	print("test")"""
 	
 	#generate_animation("W7_128_dcgan/gif/")
+	
+	# DataLoader test
+	loader = load_data("../cropped/cp/",200,20,Fast=True,rand_hflip=True,rand_affine=[(0,25),(1.0,1.25)],return_dataset=False, mode='RGB')
+	
+	for (imgs, _) in loader:
+		show_tensor(imgs[1],1)
+		
+		exit(0)
+		
+
+

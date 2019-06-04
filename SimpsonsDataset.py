@@ -39,6 +39,7 @@ class SimpsonsDataset(Dataset):
 			transform: pytorch transforms for transforms and tensor conversion
 		"""
 		self.files = glob(dir_path + '*')
+		print("First :", self.files[10:20])
 		self.labels = np.zeros(len(self.files))
 		self.height = height
 		self.width = width
@@ -50,11 +51,12 @@ class SimpsonsDataset(Dataset):
 		# Read each pixels and reshape the 1D array to 2D array
 		img_as_np = np.asarray(Image.open(self.files[index]).resize((self.height, self.width))).astype('uint8')
 		# Convert image from numpy array to PIL image
-		img_as_img = Image.fromarray(img_as_np)
-		img_as_img = img_as_img.convert('RGB')
+		#img_as_img = Image.fromarray(img_as_np)
+		#img_as_img = img_as_img.convert('RGB')
+		
 		# Transform image to tensor
 		if self.transforms is not None:
-			img_as_tensor = self.transforms(img_as_img)
+			img_as_tensor = self.transforms(img_as_np)
 			
 		# Use HSV format
 		if self.mode == "HSV":
@@ -72,20 +74,21 @@ class SimpsonsDataset(Dataset):
 		return len(self.files)
 		
 class FastSimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transforms=None, rand_hflip=False, mode="RGB"):
+	def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None, mode="RGB"):
 		"""
 		Args:
 			dir_path (string): path to dir conteint exclusively images png
 			height (int): image height
 			width (int): image width
-			transform: pytorch transforms for transforms and tensor conversion
+			transform_constante: pytorch transforms for transforms and tensor conversion before training
+			transform_tmp: pytorch transforms for transforms and tensor conversion during training
 		"""
 		self.files = glob(dir_path + '*')
 		self.labels = np.zeros(len(self.files))
 		self.height = height
 		self.width = width
-		self.transforms = transforms
-		self.rand_hflip = rand_hflip
+		self.transform_constante = transform_constante
+		self.transform_tmp = transform_tmp
 		self.mode = mode
 		
 		# Chargement des images
@@ -93,12 +96,12 @@ class FastSimpsonsDataset(Dataset):
 		for img in self.files:
 			img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
 			# Convert image from numpy array to PIL image
-			img_as_img = Image.fromarray(img_as_np)
-			img_as_img = img_as_img.convert('RGB')
+			#img_as_img = Image.fromarray(img_as_np)
+			#img_as_img = img_as_img.convert('RGB')
 				
 			# Transform image to tensor
-			if self.transforms is not None:
-				img_as_tensor = self.transforms(img_as_img)
+			if self.transform_constante is not None:
+				img_as_tensor = self.transform_constante(img_as_np)
 			
 			# Use HSV format
 			if self.mode == "HSV":
@@ -115,9 +118,10 @@ class FastSimpsonsDataset(Dataset):
 		single_image_label = self.labels[index]
 		img_as_tensor = self.tensors[index]
 		
-		if self.rand_hflip:
-			img_as_tensor = img_as_tensor.flip(2)
-
+		# Transform image to tensor
+		if self.transform_tmp is not None:
+			img_as_tensor = self.transform_tmp(img_as_tensor)
+		
 		# Return image and the label
 		return (img_as_tensor, single_image_label)
 
