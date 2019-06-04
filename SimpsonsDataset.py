@@ -111,7 +111,7 @@ class FastSimpsonsDataset(Dataset):
 				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
 				#print(img_as_tensor.shape)
 			
-			self.tensors.append(img_as_img)
+			self.tensors.append(img_as_np)
 
 	def __getitem__(self, index):
 		single_image_label = self.labels[index]
