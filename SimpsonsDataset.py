@@ -99,8 +99,8 @@ class FastSimpsonsDataset(Dataset):
 			#img_as_img = img_as_img.convert('RGB')
 				
 			# Transform image to tensor
-			if self.transform_constante is not None:
-				img_as_img = self.transform_constante(img_as_np)
+			#if self.transform_constante is not None:
+			#	img_as_img = self.transform_constante(img_as_np)
 			
 			# Use HSV format
 			if self.mode == "HSV":
