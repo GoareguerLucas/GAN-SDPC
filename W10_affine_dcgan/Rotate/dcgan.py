@@ -217,7 +217,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data(depth+"../../cropped/cp/", opt.img_size, opt.batch_size, rand_hflip=True, rand_affine=[(0,25),(1.0,1.0)])
+dataloader = load_data(depth+"../../cropped/cp/", opt.img_size, opt.batch_size, rand_hflip=True, rand_affine=[(-25,25),(1.0,1.0)])
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
