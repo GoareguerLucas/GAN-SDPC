@@ -39,7 +39,6 @@ class SimpsonsDataset(Dataset):
 			transform: pytorch transforms for transforms and tensor conversion
 		"""
 		self.files = glob(dir_path + '*')
-		print("First :", self.files[10:20])
 		self.labels = np.zeros(len(self.files))
 		self.height = height
 		self.width = width
@@ -101,26 +100,26 @@ class FastSimpsonsDataset(Dataset):
 				
 			# Transform image to tensor
 			if self.transform_constante is not None:
-				img_as_tensor = self.transform_constante(img_as_np)
+				img_as_img = self.transform_constante(img_as_np)
 			
 			# Use HSV format
 			if self.mode == "HSV":
-				array = img_as_tensor.permute(2, 1, 0).numpy()
+				array = img_as_img.permute(2, 1, 0).numpy()
 				#print(array.shape)
 				HSV = rgb2hsv(array)
 				#print(HSV.shape)
 				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
 				#print(img_as_tensor.shape)
 			
-			self.tensors.append(img_as_tensor)
+			self.tensors.append(img_as_img)
 
 	def __getitem__(self, index):
 		single_image_label = self.labels[index]
-		img_as_tensor = self.tensors[index]
+		img_as_img = self.tensors[index]
 		
 		# Transform image to tensor
 		if self.transform_tmp is not None:
-			img_as_tensor = self.transform_tmp(img_as_tensor)
+			img_as_tensor = self.transform_tmp(img_as_img)
 		
 		# Return image and the label
 		return (img_as_tensor, single_image_label)

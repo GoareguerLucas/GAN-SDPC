@@ -40,7 +40,7 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,rand_affine=No
 	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transform) #../../../Dataset/
 
-	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True)
+	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 	
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
