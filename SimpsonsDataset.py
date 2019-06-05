@@ -91,10 +91,11 @@ class FastSimpsonsDataset(Dataset):
 		self.mode = mode
 		
 		# Chargement des images
-		self.tensors = list()
+		self.imgs = list()
 		for img in self.files:
+			
 			#img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
-			img_as_np = Image.open(img).resize((self.height, self.width))
+			img_as_img = Image.open(img).resize((self.height, self.width))
 			# Convert image from numpy array to PIL image
 			#img_as_img = Image.fromarray(img_as_np)
 			#img_as_img = img_as_img.convert('RGB')
@@ -105,18 +106,20 @@ class FastSimpsonsDataset(Dataset):
 			
 			# Use HSV format
 			if self.mode == "HSV":
-				array = img_as_img.permute(2, 1, 0).numpy()
+				array = np.asarray(img).astype('uint8')
 				#print(array.shape)
-				HSV = rgb2hsv(array)
+				HSV_array = rgb2hsv(array)
+				img_as_img = Image.fromarray(HSV_array, mode="HSV")
 				#print(HSV.shape)
-				img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
+				#img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
 				#print(img_as_tensor.shape)
 			
-			self.tensors.append(img_as_np)
+			self.imgs.append(img_as_img)
 
 	def __getitem__(self, index):
+		print("Image load : ",self.files[index]) 
 		single_image_label = self.labels[index]
-		img_as_img = self.tensors[index]
+		img_as_img = self.imgs[index]
 		
 		# Transform image to tensor
 		if self.transform_tmp is not None:

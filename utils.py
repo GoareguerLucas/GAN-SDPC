@@ -25,22 +25,23 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,rand_affine=No
 	
 	# Transformation appliquer avant et pendant l'entraînement
 	transform_constante = transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5]), transforms.ToPILImage(mode="RGB")])
-	transform_tmp = list()
+	transform_tmp = []
 	if rand_hflip:
 		transform_tmp.append(transforms.RandomHorizontalFlip(p=0.5))
 	if rand_affine != None:
 		transform_tmp.append(transforms.RandomAffine(degrees=rand_affine[0],scale=rand_affine[1]))
-	transform_tmp.append(transforms.ToTensor())
+	transform_tmp = transform_tmp + [transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])]
 	transform_tmp = transforms.Compose(transform_tmp)
+	
 	transform = transforms.Compose([transform_constante, transform_tmp])
 	
 	
 	if Fast:
-		dataset = FastSimpsonsDataset(path, img_size, img_size, transform_constante, transform_tmp, mode) #../../../Dataset/
+		dataset = FastSimpsonsDataset(path, img_size, img_size, transform_constante, transform_tmp, mode) 
 	else:
-		dataset = SimpsonsDataset(path, img_size, img_size, transform) #../../../Dataset/
+		dataset = SimpsonsDataset(path, img_size, img_size, transform) 
 
-	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True) # NE PAS OUBLIER DE REMETTRE LE SHUFFLE
 	
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
@@ -268,10 +269,12 @@ if __name__ == "__main__":
 	#generate_animation("W7_128_dcgan/gif/")
 	
 	# DataLoader test
-	loader = load_data("../cropped/cp/",200,20,Fast=True,rand_hflip=True,rand_affine=[(0,25),(1.0,1.25)],return_dataset=False, mode='RGB')
+	loader, dataset = load_data("../cropped/cp/",200,6,Fast=True,rand_hflip=True,rand_affine=[(-25,25),(1.0,1.0)],return_dataset=True, mode='RGB')
 	
 	for (imgs, _) in loader:
 		show_tensor(imgs[1],1)
+		print("Max ",imgs[1].max())
+		print("Min ",imgs[1].min())
 		
 		exit(0)
 		
