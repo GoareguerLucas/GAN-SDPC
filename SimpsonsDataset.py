@@ -117,7 +117,7 @@ class FastSimpsonsDataset(Dataset):
 			self.imgs.append(img_as_img)
 
 	def __getitem__(self, index):
-		print("Image load : ",self.files[index]) 
+		#print("Image load : ",self.files[index]) 
 		single_image_label = self.labels[index]
 		img_as_img = self.imgs[index]
 		

@@ -32,7 +32,6 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,rand_affine=No
 		transform_tmp.append(transforms.RandomAffine(degrees=rand_affine[0],scale=rand_affine[1]))
 	transform_tmp = transform_tmp + [transforms.ToTensor(),transforms.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5])]
 	transform_tmp = transforms.Compose(transform_tmp)
-	
 	transform = transforms.Compose([transform_constante, transform_tmp])
 	
 	
@@ -41,7 +40,7 @@ def load_data(path,img_size,batch_size,Fast=True,rand_hflip=False,rand_affine=No
 	else:
 		dataset = SimpsonsDataset(path, img_size, img_size, transform) 
 
-	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True) # NE PAS OUBLIER DE REMETTRE LE SHUFFLE
+	dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True) 
 	
 	print("[Loading Time: ",time.strftime("%Mm:%Ss",time.gmtime(time.time()-t_total)),"]\n")
 	
@@ -185,7 +184,7 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 def sampling(noise, generator, path, epoch):
 	generator.eval()
 	gen_imgs = generator(noise)
-	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=False)
+	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
 
 def print_network(net):
