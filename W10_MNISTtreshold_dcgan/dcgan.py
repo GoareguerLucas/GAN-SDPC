@@ -79,7 +79,7 @@ def weights_init_normal(m,factor=1.0):
 
 
 class Generator(nn.Module):
-	def __init__(self,verbose=False):
+	def __init__(self,verbose=True):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -150,7 +150,7 @@ class Generator(nn.Module):
 		return "Generator"
 
 class Discriminator(nn.Module):
-	def __init__(self,verbose=False):
+	def __init__(self,verbose=True):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
@@ -302,6 +302,8 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	#scheduler_D.step()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
+		
+		print("Shape ",imgs.shape)
 
 		# Adversarial ground truths
 		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
