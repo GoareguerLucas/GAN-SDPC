@@ -23,7 +23,7 @@ matplot:
 	export MPLCONFIGDIR="/var/lib/vz/data/g14006889/cache/matplotlib/"
 
 scp_gt0:
-	scp -P 8012 -r g14006889@gt-0.luminy.univ-amu.fr:/var/lib//vz/data/g14006889/GAN-SDPC/W3_current_began/M_k.png .
+	scp -P 8012 -r g14006889@gt-0.luminy.univ-amu.fr:/var/lib//vz/data/g14006889/GAN-SDPC/ .
 
 weigth:
 	du -h . --max-depth=1
