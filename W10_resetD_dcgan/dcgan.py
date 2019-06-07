@@ -255,6 +255,8 @@ d_g_z_mean = np.zeros(nb_batch)
 # Vecteur z fixe pour faire les samples 
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
+trainG = True # On ne doit pas entraîner G dans les phase ou D vient juste de reset   
+
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	t_epoch = time.time()
@@ -308,11 +310,12 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		d_g_z = discriminator(gen_imgs)
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(d_g_z, valid)
-		# Backward
-		g_loss.backward()
 		
-		optimizer_G.step()
-
+		if trainG:
+			# Backward
+			g_loss.backward()
+			
+			optimizer_G.step()
 
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
@@ -340,9 +343,11 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	if D_x[j] > 0.7 and D_G_z[j] < 0.2: 
 		print("Load previous model for reset D")
 		load_model(discriminator,optimizer_D,opt.model_save_path+"/tmp_D.pt")
+		trainG = False
 	if D_x[j] > 0.6 and D_G_z[j] < 0.3:
 		print("Save model for next reset D")
 		save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/tmp_D.pt")
+		trainG = True
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
