@@ -303,7 +303,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
 		
-		print("Shape ",imgs.shape)
+		#print("Shape ",imgs.shape)
 
 		# Adversarial ground truths
 		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
