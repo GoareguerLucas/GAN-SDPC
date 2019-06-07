@@ -372,6 +372,10 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 #Plot game score
 plot_scores(D_x,D_G_z,start_epoch,epoch)
 
+# Remove Reset save
+if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
+	os.remove(opt.model_save_path+"/tmp_D.pt")
+
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
 save_model(generator,optimizer_G,epoch,opt.model_save_path+"/last_G.pt")
