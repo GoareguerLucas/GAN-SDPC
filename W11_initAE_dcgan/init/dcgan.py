@@ -52,6 +52,7 @@ from utils import *
 
 # Dossier de sauvegarde
 os.makedirs(opt.sample_path, exist_ok=True)
+os.makedirs(opt.sample_path+"/init", exist_ok=True)
 os.makedirs(opt.model_save_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
