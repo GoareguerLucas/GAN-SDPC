@@ -256,7 +256,7 @@ if cuda:
 	discriminator.cuda()
 	adversarial_loss.cuda()
 	encoder.cuda()
-	MSE_loss()
+	MSE_loss.cuda()
 	
 # Initialize weights
 generator.apply(weights_init_normal)
