@@ -2,6 +2,7 @@ import argparse
 import os
 import numpy as np
 import math
+import itertools
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -90,6 +91,9 @@ class Encoder(nn.Module):
 		self.conv2 = nn.Sequential(*encoder_block(64, 128),)
 		self.conv3 = nn.Sequential(*encoder_block(128, 256, stride=1, padding=2),)
 		self.conv4 = nn.Sequential(*encoder_block(256, self.max_filters),)
+		
+		self.init_size = opt.img_size // 8
+		self.vector = nn.Linear(self.max_filters * self.init_size ** 2, opt.latent_dim)
 		self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 		
 	def forward(self, img):
@@ -105,8 +109,10 @@ class Encoder(nn.Module):
 		print("Conv4 out : ",out.shape)
 		
 		out = out.view(out.shape[0], -1)
-		out = self.sigmoid(out)	
 		print("View out : ",out.shape)
+		z = self.vector(out)
+		z = self.sigmoid(z)	
+		print("Z : ",z.shape)
 		
 		return z
 
@@ -233,7 +239,7 @@ class Discriminator(nn.Module):
 
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
-MSE_loss = torch.nn.MSEloss()
+MSE_loss = torch.nn.MSELoss()
 sigmoid = nn.Sigmoid()
 
 # Initialize generator and discriminator
@@ -287,7 +293,7 @@ for epoch in range(1,21):
 		decoded_imgs = generator(z)
 		
 		# Loss measures generator's ability to fool the discriminator
-		init_loss = MSE_loss(z, decoded_imgs)
+		init_loss = MSE_loss(real_imgs, decoded_imgs)
 		# Backward
 		init_loss.backward()
 		
@@ -300,8 +306,8 @@ for epoch in range(1,21):
 		init_losses.append(init_loss.item())
 		
 	# Save samples
-	if epoch % opt.sample_interval == 0:
-		AE_sampling(real_imgs, encoder, generator, opt.sample_path+"/init", epoch)
+	#if epoch % opt.sample_interval == 0:
+	AE_sampling(real_imgs, encoder, generator, opt.sample_path+"/init", epoch)
 	
 	# Save Losses for plotting later
 	Init_losses.append(sum(init_losses)/len(dataloader))
@@ -311,7 +317,7 @@ for epoch in range(1,21):
 print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 	
 #Plot losses
-plot_losses(Init_losses,Init_losses,1,epoch)
+plot_losses(Init_losses,Init_losses,1,epoch,path="init_loss.png")
 
 # ----------
 #  Load models

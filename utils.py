@@ -105,7 +105,7 @@ def plot_scores(D_x,D_G_z,start_epoch=1,current_epoch=-1):
 	plt.savefig("scores.png",format="png")
 	plt.close(fig)
 
-def plot_losses(G_losses,D_losses,start_epoch=1,current_epoch=-1):
+def plot_losses(G_losses,D_losses,start_epoch=1,current_epoch=-1,path="losses.png"):
 	if len(G_losses) <= 0 or len(D_losses) <= 0:
 		return None
 	
@@ -126,7 +126,7 @@ def plot_losses(G_losses,D_losses,start_epoch=1,current_epoch=-1):
 	plt.xticks(positions, labels)
 	
 	plt.grid(True)
-	plt.savefig("losses.png",format="png")
+	plt.savefig(path,format="png")
 	plt.close(fig)
 
 def plot_began(M,k,start_epoch=1,current_epoch=-1):
