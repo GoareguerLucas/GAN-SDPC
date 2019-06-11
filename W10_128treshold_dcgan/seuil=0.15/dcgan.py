@@ -37,7 +37,7 @@ parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help=
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
-parser.add_argument("-t","--treshold", type=float, default=0.5, help="Seuil de renforcement [0.0-0.5]")
+parser.add_argument("-t","--treshold", type=float, default=0.15, help="Seuil de renforcement [0.0-0.5]")
 opt = parser.parse_args()
 print(opt)
 
@@ -176,7 +176,7 @@ class Discriminator(nn.Module):
 
 		# The height and width of downsampled image
 		self.init_size = opt.img_size // 8
-		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
+		self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1), nn.Sigmoid())
 
 	def forward(self, img):
 		if self.verbose:
@@ -216,7 +216,7 @@ class Discriminator(nn.Module):
 		return "Discriminator"
 
 # Loss function
-adversarial_loss = torch.nn.BCEWithLogitsLoss()
+adversarial_loss = torch.nn.BCELoss()
 #pixelwise_loss = torch.nn.L1Loss()
 sigmoid = nn.Sigmoid()
 
@@ -238,21 +238,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-#dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size)
-# Configure data loader
-os.makedirs("../../mnist", exist_ok=True)
-dataloader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "../../mnist",
-        train=True,
-        download=True,
-        transform=transforms.Compose(
-            [transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
-        ),
-    ),
-    batch_size=opt.batch_size,
-    shuffle=True,
-)
+dataloader = load_data(depth+"../../cropped/cp/",opt.img_size,opt.batch_size)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
@@ -287,7 +273,6 @@ d_g_z_mean = []
 if opt.treshold > 1 or opt.treshold < 0:
 	print("Attention le treshold choisi doit être compris entre 0 et 1.")
 	exit(0)
-T = int(opt.treshold * opt.batch_size) # Taille des quantils
 
 save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
@@ -303,12 +288,10 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
 
-		#print("Shape ",imgs.shape)
-
 		# Adversarial ground truths
-		valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
-		valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
-		fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
+		# valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+		valid = Variable(Tensor(imgs.size(0), 1).fill_(1-opt.treshold), requires_grad=False)
+		fake = Variable(Tensor(imgs.size(0), 1).fill_(opt.treshold), requires_grad=False)
 
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
@@ -326,15 +309,15 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		# Ajout d'un bruit au image  réels
 		#rand = Tensor(imgs.shape).normal_(0.0, 0.1)
 		#Discriminator descision
-		d_x = discriminator(real_imgs)
+		d_x = opt.treshold + discriminator(real_imgs) * (1-2*opt.treshold)
 		# Measure discriminator's ability to classify real from generated samples
-		real_loss = adversarial_loss(d_x, valid_smooth)
+		real_loss = adversarial_loss(d_x, valid)
 		# Backward
 		real_loss.backward()
 
 		# Fake batch
 		#Discriminator descision
-		d_g_z = discriminator(gen_imgs.detach())
+		d_g_z = opt.treshold + discriminator(gen_imgs.detach()) * (1-2*opt.treshold)
 		# Measure discriminator's ability to classify real from generated samples
 		fake_loss = adversarial_loss(d_g_z, fake)
 		# Backward
@@ -351,16 +334,16 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		optimizer_G.zero_grad()
 
 		#Discriminator descision
-		d_g_z = discriminator(gen_imgs)
+		d_g_z = opt.treshold + discriminator(gen_imgs) * (1-2*opt.treshold)
 
 		# Classement
 		#_, idx_best = torch.topk(d_g_z, T, dim=0,largest=True)
-		_, idx_worst = torch.topk(d_g_z, T, dim=0,largest=False)
+		# _, idx_worst = torch.topk(d_g_z, T, dim=0,largest=False)
 
 		# Treshold adversarial ground truths
-		answer = Variable(Tensor(imgs.size(0), 1).fill_(.95), requires_grad=False)
+		answer = Variable(Tensor(imgs.size(0), 1).fill_(1-opt.treshold), requires_grad=False)
 		#answer.data[idx_best] = 1
-		answer.data[idx_worst] = 0.5
+		# answer.data[idx_worst] = 0.5
 
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(d_g_z, answer)
@@ -375,10 +358,6 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
 			% (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
 		)
-
-		# Compensation pour le BCElogits
-		d_x = sigmoid(d_x)
-		d_g_z = sigmoid(d_g_z)
 
 		# Save Losses and scores for plotting later
 		g_losses.append(g_loss.item())
