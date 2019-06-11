@@ -314,6 +314,7 @@ for epoch in range(1,init_epoch+1):
 	
 	# Save Losses for plotting later
 	Init_losses.append(sum(init_losses)/len(dataloader))
+	init_losses = []
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
