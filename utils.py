@@ -191,8 +191,8 @@ def AE_sampling(imgs, encoder, generator, path, epoch):
 	generator.eval()
 	enc_imgs = encoder(imgs)
 	dec_imgs = generator(enc_imgs)
-	save_image(gen_imgs.data[:], "%s/%d_img.png" % (path, epoch), nrow=4, normalize=True)
-	save_image(gen_imgs.data[:], "%s/%d_dec.png" % (path, epoch), nrow=4, normalize=True)
+	save_image(enc_imgs.data[:], "%s/%d_img.png" % (path, epoch), nrow=4, normalize=True)
+	save_image(dec_imgs.data[:], "%s/%d_dec.png" % (path, epoch), nrow=4, normalize=True)
 	generator.train()
 
 def print_network(net):

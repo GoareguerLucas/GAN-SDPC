@@ -279,8 +279,10 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 Init_losses = []
 init_losses = []
 
+init_epoch = 20
+
 t_total = time.time()
-for epoch in range(1,21):
+for epoch in range(1,init_epoch+1):
 	t_epoch = time.time()
 	for i, (imgs, _) in enumerate(dataloader):
 		t_batch = time.time()
@@ -300,7 +302,7 @@ for epoch in range(1,21):
 		optimizer_Init.step()
 		
 		print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
-			% (epoch, opt.n_epochs, i+1, len(dataloader), init_loss.item(), time.time()-t_batch) )
+			% (epoch, init_epoch, i+1, len(dataloader), init_loss.item(), time.time()-t_batch) )
 		
 		# Save Losses for plotting later
 		init_losses.append(init_loss.item())
