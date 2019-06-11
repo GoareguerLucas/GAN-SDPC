@@ -186,6 +186,14 @@ def sampling(noise, generator, path, epoch):
 	gen_imgs = generator(noise)
 	save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
 	generator.train()
+	
+def AE_sampling(imgs, encoder, generator, path, epoch):
+	generator.eval()
+	enc_imgs = encoder(imgs)
+	dec_imgs = generator(enc_imgs)
+	save_image(gen_imgs.data[:], "%s/%d_img.png" % (path, epoch), nrow=4, normalize=True)
+	save_image(gen_imgs.data[:], "%s/%d_dec.png" % (path, epoch), nrow=4, normalize=True)
+	generator.train()
 
 def print_network(net):
 	num_params = 0
