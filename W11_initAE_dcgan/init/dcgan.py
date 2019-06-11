@@ -98,22 +98,22 @@ class Encoder(nn.Module):
 		self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 		
 	def forward(self, img):
-		print("Encoder")
-		print("Image shape : ",img.shape)
+		#print("Encoder")
+		#print("Image shape : ",img.shape)
 		out = self.conv1(img)
-		print("Conv1 out : ",out.shape)
+		#print("Conv1 out : ",out.shape)
 		out = self.conv2(out)
-		print("Conv2 out : ",out.shape)
+		#print("Conv2 out : ",out.shape)
 		out = self.conv3(out)
-		print("Conv3 out : ",out.shape)
+		#print("Conv3 out : ",out.shape)
 		out = self.conv4(out)
-		print("Conv4 out : ",out.shape)
+		#print("Conv4 out : ",out.shape)
 		
 		out = out.view(out.shape[0], -1)
-		print("View out : ",out.shape)
+		#print("View out : ",out.shape)
 		z = self.vector(out)
 		z = self.sigmoid(z)	
-		print("Z : ",z.shape)
+		#print("Z : ",z.shape)
 		
 		return z
 
