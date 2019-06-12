@@ -257,6 +257,9 @@ fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 trainG = True # On ne doit pas entraîner G dans les phase ou D vient juste de reset   
 
+nb_load = 0
+nb_save = 0
+
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	t_epoch = time.time()
@@ -342,19 +345,20 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	print("[D(x): ",D_x[j],"] [D(G(z): ",D_G_z[j],"]")
 	
 	# Reset systemes
-	#if D_x[j] > 0.6 and D_G_z[j] < 0.3:
-	if D_x[j] < 0.3 and D_G_z[j] > 0.55:
+	if D_x[j] > 0.6 and D_G_z[j] < 0.3:
+	#if D_x[j] < 0.3 and D_G_z[j] > 0.55:
 		if not os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 			print("Save model for next reset D")
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/tmp_D.pt")
 			trainG = True
-	#elif D_x[j] > 0.7 and D_G_z[j] < 0.2: 
-	elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
+			nb_save = nb_save+1
+	elif D_x[j] > 0.7 and D_G_z[j] < 0.2: 
+	#elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
 		print("Load previous model for reset D")
 		load_model(discriminator,optimizer_D,opt.model_save_path+"/tmp_D.pt")
 		os.remove(opt.model_save_path+"/tmp_D.pt")
 		trainG = False
-	
+		nb_load = nb_load+1
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
@@ -385,6 +389,8 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 # Remove Reset save
+print("Nb_load : ",nb_load)
+print("Nb_save : ",nb_save)
 if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 	os.remove(opt.model_save_path+"/tmp_D.pt")
 
