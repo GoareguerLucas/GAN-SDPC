@@ -391,7 +391,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		#Plot scores
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 		#Plot special reset
-		plot_reset(trainG,save_point,load_point,start_epoch,epoch)
+		plot_reset(plot_trainG,save_point,load_point,start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
