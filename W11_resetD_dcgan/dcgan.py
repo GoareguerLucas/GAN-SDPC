@@ -252,6 +252,8 @@ D_G_z = np.zeros(nb_epochs)
 d_x_mean = np.zeros(nb_batch)
 d_g_z_mean = np.zeros(nb_batch)
 
+plot_trainG = np.zeros(nb_epochs) -1
+
 # Vecteur z fixe pour faire les samples 
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
@@ -361,6 +363,11 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 			os.remove(opt.model_save_path+"/tmp_D.pt")
 			trainG = False
 			nb_load = nb_load+1
+			
+	if trainG:
+		plot_trainG[j] = 1
+	else:	
+		plot_trainG[j] = 0
 	
 	# Save samples
 	if epoch % opt.sample_interval == 0:
@@ -395,6 +402,7 @@ print("Nb_load : ",nb_load)
 print("Nb_save : ",nb_save)
 if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 	os.remove(opt.model_save_path+"/tmp_D.pt")
+plot_lr(plot_trainG,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
