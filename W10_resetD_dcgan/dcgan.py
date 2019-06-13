@@ -346,16 +346,16 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 	print("[D(x): ",D_x[j],"] [D(G(z): ",D_G_z[j],"]")
 	
 	# Reset systemes
-	if D_x[j] > 0.6 and D_G_z[j] < 0.3:
+	if D_x[j] > 0.6 and D_G_z[j] < 0.3: # Seuil de sauvegarde
 	#if D_x[j] < 0.3 and D_G_z[j] > 0.55:
-		if not os.path.exists(opt.model_save_path+"/tmp_D.pt"):
+		if not os.path.exists(opt.model_save_path+"/tmp_D.pt"): # Si aucune sauvegarde n'est présente
 			print("Save model for next reset D")
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/tmp_D.pt")
 			trainG = True
 			nb_save = nb_save+1
-	if D_x[j] > 0.7 and D_G_z[j] < 0.2: 
-	#elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
-		if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
+		elif D_x[j] > 0.7 and D_G_z[j] < 0.2: # Seuil de chargement
+		#elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
+			#if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 			print("Load previous model for reset D")
 			load_model(discriminator,optimizer_D,opt.model_save_path+"/tmp_D.pt")
 			os.remove(opt.model_save_path+"/tmp_D.pt")
