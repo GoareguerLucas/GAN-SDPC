@@ -332,6 +332,7 @@ if opt.load_model == True:
 # ----------
 #  Training
 # ----------
+E_losses = []
 G_losses = []
 D_losses = []
 g_losses = []
