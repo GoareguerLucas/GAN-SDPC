@@ -409,7 +409,7 @@ print("Nb_load : ",nb_load)
 print("Nb_save : ",nb_save)
 if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 	os.remove(opt.model_save_path+"/tmp_D.pt")
-plot_reset(trainG,save_point,load_point,start_epoch,epoch)
+plot_reset(plot_trainG,save_point,load_point,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
