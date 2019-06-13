@@ -306,16 +306,16 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		# -----------------
 		#  Train Generator
 		# -----------------
-
-		optimizer_G.zero_grad()
-		
-		# New discriminator descision, Since we just updated D
-		d_g_z = discriminator(gen_imgs)
-		
-		# Loss measures generator's ability to fool the discriminator
-		g_loss = adversarial_loss(d_g_z, valid)
-		
 		if trainG:	
+			optimizer_G.zero_grad()
+		
+			# New discriminator descision, Since we just updated D
+			d_g_z = discriminator(gen_imgs)
+		
+			# Loss measures generator's ability to fool the discriminator
+			g_loss = adversarial_loss(d_g_z, valid)
+		
+		
 			# Backward
 			g_loss.backward()
 			
