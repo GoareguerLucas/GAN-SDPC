@@ -311,20 +311,20 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		# -----------------
 		#  Train Generator
 		# -----------------
-		if trainG:	
-			optimizer_G.zero_grad()
+		#if trainG:	
+		optimizer_G.zero_grad()
+	
+		# New discriminator descision, Since we just updated D
+		d_g_z = discriminator(gen_imgs)
+	
+		# Loss measures generator's ability to fool the discriminator
+		g_loss = adversarial_loss(d_g_z, valid)
+	
+	
+		# Backward
+		g_loss.backward()
 		
-			# New discriminator descision, Since we just updated D
-			d_g_z = discriminator(gen_imgs)
-		
-			# Loss measures generator's ability to fool the discriminator
-			g_loss = adversarial_loss(d_g_z, valid)
-		
-		
-			# Backward
-			g_loss.backward()
-			
-			optimizer_G.step()
+		optimizer_G.step()
 
 		print(
 			"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
@@ -358,7 +358,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/tmp_D.pt")
 			trainG = True
 			nb_save = nb_save+1
-			save_point.append(epoch)
+			save_point.append(epoch-1)
 		elif D_x[j] > 0.7 and D_G_z[j] < 0.2: # Seuil de chargement
 		#elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
 			#if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
@@ -367,7 +367,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 			os.remove(opt.model_save_path+"/tmp_D.pt")
 			trainG = False
 			nb_load = nb_load+1
-			load_point.append(epoch)
+			load_point.append(epoch-1)
 			
 	if trainG:
 		plot_trainG[j] = 1
