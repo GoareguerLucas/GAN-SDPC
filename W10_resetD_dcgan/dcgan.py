@@ -311,10 +311,11 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		
 		# New discriminator descision, Since we just updated D
 		d_g_z = discriminator(gen_imgs)
+		
 		# Loss measures generator's ability to fool the discriminator
 		g_loss = adversarial_loss(d_g_z, valid)
 		
-		if trainG:
+		if trainG:	
 			# Backward
 			g_loss.backward()
 			
@@ -379,6 +380,9 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
+	
+	if nb_load > 25:
+		break
 
 durer = time.gmtime(time.time()-t_total)
 print("[Total Time: ",durer.tm_mday-1,"j:",time.strftime("%Hh:%Mm:%Ss",durer),"]",sep='')
