@@ -254,6 +254,9 @@ d_g_z_mean = np.zeros(nb_batch)
 
 plot_trainG = np.zeros(nb_epochs) -1
 
+save_point = list()
+load_point = list()
+
 # Vecteur z fixe pour faire les samples 
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
@@ -355,6 +358,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 			save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/tmp_D.pt")
 			trainG = True
 			nb_save = nb_save+1
+			save_point.append(epoch)
 		elif D_x[j] > 0.7 and D_G_z[j] < 0.2: # Seuil de chargement
 		#elif D_x[j] < 0.2 and D_G_z[j] > 0.6: 
 			#if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
@@ -363,6 +367,7 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 			os.remove(opt.model_save_path+"/tmp_D.pt")
 			trainG = False
 			nb_load = nb_load+1
+			load_point.append(epoch)
 			
 	if trainG:
 		plot_trainG[j] = 1
@@ -385,6 +390,8 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		plot_losses(G_losses,D_losses,start_epoch,epoch)
 		#Plot scores
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
+		#Plot special reset
+		plot_reset(trainG,save_point,load_point,start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
@@ -402,7 +409,7 @@ print("Nb_load : ",nb_load)
 print("Nb_save : ",nb_save)
 if os.path.exists(opt.model_save_path+"/tmp_D.pt"):
 	os.remove(opt.model_save_path+"/tmp_D.pt")
-plot_lr(plot_trainG,start_epoch,epoch)
+plot_reset(trainG,save_point,load_point,start_epoch,epoch)
 
 # Save model for futur training
 save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")

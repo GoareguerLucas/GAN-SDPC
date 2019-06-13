@@ -177,6 +177,31 @@ def plot_lr(lr,start_epoch=1,current_epoch=-1):
 	plt.savefig("lr.png",format="png")
 	plt.close(fig)
 
+def plot_reset(trainG,save_point,load_point,start_epoch=1,current_epoch=-1):
+	if len(lr) <= 0:
+		return None
+		
+	if current_epoch == -1: # C'est pour surcharger la fonction pour les versions passer
+		current_epoch = len(lr)*10
+	
+	#Plot trainG
+	fig = plt.figure(figsize=(10,5))
+	plt.title("trainG Value During Training")
+	plt.plot(trainG,label="lr")
+	plt.scatter(save_point,np.zeros(64),s=60,color='r',marker="|")
+	plt.scatter(load_point,np.zeros(64),color='g',marker="+")
+	plt.xlabel("Epochs")
+	plt.ylabel("Value")
+	plt.legend()
+	# Gradutation
+	positions = np.linspace(0,len(lr),num=6)
+	labels = np.linspace(start_epoch-1,current_epoch,num=6)
+	plt.xticks(positions, labels)
+	
+	plt.grid(True)
+	plt.savefig("lr.png",format="png")
+	plt.close(fig)
+
 """
 Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
 Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
