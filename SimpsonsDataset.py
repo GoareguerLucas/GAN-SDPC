@@ -2,14 +2,18 @@ from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 import torchvision  
 from PIL import Image
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from glob import glob
 import datetime
 import numpy as np
 import random
 import torch
-
-from skimage.color import rgb2hsv
+try:
+    from skimage.color import rgb2hsv
+except:
+    pass
 
 INPUT_DATA_DIR = "../cropped/cp/"
 IMAGE_SIZE = 200

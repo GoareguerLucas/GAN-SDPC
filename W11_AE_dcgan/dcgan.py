@@ -17,7 +17,6 @@ import torch
 
 import sys
 
-import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
