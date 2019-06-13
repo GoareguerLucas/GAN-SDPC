@@ -3,16 +3,15 @@ from torchvision import transforms
 import torchvision  
 from torchvision.utils import save_image
 from PIL import Image
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from glob import glob
 import datetime
 import numpy as np
 import random
 import torch
-import imageio
 import time
-
-from skimage.color import hsv2rgb
 
 import sys
 sys.path.append("../")#../../GAN-SDPC/
@@ -235,6 +234,7 @@ def comp(s):
 	return int(num)
 
 def generate_animation(path):
+	import imageio
 	images_path = glob(path + '[0-9]*.png')
 	
 	images_path = sorted(images_path,key=comp)
