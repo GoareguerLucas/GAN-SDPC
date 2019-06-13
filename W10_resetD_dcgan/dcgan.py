@@ -380,9 +380,6 @@ for j, epoch in enumerate(range(start_epoch,opt.n_epochs+1)):
 		plot_scores(D_x,D_G_z,start_epoch,epoch)
 	
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
-	
-	if nb_load > 25:
-		break
 
 durer = time.gmtime(time.time()-t_total)
 print("[Total Time: ",durer.tm_mday-1,"j:",time.strftime("%Hh:%Mm:%Ss",durer),"]",sep='')
