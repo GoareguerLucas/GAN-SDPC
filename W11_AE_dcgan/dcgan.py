@@ -35,7 +35,7 @@ parser.add_argument("--latent_dim", type=int, default=300, help="dimensionality 
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
-parser.add_argument("--sample_path", type=str, default=tag+'images')
+parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
@@ -393,7 +393,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		sampling(fixed_noise, generator, opt.sample_path, epoch)
+		sampling(fixed_noise, generator, opt.sample_path, epoch, tag)
 
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
@@ -410,9 +410,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses
-		plot_losses(G_losses,D_losses,start_epoch,epoch)
+		plot_losses(G_losses,D_losses,start_epoch,epoch, E_losses, tag)
 		#Plot scores
-		plot_scores(D_x,D_G_z,start_epoch,epoch)
+		plot_scores(D_x,D_G_z,start_epoch,epoch, tag)
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 

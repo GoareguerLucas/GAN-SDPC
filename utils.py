@@ -110,7 +110,7 @@ def plot_scores(D_x, D_G_z, start_epoch=1, current_epoch=-1):
     plt.close(fig)
 
 
-def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losses.png"):
+def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, E_losses=[], tag='', path="losses.png"):
     if len(G_losses) <= 0 or len(D_losses) <= 0:
         return None
 
@@ -119,7 +119,8 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
 
     # Plot losses
     fig = plt.figure(figsize=(10, 5))
-    plt.title("Generator and Discriminator Loss During Training")
+    plt.title("Loss During Training")
+    plt.plot(E_losses, label="E")
     plt.plot(D_losses, label="D")
     plt.plot(G_losses, label="G")
     plt.xlabel("Epochs")
@@ -131,7 +132,7 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
     plt.xticks(positions, labels)
 
     plt.grid(True)
-    plt.savefig(path, format="png")
+    plt.savefig(f'{tag}{path}', format="png")
     plt.close(fig)
 
 
@@ -217,10 +218,10 @@ Le sample est efféctuer en mode eval pour generator puis il est de nouveau rég
 """
 
 
-def sampling(noise, generator, path, epoch):
+def sampling(noise, generator, path, epoch, tag=''):
     generator.eval()
     gen_imgs = generator(noise)
-    save_image(gen_imgs.data[:], "%s/%d.png" % (path, epoch), nrow=5, normalize=True)
+    save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=5, normalize=True)
     generator.train()
 
 
