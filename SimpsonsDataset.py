@@ -1,6 +1,6 @@
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
-import torchvision  
+import torchvision
 from PIL import Image
 import matplotlib
 matplotlib.use('Agg')
@@ -15,138 +15,142 @@ try:
 except:
     pass
 
+
+def show_tensor(sample_tensor, epoch):
+    #figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
+    # for index, axis in enumerate(axes):
+    #	axis.axis('off')
+
+    tensor_view = sample_tensor.permute(1, 2, 0)
+
+    print(tensor_view.shape)
+
+    plt.imshow(np.asarray(tensor_view))
+
+    plt.show()
+
+
+class SimpsonsDataset(Dataset):
+    def __init__(self, dir_path, height, width, transforms=None, mode="RGB"):
+        """
+        Args:
+                dir_path (string): path to dir conteint exclusively images png
+                height (int): image height
+                width (int): image width
+                transform: pytorch transforms for transforms and tensor conversion
+        """
+        self.files = glob(dir_path + '*')
+        self.labels = np.zeros(len(self.files))
+        self.height = height
+        self.width = width
+        self.transforms = transforms
+        self.mode = mode
+
+    def __getitem__(self, index):
+        single_image_label = self.labels[index]
+        # Read each pixels and reshape the 1D array to 2D array
+        img_as_np = np.asarray(Image.open(self.files[index]).resize((self.height, self.width))).astype('uint8')
+        # Convert image from numpy array to PIL image
+        #img_as_img = Image.fromarray(img_as_np)
+        #img_as_img = img_as_img.convert('RGB')
+
+        # Transform image to tensor
+        if self.transforms is not None:
+            img_as_tensor = self.transforms(img_as_np)
+
+        # Use HSV format
+        if self.mode == "HSV":
+            array = img_as_tensor.permute(2, 1, 0).numpy()
+            # print(array.shape)
+            HSV = rgb2hsv(array)
+            # print(HSV.shape)
+            img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
+            # print(img_as_tensor.shape)
+
+        # Return image and the label
+        return (img_as_tensor, single_image_label)
+
+    def __len__(self):
+        return len(self.files)
+
+
+class FastSimpsonsDataset(Dataset):
+    def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None, mode="RGB"):
+        """
+        Args:
+                dir_path (string): path to dir conteint exclusively images png
+                height (int): image height
+                width (int): image width
+                transform_constante: pytorch transforms for transforms and tensor conversion before training
+                transform_tmp: pytorch transforms for transforms and tensor conversion during training
+        """
+        self.files = glob(dir_path + '*')
+        self.labels = np.zeros(len(self.files))
+        self.height = height
+        self.width = width
+        self.transform_constante = transform_constante
+        self.transform_tmp = transform_tmp
+        self.mode = mode
+
+        # Chargement des images
+        self.imgs = list()
+        for img in self.files:
+
+            #img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
+            img_as_img = Image.open(img).resize((self.height, self.width))
+            # Convert image from numpy array to PIL image
+            #img_as_img = Image.fromarray(img_as_np)
+            #img_as_img = img_as_img.convert('RGB')
+
+            # Transform image to tensor
+            # if self.transform_constante is not None:
+            #	img_as_img = self.transform_constante(img_as_np)
+
+            # Use HSV format
+            if self.mode == "HSV":
+                array = np.asarray(img).astype('uint8')
+                # print(array.shape)
+                HSV_array = rgb2hsv(array)
+                img_as_img = Image.fromarray(HSV_array, mode="HSV")
+                # print(HSV.shape)
+                #img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
+                # print(img_as_tensor.shape)
+
+            self.imgs.append(img_as_img)
+
+    def __getitem__(self, index):
+        #print("Image load : ",self.files[index])
+        single_image_label = self.labels[index]
+        img_as_img = self.imgs[index]
+
+        # Transform image to tensor
+        if self.transform_tmp is not None:
+            img_as_tensor = self.transform_tmp(img_as_img)
+
+        # Return image and the label
+        return (img_as_tensor, single_image_label)
+
+    def __len__(self):
+        return len(self.files)
+
+
 INPUT_DATA_DIR = "../cropped/cp/"
 IMAGE_SIZE = 200
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
 
-def show_tensor(sample_tensor, epoch):
-	#figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
-	#for index, axis in enumerate(axes):
-	#	axis.axis('off')
-	
-	tensor_view = sample_tensor.permute(1, 2, 0)
-
-	print(tensor_view.shape)
-	
-	plt.imshow(np.asarray(tensor_view))
-		
-	plt.show()
-
-
-class SimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transforms=None, mode="RGB"):
-		"""
-		Args:
-			dir_path (string): path to dir conteint exclusively images png
-			height (int): image height
-			width (int): image width
-			transform: pytorch transforms for transforms and tensor conversion
-		"""
-		self.files = glob(dir_path + '*')
-		self.labels = np.zeros(len(self.files))
-		self.height = height
-		self.width = width
-		self.transforms = transforms
-		self.mode = mode
-
-	def __getitem__(self, index):
-		single_image_label = self.labels[index]
-		# Read each pixels and reshape the 1D array to 2D array
-		img_as_np = np.asarray(Image.open(self.files[index]).resize((self.height, self.width))).astype('uint8')
-		# Convert image from numpy array to PIL image
-		#img_as_img = Image.fromarray(img_as_np)
-		#img_as_img = img_as_img.convert('RGB')
-		
-		# Transform image to tensor
-		if self.transforms is not None:
-			img_as_tensor = self.transforms(img_as_np)
-			
-		# Use HSV format
-		if self.mode == "HSV":
-			array = img_as_tensor.permute(2, 1, 0).numpy()
-			#print(array.shape)
-			HSV = rgb2hsv(array)
-			#print(HSV.shape)
-			img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
-			#print(img_as_tensor.shape)
-			
-		# Return image and the label
-		return (img_as_tensor, single_image_label)
-
-	def __len__(self):
-		return len(self.files)
-		
-class FastSimpsonsDataset(Dataset):
-	def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None, mode="RGB"):
-		"""
-		Args:
-			dir_path (string): path to dir conteint exclusively images png
-			height (int): image height
-			width (int): image width
-			transform_constante: pytorch transforms for transforms and tensor conversion before training
-			transform_tmp: pytorch transforms for transforms and tensor conversion during training
-		"""
-		self.files = glob(dir_path + '*')
-		self.labels = np.zeros(len(self.files))
-		self.height = height
-		self.width = width
-		self.transform_constante = transform_constante
-		self.transform_tmp = transform_tmp
-		self.mode = mode
-		
-		# Chargement des images
-		self.imgs = list()
-		for img in self.files:
-			
-			#img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
-			img_as_img = Image.open(img).resize((self.height, self.width))
-			# Convert image from numpy array to PIL image
-			#img_as_img = Image.fromarray(img_as_np)
-			#img_as_img = img_as_img.convert('RGB')
-				
-			# Transform image to tensor
-			#if self.transform_constante is not None:
-			#	img_as_img = self.transform_constante(img_as_np)
-			
-			# Use HSV format
-			if self.mode == "HSV":
-				array = np.asarray(img).astype('uint8')
-				#print(array.shape)
-				HSV_array = rgb2hsv(array)
-				img_as_img = Image.fromarray(HSV_array, mode="HSV")
-				#print(HSV.shape)
-				#img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
-				#print(img_as_tensor.shape)
-			
-			self.imgs.append(img_as_img)
-
-	def __getitem__(self, index):
-		#print("Image load : ",self.files[index]) 
-		single_image_label = self.labels[index]
-		img_as_img = self.imgs[index]
-		
-		# Transform image to tensor
-		if self.transform_tmp is not None:
-			img_as_tensor = self.transform_tmp(img_as_img)
-		
-		# Return image and the label
-		return (img_as_tensor, single_image_label)
-
-	def __len__(self):
-		return len(self.files)
-		
 
 if __name__ == "__main__":
-	
-	# HSV test
-	transformations = transforms.Compose([transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5],[0.5])])
-	simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations, mode="HSV")
-	
-	print(type(simpsonsDataset), len(simpsonsDataset))
-	
-	show_tensor(simpsonsDataset.__getitem__(1)[0],1)
-	
-	""""DataNoise test
+
+    # HSV test
+    transformations = transforms.Compose(
+        [transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
+    simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations, mode="HSV")
+
+    print(type(simpsonsDataset), len(simpsonsDataset))
+
+    show_tensor(simpsonsDataset.__getitem__(1)[0], 1)
+
+    """"DataNoise test
 	nb_images = 100
 	
 	images = []

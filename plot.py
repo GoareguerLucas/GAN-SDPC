@@ -52,9 +52,9 @@ def init_hist(nb_epochs, nb_batch):
     hist["d_g_z_cv"] = np.zeros(nb_batch)
 
     # Valeur min et max des réponse D(x) et D(G(z)) par epochs
-    hist["D_x_min"] = np.zeros(nb_epochs)
+    hist["D_x_min"] = np.ones(nb_epochs)
     hist["D_x_max"] = np.zeros(nb_epochs)
-    hist["D_G_z_min"] = np.zeros(nb_epochs)
+    hist["D_G_z_min"] = np.ones(nb_epochs)
     hist["D_G_z_max"] = np.zeros(nb_epochs)
 
     return hist
@@ -64,7 +64,7 @@ def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z):
     """
     Sauvegarde les données du batch dans l'historique après traitement
     """
-    
+
     d_x = d_x.detach().cpu().numpy()
     d_g_z = d_g_z.detach().cpu().numpy()
     g_loss = g_loss.item()
@@ -126,7 +126,7 @@ def plot_min_max(D_x_max, D_G_z_max, D_x_min, D_G_z_min, start_epoch, current_ep
     fig = plt.figure(figsize=(10, 5))
     plt.title("Min and max scores for Generator and Discriminator During Training")
     plt.plot(D_x_max, label="Max D(x)")
-    plt.plot(D_x_min, label="Min D(x")
+    plt.plot(D_x_min, label="Min D(x)")
     plt.plot(D_G_z_max, label="Max D(G(z))")
     plt.plot(D_G_z_min, label="Min D(G(z))")
     plt.xlabel("Epochs")

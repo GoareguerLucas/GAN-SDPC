@@ -3,7 +3,6 @@ default: rsync
 clean_models:
 	rm */models/*.pt; rm */*/models/*.pt
 	
-
 start_ssh:
 	sudo systemctl start ssh
 
@@ -30,6 +29,9 @@ weigth:
 
 count_file:
 	ls -Al | wc -l
+
+pep8:
+	autopep8 $(DIR)/*.py -r -i --max-line-length 120 --ignore E402
 
 see_rsync:
 	rsync -avhuzn . albert@147.94.234.150:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
