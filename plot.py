@@ -116,9 +116,9 @@ def do_plot(hist, start_epoch, epoch):
     # Plot mean scores
     plot_scores(hist["D_x_mean"], hist["D_G_z_mean"], start_epoch, epoch)
     # Plot std scores
-    plot_scores(hist["D_x_std"], hist["D_G_z_std"], hist["D_x_cv"], hist["D_G_z_cv"], start_epoch, epoch)
+    plot_std_cv(hist["D_x_std"], hist["D_G_z_std"], hist["D_x_cv"], hist["D_G_z_cv"], start_epoch, epoch)
     # Plot min et max scores
-    plot_scores(hist["D_x_max"], hist["D_G_z_max"], hist["D_x_min"], hist["D_G_z_min"], start_epoch, epoch)
+    plot_min_max(hist["D_x_max"], hist["D_G_z_max"], hist["D_x_min"], hist["D_G_z_min"], start_epoch, epoch)
 
 
 def plot_min_max(D_x_max, D_G_z_max, D_x_min, D_G_z_min, start_epoch, current_epoch):
