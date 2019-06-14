@@ -18,10 +18,12 @@ import torch
 import sys
 
 import time
+import datetime
+tag = datetime.datetime.now().isoformat(timespec='seconds')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=32, help="size of the batches")
+parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.004, help="adam: learning rate for G")
@@ -33,10 +35,7 @@ parser.add_argument("--latent_dim", type=int, default=300, help="dimensionality 
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
-parser.add_argument("--sample_path", type=str, default='images')
-parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
-parser.add_argument('--model_save_path', type=str, default='models')
-parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
+parser.add_argument("--sample_path", type=str, default=tag+'images')
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
@@ -52,8 +51,6 @@ from utils import *
 
 # Dossier de sauvegarde
 os.makedirs(opt.sample_path, exist_ok=True)
-# os.makedirs(opt.sample_path+"/init", exist_ok=True)
-os.makedirs(opt.model_save_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
 
@@ -274,12 +271,7 @@ optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.p
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
-# ----------
-#  Load models
-# ----------
 start_epoch = 1
-if opt.load_model == True:
-	start_epoch = load_models(discriminator, optimizer_D, generator, optimizer_G, opt.n_epochs, opt.model_save_path)
 
 # ----------
 #  Training
@@ -415,13 +407,6 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_x_mean = []
 		d_g_z_mean = []
 
-	# Save models
-	if epoch % opt.model_save_interval == 0:
-		num = str(int(epoch / opt.model_save_interval))
-		save_model(encoder,optimizer_E,epoch,opt.model_save_path+"/"+num+"_E.pt")
-		save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
-		save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
-
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses
@@ -438,8 +423,3 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 
 #Plot game score
 plot_scores(D_x,D_G_z,start_epoch,epoch)
-
-# Save model for futur training
-save_model(encoder,optimizer_E,epoch,opt.model_save_path+"/last_E.pt")
-save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
-save_model(generator,optimizer_G,epoch,opt.model_save_path+"/last_G.pt")
