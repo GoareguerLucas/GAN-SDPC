@@ -70,7 +70,7 @@ class Encoder(nn.Module):
 		super(Encoder, self).__init__()
 
 		def encoder_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.05, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -107,11 +107,11 @@ class Encoder(nn.Module):
 		return z
 
 class Generator(nn.Module):
-	def __init__(self,verbose=False):
+	def __init__(self, verbose=False):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
-			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.05, inplace=True)]
 
 			return block
 
@@ -119,7 +119,7 @@ class Generator(nn.Module):
 
 		self.max_filters = 512
 		self.init_size = opt.img_size // 8
-		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
+		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.05, inplace=True))
 
 
 		self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
@@ -173,7 +173,7 @@ class Discriminator(nn.Module):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.05, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -302,7 +302,8 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		decoded_imgs = generator(encoder(real_imgs))
 
 		# Loss measures Encoder's ability to generate vectors suitable with the generator
-		e_loss = MSE_loss(real_imgs, decoded_imgs) # TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+		e_loss = MSE_loss(real_imgs, decoded_imgs)
+		# TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
 		# Backward
 		e_loss.backward()
 
