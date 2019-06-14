@@ -21,15 +21,16 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
+parser.add_argument("-b", "--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.004, help="adam: learning rate for G")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
+parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
@@ -269,58 +270,9 @@ dataloader = load_data(depth + "../../cropped_clear/cp/", opt.img_size, opt.batc
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
-optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrG, betas=(opt.b1, opt.b2))
+optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
-# ----------
-#  Initalisation Generator
-# ----------
-# Init_losses = []
-# init_losses = []
-#
-# init_epoch = 20
-#
-# t_total = time.time()
-# for epoch in range(1,init_epoch+1):
-# 	t_epoch = time.time()
-# 	for i, (imgs, _) in enumerate(dataloader):
-# 		t_batch = time.time()
-#
-# 		real_imgs = Variable(imgs.type(Tensor))
-#
-# 		optimizer_E.zero_grad()
-#
-# 		z = encoder(real_imgs)
-# 		decoded_imgs = generator(z)
-#
-# 		# Loss measures generator's ability to fool the discriminator
-# 		init_loss = MSE_loss(real_imgs, decoded_imgs)
-# 		# Backward
-# 		init_loss.backward()
-#
-# 		optimizer_E.step()
-#
-# 		print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
-# 			% (epoch, init_epoch, i+1, len(dataloader), init_loss.item(), time.time()-t_batch) )
-#
-# 		# Save Losses for plotting later
-# 		init_losses.append(init_loss.item())
-#
-# 	# Save samples
-# 	#if epoch % opt.sample_interval == 0:
-# 	AE_sampling(real_imgs, encoder, generator, opt.sample_path+"/init", epoch)
-#
-# 	# Save Losses for plotting later
-# 	Init_losses.append(sum(init_losses)/len(dataloader))
-# 	init_losses = []
-#
-# 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
-#
-# print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
-#
-# #Plot losses
-# plot_losses(Init_losses,Init_losses,1,epoch,path="init_loss.png")
 
 # ----------
 #  Load models
@@ -347,7 +299,8 @@ save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 # Vecteur z fixe pour faire les samples
-fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
+N_samples = 5**2
+fixed_noise = Variable(Tensor(np.random.normal(0, 1, (N_samples, opt.latent_dim))))
 
 t_total = time.time()
 for epoch in range(start_epoch,opt.n_epochs+1):
@@ -365,7 +318,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		decoded_imgs = generator(encoder(real_imgs))
 
 		# Loss measures Encoder's ability to generate vectors suitable with the generator
-		e_loss = MSE_loss(real_imgs, decoded_imgs)
+		e_loss = MSE_loss(real_imgs, decoded_imgs) # TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
 		# Backward
 		e_loss.backward()
 
@@ -386,7 +339,11 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		# Generate a batch of images
-		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+		if True:
+			z = np.random.uniform(0, 1, (imgs.shape[0], opt.latent_dim))
+		else:
+			z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
+		z = Variable(Tensor(z))
 		gen_imgs = generator(z)
 
 		optimizer_D.zero_grad()
