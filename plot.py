@@ -65,8 +65,8 @@ def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z):
     Sauvegarde les données du batch dans l'historique après traitement
     """
     
-    d_x = d_x.detach().numpy()
-    d_g_z = d_g_z.detach().numpy()
+    d_x = d_x.detach().cpu().numpy()
+    d_g_z = d_g_z.detach().cpu().numpy()
     g_loss = g_loss.item()
     d_loss = d_loss.item()
 
