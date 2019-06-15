@@ -13,6 +13,10 @@ module load userspace/all
 module load python3/3.6.3
 
 # cd W10_MNISTtreshold_dcgan
-cd W11_AE_dcgan2
-# cd W11_AE_dcgan
+cd W11_AE_dcgan
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+
+cd W11_AE_dcgan2
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..

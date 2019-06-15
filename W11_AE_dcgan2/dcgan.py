@@ -24,11 +24,11 @@ tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.001, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.001, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.005, help="adam: learning rate for E")
+parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0005, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--latent_dim", type=int, default=500, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
@@ -403,9 +403,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses
-		plot_losses(G_losses,D_losses,start_epoch,epoch, E_losses, tag)
+		plot_losses(G_losses,D_losses,start_epoch,epoch, E_losses)
 		#Plot scores
-		plot_scores(D_x,D_G_z,start_epoch,epoch, tag)
+		plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
