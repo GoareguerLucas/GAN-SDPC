@@ -277,6 +277,9 @@ start_epoch = 1
 # ----------
 #  Training
 # ----------
+nb_batch = len(dataloader)
+nb_epochs = 1 + opt.n_epochs - start_epoch
+
 hist = init_hist(nb_epochs, nb_batch, lossE=True)
 
 save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
