@@ -34,7 +34,7 @@ pep8:
 	autopep8 $(DIR)/*.py -r -i --max-line-length 120 --ignore E402
 
 see_rsync:
-	rsync -avhuzn . albert@147.94.234.150:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuzn . albert@147.94.234.130:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
 
 rsync:
-	rsync -avhuz . albert@147.94.234.150:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+	rsync -avhuz . albert@147.94.234.130:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
