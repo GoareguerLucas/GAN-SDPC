@@ -19,7 +19,7 @@ Pour ajouter un plot :
 """
 
 
-def init_hist(nb_epochs, nb_batch):
+def init_hist(nb_epochs, nb_batch, losseE=False):
     """
     Initialise et retourne un dictionnaire qui servira à sauvegarder les données que l'on voudrais afficher par la suite.
     """
@@ -32,7 +32,10 @@ def init_hist(nb_epochs, nb_batch):
     hist["D_losses"] = np.zeros(nb_epochs)
     hist["g_losses"] = np.zeros(nb_batch)
     hist["d_losses"] = np.zeros(nb_batch)
-
+    if losseE:
+        hist["E_losses"] = np.zeros(nb_epochs)
+        hist["e_losses"] = np.zeros(nb_batch)
+	
     # Moyenne des réponse D(x) et D(G(z)) moyenner par epochs
     hist["D_x_mean"] = np.zeros(nb_epochs)
     hist["D_G_z_mean"] = np.zeros(nb_epochs)
@@ -60,7 +63,7 @@ def init_hist(nb_epochs, nb_batch):
     return hist
 
 
-def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z):
+def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z, e_loss=-1):
     """
     Sauvegarde les données du batch dans l'historique après traitement
     """
@@ -69,7 +72,10 @@ def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z):
     d_g_z = d_g_z.detach().cpu().numpy()
     g_loss = g_loss.item()
     d_loss = d_loss.item()
-
+    if e_loss != -1:
+        e_loss = e_loss.item()
+        hist["e_losses"][idx_batch] = e_loss
+        
     hist["g_losses"][idx_batch] = g_loss
     hist["d_losses"][idx_batch] = d_loss
 
@@ -92,13 +98,15 @@ def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z):
         hist["D_G_z_min"][idx_epoch] = d_g_z.min()
 
 
-def save_hist_epoch(hist, idx_epoch):
+def save_hist_epoch(hist, idx_epoch, E_losses=False):
     """
     Sauvegarde les données de l'epoch dans l'historique
     """
-
+    
     hist["G_losses"][idx_epoch] = hist["g_losses"].mean()
     hist["D_losses"][idx_epoch] = hist["d_losses"].mean()
+    if E_losses:
+        hist["E_losses"][idx_epoch] = hist["e_losses"].mean()
 
     hist["D_x_mean"][idx_epoch] = hist["d_x_mean"].mean()
     hist["D_G_z_mean"][idx_epoch] = hist["d_g_z_mean"].mean()
@@ -110,9 +118,12 @@ def save_hist_epoch(hist, idx_epoch):
     hist["D_G_z_cv"][idx_epoch] = hist["d_g_z_cv"].mean()
 
 
-def do_plot(hist, start_epoch, epoch):
+def do_plot(hist, start_epoch, epoch, E_losses):
     # Plot losses
-    plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch)
+    if E_losses:
+        plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch, hist["E_losses"])
+    else:
+        plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch)
     # Plot mean scores
     plot_scores(hist["D_x_mean"], hist["D_G_z_mean"], start_epoch, epoch)
     # Plot std scores
@@ -191,7 +202,7 @@ def plot_scores(D_x, D_G_z, start_epoch=1, current_epoch=-1):
     plt.close(fig)
 
 
-def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losses.png"):
+def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losses.png", E_losses=False):
     if len(G_losses) <= 0 or len(D_losses) <= 0:
         return None
 
@@ -203,6 +214,8 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(D_losses, label="D")
     plt.plot(G_losses, label="G")
+    if E_losses:
+        plt.plot(E_losses, label="E")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()

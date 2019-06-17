@@ -48,6 +48,7 @@ sys.path.append(depth+"../")#../../GAN-SDPC/
 
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 from utils import *
+from plot import *
 
 # Dossier de sauvegarde
 os.makedirs(opt.sample_path, exist_ok=True)
