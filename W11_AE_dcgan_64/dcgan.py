@@ -19,7 +19,7 @@ import sys
 
 import time
 import datetime
-tag = datetime.datetime.now().isoformat(timespec='_') + 'seconds'
+tag = datetime.datetime.now().isoformat('_') + 'seconds'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
