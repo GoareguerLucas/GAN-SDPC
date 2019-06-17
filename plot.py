@@ -121,7 +121,7 @@ def save_hist_epoch(hist, idx_epoch, E_losses=False):
 def do_plot(hist, start_epoch, epoch, E_losses=False):
     # Plot losses
     if E_losses:
-        plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch, hist["E_losses"])
+        plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch, E_losses=hist["E_losses"])
     else:
         plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch)
     # Plot mean scores
