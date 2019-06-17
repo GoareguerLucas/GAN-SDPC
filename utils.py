@@ -132,7 +132,7 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, E_losses=[]
     plt.xticks(positions, labels)
 
     plt.grid(True)
-    plt.savefig(f'{tag}{path}', format="png")
+    plt.savefig(tag+path, format="png")
     plt.close(fig)
 
 
