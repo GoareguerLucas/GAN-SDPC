@@ -202,7 +202,7 @@ def plot_scores(D_x, D_G_z, start_epoch=1, current_epoch=-1):
     plt.close(fig)
 
 
-def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losses.png", E_losses=False):
+def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losses.png", E_losses=-1):
     if len(G_losses) <= 0 or len(D_losses) <= 0:
         return None
 
@@ -214,7 +214,7 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(D_losses, label="D")
     plt.plot(G_losses, label="G")
-    if E_losses:
+    if E_losses!=-1:
         plt.plot(E_losses, label="E")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
