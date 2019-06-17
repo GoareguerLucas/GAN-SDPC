@@ -409,9 +409,9 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
 		#Plot losses
-		plot_losses(G_losses,D_losses,start_epoch,epoch, E_losses, tag)
+		plot_losses(G_losses,D_losses,start_epoch,epoch)
 		#Plot scores
-		plot_scores(D_x,D_G_z,start_epoch,epoch, tag)
+		plot_scores(D_x,D_G_z,start_epoch,epoch)
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
