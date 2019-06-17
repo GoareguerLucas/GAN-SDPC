@@ -214,7 +214,7 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(D_losses, label="D")
     plt.plot(G_losses, label="G")
-    if E_losses!=-1:
+    if type(E_losses).__module__ == np.__name__:
         plt.plot(E_losses, label="E")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
