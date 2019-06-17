@@ -38,3 +38,6 @@ see_rsync:
 
 rsync:
 	rsync -avhuz . albert@147.94.234.130:~/Bureau/Lucas/GAN-SDPC/ --exclude-from=ExclusionRSync
+
+meso_rsync:
+	rsync --progress -avhuz --exclude-from=ExclusionRSync lperrinet@login.mesocentre.univ-amu.fr:/scratch/lperrinet/SDPC/GAN-SDPC/ .
