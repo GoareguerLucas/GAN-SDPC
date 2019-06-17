@@ -276,16 +276,7 @@ start_epoch = 1
 # ----------
 #  Training
 # ----------
-E_losses = []
-G_losses = []
-D_losses = []
-g_losses = []
-d_losses = []
-e_losses = []
-D_x = []
-D_G_z = []
-d_x_mean = []
-d_g_z_mean = []
+hist = init_hist(nb_epochs, nb_batch, lossE=True)
 
 save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
@@ -386,40 +377,22 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		d_g_z = sigmoid(d_g_z)
 
 		# Save Losses and scores for plotting later
-		g_losses.append(g_loss.item())
-		d_losses.append(d_loss.item())
-		d_x_mean.append(d_x.mean().item())
-		d_g_z_mean.append(d_g_z.mean().item())
+        save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z, e_loss)
+
+    # Save Losses and scores for plotting later
+    save_hist_epoch(hist, j, E_losses=True)
 
 	# Save samples
 	if epoch % opt.sample_interval == 0:
 		sampling(fixed_noise, generator, opt.sample_path, epoch, tag)
 
-	# Save Losses and scores for plotting later
-	if epoch % save_dot == 0:
-		E_losses.append(sum(e_losses)/batch_on_save_dot)
-		G_losses.append(sum(g_losses)/batch_on_save_dot)
-		D_losses.append(sum(d_losses)/batch_on_save_dot)
-		g_losses = []
-		d_losses = []
-		D_x.append(sum(d_x_mean)/batch_on_save_dot)
-		D_G_z.append(sum(d_g_z_mean)/batch_on_save_dot)
-		d_x_mean = []
-		d_g_z_mean = []
-
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
-		#Plot losses
-		plot_losses(G_losses,D_losses,start_epoch,epoch)
-		#Plot scores
-		plot_scores(D_x,D_G_z,start_epoch,epoch)
+		do_plot(hist, start_epoch, epoch, E_losses=True)
 
 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Total Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
-#Plot losses
-plot_losses(G_losses,D_losses,start_epoch,epoch)
-
-#Plot game score
-plot_scores(D_x,D_G_z,start_epoch,epoch)
+#Plot
+do_plot(hist, start_epoch, epoch, E_losses=True)
