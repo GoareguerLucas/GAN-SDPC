@@ -290,7 +290,7 @@ N_samples = 5**2
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (N_samples, opt.latent_dim))))
 
 t_total = time.time()
-for epoch in range(start_epoch,opt.n_epochs+1):
+for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
