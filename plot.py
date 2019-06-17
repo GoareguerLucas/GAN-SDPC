@@ -32,7 +32,7 @@ def init_hist(nb_epochs, nb_batch, lossE=False):
     hist["D_losses"] = np.zeros(nb_epochs)
     hist["g_losses"] = np.zeros(nb_batch)
     hist["d_losses"] = np.zeros(nb_batch)
-    if losseE:
+    if lossE:
         hist["E_losses"] = np.zeros(nb_epochs)
         hist["e_losses"] = np.zeros(nb_batch)
 	
