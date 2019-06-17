@@ -311,9 +311,6 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 
         optimizer_E.step()
 
-        # Save Losses for plotting later
-        e_losses.append(e_loss.item())
-
         # ---------------------
         #  Train Discriminator
         # ---------------------
