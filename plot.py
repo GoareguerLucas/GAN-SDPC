@@ -19,7 +19,7 @@ Pour ajouter un plot :
 """
 
 
-def init_hist(nb_epochs, nb_batch, losseE=False):
+def init_hist(nb_epochs, nb_batch, lossE=False):
     """
     Initialise et retourne un dictionnaire qui servira à sauvegarder les données que l'on voudrais afficher par la suite.
     """
@@ -118,7 +118,7 @@ def save_hist_epoch(hist, idx_epoch, E_losses=False):
     hist["D_G_z_cv"][idx_epoch] = hist["d_g_z_cv"].mean()
 
 
-def do_plot(hist, start_epoch, epoch, E_losses):
+def do_plot(hist, start_epoch, epoch, E_losses=False):
     # Plot losses
     if E_losses:
         plot_losses(hist["G_losses"], hist["D_losses"], start_epoch, epoch, hist["E_losses"])
