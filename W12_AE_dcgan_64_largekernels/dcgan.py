@@ -57,7 +57,7 @@ cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
-opts_conv = dict(kernel_size=7, stride=2, padding=3, padding_mode='circular')
+opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
 verbose=False
 verbose=True
 
@@ -109,7 +109,8 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters):
-            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            opts_conv.update(padding_mode='zeros')
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
