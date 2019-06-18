@@ -54,6 +54,7 @@ from plot import *
 os.makedirs(opt.sample_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
+NL = nn.LeakyReLU(0.2, inplace=True)
 
 class Encoder(nn.Module):
     def __init__(self):
@@ -101,8 +102,8 @@ class Generator(nn.Module):
     def __init__(self,verbose=False):
         super(Generator, self).__init__()
 
-        def generator_block(in_filters, out_filters, kernel=8, stride=2):
-            block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+        def generator_block(in_filters, out_filters, kernel=4, stride=2):
+            block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
@@ -110,7 +111,7 @@ class Generator(nn.Module):
 
         self.max_filters = 512
         self.init_size = opt.img_size // 8
-        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
+        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), NL)
 
 
         self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
@@ -163,8 +164,8 @@ class Discriminator(nn.Module):
     def __init__(self,verbose=False):
         super(Discriminator, self).__init__()
 
-        def discriminator_block(in_filters, out_filters, bn=True, kernel=8, stride=2, padding=1):
-            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+        def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
+            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), NL]#, nn.Dropout2d(0.25)
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
