@@ -55,13 +55,15 @@ os.makedirs(opt.sample_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
+# (N + 2*p - k) / s +1
+opts_conv = dict(kernel=8, stride=2, padding=3, padding_mode='circular')
 
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
 
-        def encoder_block(in_filters, out_filters, bn=True, kernel=8, stride=2, padding=1):
-            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+        def encoder_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL)]
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
@@ -71,7 +73,7 @@ class Encoder(nn.Module):
 
         self.conv1 = nn.Sequential(*encoder_block(opt.channels, 64, bn=False),)
         self.conv2 = nn.Sequential(*encoder_block(64, 128),)
-        self.conv3 = nn.Sequential(*encoder_block(128, 256, stride=1, padding=2),)
+        self.conv3 = nn.Sequential(*encoder_block(128, 256),)
         self.conv4 = nn.Sequential(*encoder_block(256, self.max_filters),)
 
         self.init_size = opt.img_size // 8
@@ -102,8 +104,8 @@ class Generator(nn.Module):
     def __init__(self,verbose=False):
         super(Generator, self).__init__()
 
-        def generator_block(in_filters, out_filters, kernel=4, stride=2):
-            block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
+        def generator_block(in_filters, out_filters):
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
@@ -164,8 +166,8 @@ class Discriminator(nn.Module):
     def __init__(self,verbose=False):
         super(Discriminator, self).__init__()
 
-        def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), NL]#, nn.Dropout2d(0.25)
+        def discriminator_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]#, nn.Dropout2d(0.25)
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
