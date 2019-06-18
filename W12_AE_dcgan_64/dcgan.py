@@ -57,7 +57,6 @@ cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1
 opts_conv = dict(kernel=4, stride=2, padding=1, padding_mode='circular')
-opts_conv = dict(kernel=8, stride=2, padding=3, padding_mode='circular')
 
 class Encoder(nn.Module):
     def __init__(self):
