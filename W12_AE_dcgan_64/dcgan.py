@@ -54,40 +54,27 @@ from plot import *
 os.makedirs(opt.sample_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
-
-def weights_init_normal(m,factor=1.0):
-    classname = m.__class__.__name__
-    if classname.find("Conv") != -1:
-        n=float(m.in_channels*m.kernel_size[0]*m.kernel_size[1])
-        n+=float(m.kernel_size[0]*m.kernel_size[1]*m.out_channels)
-        n=n/2.0
-        m.weight.data.normal_(0,np.sqrt(factor/n))
-        m.bias.data.zero_()
-        #torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
-    elif classname.find("Linear") != -1:
-        n=float(m.in_features+m.out_features)
-        n=n/2.0
-        m.weight.data.normal_(0,np.sqrt(factor/n))
-        m.bias.data.zero_()
-    elif classname.find("BatchNorm2d") != -1:
-        m.weight.data.fill_(1.0)
-        m.bias.data.zero_()
+NL = nn.LeakyReLU(0.2, inplace=True)
+# (N + 2*p - k) / s +1
+opts_conv = dict(kernel=4, stride=2, padding=1, padding_mode='circular')
+opts_conv = dict(kernel=8, stride=2, padding=3, padding_mode='circular')
 
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
 
-        def encoder_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+        def encoder_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL)]
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
 
+        # use a different layer in the encoder using similarly max_filters
         self.max_filters = 512
 
         self.conv1 = nn.Sequential(*encoder_block(opt.channels, 64, bn=False),)
         self.conv2 = nn.Sequential(*encoder_block(64, 128),)
-        self.conv3 = nn.Sequential(*encoder_block(128, 256, stride=1, padding=2),)
+        self.conv3 = nn.Sequential(*encoder_block(128, 256),)
         self.conv4 = nn.Sequential(*encoder_block(256, self.max_filters),)
 
         self.init_size = opt.img_size // 8
@@ -118,8 +105,8 @@ class Generator(nn.Module):
     def __init__(self,verbose=False):
         super(Generator, self).__init__()
 
-        def generator_block(in_filters, out_filters, kernel=4, stride=2):
-            block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
+        def generator_block(in_filters, out_filters):
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
@@ -127,7 +114,7 @@ class Generator(nn.Module):
 
         self.max_filters = 512
         self.init_size = opt.img_size // 8
-        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
+        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), NL)
 
 
         self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
@@ -180,8 +167,8 @@ class Discriminator(nn.Module):
     def __init__(self,verbose=False):
         super(Discriminator, self).__init__()
 
-        def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-            block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
+        def discriminator_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]#, nn.Dropout2d(0.25)
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
