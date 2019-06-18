@@ -83,7 +83,8 @@ class Encoder(nn.Module):
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
 
-        self.max_filters = 512
+        # use a different layer in the encoder using similarly max_filters
+        self.max_filters = 1024
 
         self.conv1 = nn.Sequential(*encoder_block(opt.channels, 64, bn=False),)
         self.conv2 = nn.Sequential(*encoder_block(64, 128),)
