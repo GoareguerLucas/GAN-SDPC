@@ -57,10 +57,12 @@ cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
-opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='circular')
+opts_conv = dict(kernel_size=7, stride=2, padding=3, padding_mode='circular')
+verbose=False
+verbose=True
 
 class Encoder(nn.Module):
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=verbose):
         super(Encoder, self).__init__()
 
         def encoder_block(in_filters, out_filters, bn=True):
@@ -103,7 +105,7 @@ class Encoder(nn.Module):
         return z
 
 class Generator(nn.Module):
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=verbose):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters):
@@ -154,7 +156,7 @@ class Generator(nn.Module):
         return "Generator"
 
 class Discriminator(nn.Module):
-    def __init__(self,verbose=True):
+    def __init__(self,verbose=verbose):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
