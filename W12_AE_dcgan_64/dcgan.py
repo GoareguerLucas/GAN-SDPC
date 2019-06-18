@@ -55,19 +55,20 @@ os.makedirs(opt.sample_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
-# (N + 2*p - k) / s +1
-opts_conv = dict(kernel=4, stride=2, padding=1, padding_mode='circular')
+# (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
+opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
 
 class Encoder(nn.Module):
-    def __init__(self):
+    def __init__(self, verbose=False):
         super(Encoder, self).__init__()
 
         def encoder_block(in_filters, out_filters, bn=True):
-            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL)]
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, opt.eps))
             return block
 
+        self.verbose = verbose
         # use a different layer in the encoder using similarly max_filters
         self.max_filters = 512
 
@@ -76,41 +77,41 @@ class Encoder(nn.Module):
         self.conv3 = nn.Sequential(*encoder_block(128, 256),)
         self.conv4 = nn.Sequential(*encoder_block(256, self.max_filters),)
 
-        self.init_size = opt.img_size // 8
+        self.init_size = opt.img_size // opts_conv['stride']**4
         self.vector = nn.Linear(self.max_filters * self.init_size ** 2, opt.latent_dim)
         self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 
     def forward(self, img):
-        #print("Encoder")
-        #print("Image shape : ",img.shape)
+        if self.verbose: print("Encoder")
+        if self.verbose: print("Image shape : ",img.shape)
         out = self.conv1(img)
-        #print("Conv1 out : ",out.shape)
+        if self.verbose: print("Conv1 out : ",out.shape)
         out = self.conv2(out)
-        #print("Conv2 out : ",out.shape)
+        if self.verbose: print("Conv2 out : ",out.shape)
         out = self.conv3(out)
-        #print("Conv3 out : ",out.shape)
+        if self.verbose: print("Conv3 out : ",out.shape)
         out = self.conv4(out)
-        #print("Conv4 out : ",out.shape)
+        if self.verbose: print("Conv4 out : ",out.shape, " init_size=", self.init_size)
 
         out = out.view(out.shape[0], -1)
-        #print("View out : ",out.shape)
+        if self.verbose: print("View out : ",out.shape)
         z = self.vector(out)
         z = self.sigmoid(z)
-        #print("Z : ",z.shape)
+        if self.verbose: print("Z : ",z.shape)
 
         return z
 
 class Generator(nn.Module):
-    def __init__(self,verbose=False):
+    def __init__(self, verbose=False):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters):
-            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            opts_conv.update(padding_mode='zeros')
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
         self.verbose = verbose
-
         self.max_filters = 512
         self.init_size = opt.img_size // 8
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), NL)
@@ -125,37 +126,27 @@ class Generator(nn.Module):
         )
 
     def forward(self, z):
-        if self.verbose:
-            print("G")
-            out = self.l1(z)
-            print("l1 out : ",out.shape)
-            out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-            print("View out : ",out.shape)
+        if self.verbose: print("G")
+        # Dim : opt.latent_dim
+        out = self.l1(z)
+        if self.verbose: print("l1 out : ",out.shape)
+        out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
+        # Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
+        if self.verbose: print("View out : ",out.shape)
 
-            out = self.conv1(out)
-            print("Conv1 out : ",out.shape)
-            out = self.conv2(out)
-            print("Conv2 out : ",out.shape)
-            out = self.conv3(out)
-            print("Conv3 out : ",out.shape)
+        out = self.conv1(out)
+        # Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
+        if self.verbose: print("Conv1 out : ",out.shape)
+        out = self.conv2(out)
+        # Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
+        if self.verbose: print("Conv2 out : ",out.shape)
+        out = self.conv3(out)
+        # Dim : (self.max_filters/8, opt.img_size, opt.img_size)
+        if self.verbose: print("Conv3 out : ",out.shape)
 
-            img = self.conv_blocks(out)
-            print("Channels Conv out : ",img.shape)
-        else:
-            # Dim : opt.latent_dim
-            out = self.l1(z)
-            out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-            # Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
-
-            out = self.conv1(out)
-            # Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
-            out = self.conv2(out)
-            # Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
-            out = self.conv3(out)
-            # Dim : (self.max_filters/8, opt.img_size, opt.img_size)
-
-            img = self.conv_blocks(out)
-            # Dim : (opt.chanels, opt.img_size, opt.img_size)
+        img = self.conv_blocks(out)
+        # Dim : (opt.chanels, opt.img_size, opt.img_size)
+        if self.verbose: print("img out : ", img.shape)
 
         return img
 
@@ -177,11 +168,11 @@ class Discriminator(nn.Module):
 
         self.conv1 = nn.Sequential(*discriminator_block(opt.channels, 64, bn=False),)
         self.conv2 = nn.Sequential(*discriminator_block(64, 128),)
-        self.conv3 = nn.Sequential(*discriminator_block(128, 256, stride=1, padding=2),)
+        self.conv3 = nn.Sequential(*discriminator_block(128, 256),)
         self.conv4 = nn.Sequential(*discriminator_block(256, self.max_filters),)
 
         # The height and width of downsampled image
-        self.init_size = opt.img_size // 8
+        self.init_size = opt.img_size // opts_conv['stride']**4
         self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))#, nn.Sigmoid()
 
     def forward(self, img):
