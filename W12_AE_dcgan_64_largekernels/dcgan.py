@@ -58,6 +58,7 @@ NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=4, stride=2, padding=2, padding_mode='circular')
 opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='circular')
+opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
 verbose=False
 verbose=True
 
@@ -109,7 +110,7 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters):
-            opts_conv.update(padding_mode='zeros')
+            # opts_conv.update(padding_mode='zeros')
             block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
