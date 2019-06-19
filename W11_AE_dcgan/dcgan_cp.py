@@ -1,7 +1,7 @@
 import argparse
 import os
 import numpy as np
-import math
+
 import itertools
 
 import torchvision.transforms as transforms
@@ -19,26 +19,33 @@ import sys
 
 import time
 import datetime
-tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+tag = datetime.datetime.now().isoformat(timespec='seconds')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.0005, help="adam: learning rate for E")
+parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--latent_dim", type=int, default=500, help="dimensionality of the latent space")
+parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
+parser.add_argument("--latent_dim", type=int, default=300, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
+parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
-print('opt', opt)
+print(opt)
 
-sys.path.append("../")
+# Particular import
+depth = ""
+if opt.depth == True:
+	depth = "../"
+sys.path.append(depth+"../")#../../GAN-SDPC/
+
 from SimpsonsDataset import SimpsonsDataset,FastSimpsonsDataset
 from utils import *
 
@@ -47,19 +54,19 @@ os.makedirs(opt.sample_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
 
-def weights_init_normal(m, factor=1.0):
+def weights_init_normal(m,factor=1.0):
 	classname = m.__class__.__name__
 	if classname.find("Conv") != -1:
 		n=float(m.in_channels*m.kernel_size[0]*m.kernel_size[1])
 		n+=float(m.kernel_size[0]*m.kernel_size[1]*m.out_channels)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 		#torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 	elif classname.find("Linear") != -1:
 		n=float(m.in_features+m.out_features)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 	elif classname.find("BatchNorm2d") != -1:
 		m.weight.data.fill_(1.0)
@@ -70,7 +77,7 @@ class Encoder(nn.Module):
 		super(Encoder, self).__init__()
 
 		def encoder_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.05, inplace=True)]#, nn.Dropout2d(0.25)
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -84,7 +91,7 @@ class Encoder(nn.Module):
 
 		self.init_size = opt.img_size // 8
 		self.vector = nn.Linear(self.max_filters * self.init_size ** 2, opt.latent_dim)
-		self.sigmoid = nn.Sequential(nn.Dropout(0.25), nn.Sigmoid(),)
+		self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 
 	def forward(self, img):
 		#print("Encoder")
@@ -107,11 +114,11 @@ class Encoder(nn.Module):
 		return z
 
 class Generator(nn.Module):
-	def __init__(self, verbose=False):
+	def __init__(self,verbose=False):
 		super(Generator, self).__init__()
 
 		def generator_block(in_filters, out_filters, kernel=4, stride=2):
-			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.05, inplace=True)]
+			block = [nn.ConvTranspose2d(in_filters, out_filters, kernel, stride=stride, padding=1), nn.BatchNorm2d(out_filters, opt.eps), nn.LeakyReLU(0.2, inplace=True)]
 
 			return block
 
@@ -119,7 +126,7 @@ class Generator(nn.Module):
 
 		self.max_filters = 512
 		self.init_size = opt.img_size // 8
-		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.05, inplace=True))
+		self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, self.max_filters * self.init_size ** 2), nn.LeakyReLU(0.2, inplace=True))
 
 
 		self.conv1 = nn.Sequential(*generator_block(self.max_filters, 256),)
@@ -173,7 +180,7 @@ class Discriminator(nn.Module):
 		super(Discriminator, self).__init__()
 
 		def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
-			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.05, inplace=True)]#, nn.Dropout2d(0.25)
+			block = [nn.Conv2d(in_filters, out_filters, kernel, stride, padding=padding), nn.LeakyReLU(0.2, inplace=True)]#, nn.Dropout2d(0.25)
 			if bn:
 				block.append(nn.BatchNorm2d(out_filters, opt.eps))
 			return block
@@ -254,7 +261,7 @@ discriminator.apply(weights_init_normal)
 encoder.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data("../../cropped_clear/cp/", opt.img_size, opt.batch_size, rand_hflip=True)
+dataloader = load_data(depth + "../../cropped_clear/cp/", opt.img_size, opt.batch_size, rand_hflip=True)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
@@ -302,8 +309,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		decoded_imgs = generator(encoder(real_imgs))
 
 		# Loss measures Encoder's ability to generate vectors suitable with the generator
-		e_loss = MSE_loss(real_imgs, decoded_imgs)
-		# TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+		e_loss = MSE_loss(real_imgs, decoded_imgs) # TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
 		# Backward
 		e_loss.backward()
 

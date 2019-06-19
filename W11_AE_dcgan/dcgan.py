@@ -1,7 +1,7 @@
 import argparse
 import os
 import numpy as np
-import math
+
 import itertools
 
 import torchvision.transforms as transforms
@@ -17,25 +17,26 @@ import torch
 
 import sys
 
+import matplotlib.pyplot as plt
 import time
-import datetime
-tag = datetime.datetime.now().isoformat(timespec='seconds')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=300, help="dimensionality of the latent space")
-parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
+parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
+parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
+parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling")
+parser.add_argument('--model_save_path', type=str, default='models')
+parser.add_argument('--load_model', action="store_true", help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 opt = parser.parse_args()
 print(opt)
@@ -51,8 +52,11 @@ from utils import *
 
 # Dossier de sauvegarde
 os.makedirs(opt.sample_path, exist_ok=True)
+os.makedirs(opt.sample_path+"/init", exist_ok=True)
+os.makedirs(opt.model_save_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
+
 
 def weights_init_normal(m,factor=1.0):
 	classname = m.__class__.__name__
@@ -60,13 +64,13 @@ def weights_init_normal(m,factor=1.0):
 		n=float(m.in_channels*m.kernel_size[0]*m.kernel_size[1])
 		n+=float(m.kernel_size[0]*m.kernel_size[1]*m.out_channels)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 		#torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 	elif classname.find("Linear") != -1:
 		n=float(m.in_features+m.out_features)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 	elif classname.find("BatchNorm2d") != -1:
 		m.weight.data.fill_(1.0)
@@ -266,16 +270,69 @@ dataloader = load_data(depth + "../../cropped_clear/cp/", opt.img_size, opt.batc
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
-optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
+optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrG, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
+# ----------
+#  Initalisation Generator
+# ----------
+# Init_losses = []
+# init_losses = []
+#
+# init_epoch = 20
+#
+# t_total = time.time()
+# for epoch in range(1,init_epoch+1):
+# 	t_epoch = time.time()
+# 	for i, (imgs, _) in enumerate(dataloader):
+# 		t_batch = time.time()
+#
+# 		real_imgs = Variable(imgs.type(Tensor))
+#
+# 		optimizer_E.zero_grad()
+#
+# 		z = encoder(real_imgs)
+# 		decoded_imgs = generator(z)
+#
+# 		# Loss measures generator's ability to fool the discriminator
+# 		init_loss = MSE_loss(real_imgs, decoded_imgs)
+# 		# Backward
+# 		init_loss.backward()
+#
+# 		optimizer_E.step()
+#
+# 		print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
+# 			% (epoch, init_epoch, i+1, len(dataloader), init_loss.item(), time.time()-t_batch) )
+#
+# 		# Save Losses for plotting later
+# 		init_losses.append(init_loss.item())
+#
+# 	# Save samples
+# 	#if epoch % opt.sample_interval == 0:
+# 	AE_sampling(real_imgs, encoder, generator, opt.sample_path+"/init", epoch)
+#
+# 	# Save Losses for plotting later
+# 	Init_losses.append(sum(init_losses)/len(dataloader))
+# 	init_losses = []
+#
+# 	print("[Epoch Time: ",time.time()-t_epoch,"s]")
+#
+# print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
+#
+# #Plot losses
+# plot_losses(Init_losses,Init_losses,1,epoch,path="init_loss.png")
+
+# ----------
+#  Load models
+# ----------
 start_epoch = 1
+if opt.load_model == True:
+	start_epoch = load_models(discriminator, optimizer_D, generator, optimizer_G, opt.n_epochs, opt.model_save_path)
 
 # ----------
 #  Training
 # ----------
-E_losses = []
 G_losses = []
 D_losses = []
 g_losses = []
@@ -290,8 +347,7 @@ save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 # Vecteur z fixe pour faire les samples
-N_samples = 5**2
-fixed_noise = Variable(Tensor(np.random.normal(0, 1, (N_samples, opt.latent_dim))))
+fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
 
 t_total = time.time()
 for epoch in range(start_epoch,opt.n_epochs+1):
@@ -309,7 +365,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		decoded_imgs = generator(encoder(real_imgs))
 
 		# Loss measures Encoder's ability to generate vectors suitable with the generator
-		e_loss = MSE_loss(real_imgs, decoded_imgs) # TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+		e_loss = MSE_loss(real_imgs, decoded_imgs)
 		# Backward
 		e_loss.backward()
 
@@ -330,11 +386,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		# Configure input
 		real_imgs = Variable(imgs.type(Tensor))
 		# Generate a batch of images
-		if True:
-			z = np.random.uniform(0, 1, (imgs.shape[0], opt.latent_dim))
-		else:
-			z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
-		z = Variable(Tensor(z))
+		z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
 		gen_imgs = generator(z)
 
 		optimizer_D.zero_grad()
@@ -392,7 +444,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 
 	# Save samples
 	if epoch % opt.sample_interval == 0:
-		sampling(fixed_noise, generator, opt.sample_path, epoch, tag)
+		sampling(fixed_noise, generator, opt.sample_path, epoch)
 
 	# Save Losses and scores for plotting later
 	if epoch % save_dot == 0:
@@ -405,6 +457,13 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 		D_G_z.append(sum(d_g_z_mean)/batch_on_save_dot)
 		d_x_mean = []
 		d_g_z_mean = []
+
+	# Save models
+	if epoch % opt.model_save_interval == 0:
+		num = str(int(epoch / opt.model_save_interval))
+		save_model(encoder,optimizer_E,epoch,opt.model_save_path+"/"+num+"_E.pt")
+		save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/"+num+"_D.pt")
+		save_model(generator,optimizer_G,epoch,opt.model_save_path+"/"+num+"_G.pt")
 
 	# Intermediate plot
 	if epoch % (opt.n_epochs/4) == 0:
@@ -422,3 +481,8 @@ plot_losses(G_losses,D_losses,start_epoch,epoch)
 
 #Plot game score
 plot_scores(D_x,D_G_z,start_epoch,epoch)
+
+# Save model for futur training
+save_model(encoder,optimizer_E,epoch,opt.model_save_path+"/last_E.pt")
+save_model(discriminator,optimizer_D,epoch,opt.model_save_path+"/last_D.pt")
+save_model(generator,optimizer_G,epoch,opt.model_save_path+"/last_G.pt")

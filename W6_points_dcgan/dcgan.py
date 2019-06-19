@@ -1,7 +1,7 @@
 import argparse
 import os
 import numpy as np
-import math
+
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -64,13 +64,13 @@ def weights_init_normal(m,factor=1.0):
 		n=float(m.in_channels*m.kernel_size[0]*m.kernel_size[1])
 		n+=float(m.kernel_size[0]*m.kernel_size[1]*m.out_channels)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 		#torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
 	elif classname.find("Linear") != -1:
 		n=float(m.in_features+m.out_features)
 		n=n/2.0
-		m.weight.data.normal_(0,math.sqrt(factor/n))
+		m.weight.data.normal_(0,np.sqrt(factor/n))
 		m.bias.data.zero_()
 	elif classname.find("BatchNorm2d") != -1:
 		m.weight.data.fill_(1.0)

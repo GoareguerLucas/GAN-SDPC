@@ -13,10 +13,30 @@ module load userspace/all
 module load python3/3.6.3
 
 # cd W10_MNISTtreshold_dcgan
-cd W11_AE_dcgan_64
+# cd W11_AE_dcgan_64
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+# cd W11_AE_dcgan_128
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+cd W12_AE_dcgan_64
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
 
-cd W11_AE_dcgan_128
+# cd W12_AE_dcgan_128
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+# cd W12_AE_dcgan_64_maxfilters
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+
+cd W12_AE_dcgan_64_largekernels
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
+#
+# cd W12_AE_dcgan_64_upsampling
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
