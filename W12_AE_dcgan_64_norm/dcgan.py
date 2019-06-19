@@ -284,11 +284,17 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         real_imgs = Variable(imgs.type(Tensor))
 
         optimizer_E.zero_grad()
-
-        decoded_imgs = generator(encoder(real_imgs))
+        z_imgs = encoder(real_imgs)
+        decoded_imgs = generator(z_imgs)
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
-        e_loss = MSE_loss(real_imgs, decoded_imgs) # TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+        # TODO add a loss for the distribution of z values
+        e_loss = MSE_loss(real_imgs, decoded_imgs)
+        e_lambda_norm = torch.tensor(1.)
+        e_lambda_dev = torch.tensor(1.)
+        std = torch.sqrt(z_imgs.pow(2).sum(1))
+        e_loss += e_lambda_dev * std.pow(2)
+        e_loss += e_lambda_norm * (std - 1).pow(2)
         # Backward
         e_loss.backward()
 
