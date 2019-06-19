@@ -31,7 +31,7 @@ count_file:
 	ls -Al | wc -l
 
 venv:
-	source ../p3/bin/activate &&
+	source ../p3/bin/activate
 
 pep8:
 	autopep8 $(DIR)/*.py -r -i --max-line-length 120 --ignore E402

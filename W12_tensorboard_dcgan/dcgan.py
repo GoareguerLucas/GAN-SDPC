@@ -334,18 +334,18 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         
         # Tensorboard test
         with train_summary_writer.as_default():
-			writer.add_scalar('g_loss', g_loss.item(), global_step=i + nb_batch*epoch, walltime=None)
-			writer.add_scalar('d_loss', d_loss.item(), global_step=i + nb_batch*epoch, walltime=None)
-	
-	
+            writer.add_scalar('g_loss', g_loss.item(), global_step=i + nb_batch*epoch, walltime=None)
+            writer.add_scalar('d_loss', d_loss.item(), global_step=i + nb_batch*epoch, walltime=None)
+    
+    
     # Save Losses and scores for plotting later
     save_hist_epoch(hist, j)
-	
-	# Tensorboard test
-	with train_summary_writer.as_default():
-		writer.add_scalar('G_loss', hist["G_losses"][j], global_step=epoch, walltime=None)
-		writer.add_scalar('D_loss', hist["G_losses"][j], global_step=epoch, walltime=None)
-	
+    
+    # Tensorboard test
+    with train_summary_writer.as_default():
+        writer.add_scalar('G_loss', hist["G_losses"][j], global_step=epoch, walltime=None)
+        writer.add_scalar('D_loss', hist["G_losses"][j], global_step=epoch, walltime=None)
+    
     # Save samples
     if epoch % opt.sample_interval == 0:
         sampling(fixed_noise, generator, opt.sample_path, epoch)
