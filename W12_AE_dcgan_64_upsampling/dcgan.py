@@ -110,8 +110,7 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters):
-            # opts_conv.update(padding_mode='zeros')
-            block = [nn.ConvTranspose2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=opts_conv['stride'], padding=opts_conv['padding'], padding_mode='zeros', output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
         # def generator_block(in_filters, out_filters):
