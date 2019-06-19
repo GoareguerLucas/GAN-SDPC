@@ -289,12 +289,17 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
         # TODO add a loss for the distribution of z values
-        e_loss = MSE_loss(real_imgs, decoded_imgs)
-        e_lambda_norm = torch.tensor(1.)
-        e_lambda_dev = torch.tensor(1.)
-        std = torch.sqrt(z_imgs.pow(2).sum(1))
-        e_loss += e_lambda_dev * std.pow(2)
-        e_loss += e_lambda_norm * (std - 1).pow(2)
+        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones)
+        # print("e_loss out : ", e_loss.shape)
+        # e_lambda_norm = torch.tensor(1.)
+        # e_lambda_dev = torch.tensor(1.)
+        # std = torch.sqrt(z_imgs.pow(2).mean(1))
+        # print("std out : ", std.shape)
+        # print("std.pow(2) out : ", std.pow(2).shape)
+        # e_loss += e_lambda_dev * std.pow(2)
+        # e_loss += e_lambda_norm * (std - 1).pow(2)
         # Backward
         e_loss.backward()
 
