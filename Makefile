@@ -13,10 +13,10 @@ connect_ssh:
 	ssh albert@147.94.234.202
 
 connect_gt2:
-	ssh -p8012 g14006889@gt-2.luminy.univ-amu.fr
+	ssh -p8012 -L16006:localhost:6006 g14006889@gt-2.luminy.univ-amu.fr
 
 connect_gt0:
-	ssh -p8012 g14006889@gt-0.luminy.univ-amu.fr
+	ssh -p8012 -L16006:localhost:6006 g14006889@gt-0.luminy.univ-amu.fr
 
 matplot:
 	export MPLCONFIGDIR="/var/lib/vz/data/g14006889/cache/matplotlib/"
@@ -29,6 +29,9 @@ weigth:
 
 count_file:
 	ls -Al | wc -l
+
+venv:
+	source ../p3/bin/activate
 
 pep8:
 	autopep8 $(DIR)/*.py -r -i --max-line-length 120 --ignore E402
