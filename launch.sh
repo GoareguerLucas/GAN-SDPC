@@ -56,14 +56,14 @@ module load python3/3.6.3
 cd W12_AE_dcgan_64_norm
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
-
-cd W12_AE_dcgan_64_leaky
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
-
-cd W12_AE_dcgan_128_adam
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
+ 
+# cd W12_AE_dcgan_64_leaky
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+# cd W12_AE_dcgan_128_adam
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
 
 # FUTURE
 # max pooling for the generation
