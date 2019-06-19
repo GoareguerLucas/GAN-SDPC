@@ -56,10 +56,10 @@ os.makedirs(opt.sample_path, exist_ok=True)
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
-opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
-opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
+opts_conv = dict(kernel_size=4, stride=2, padding=2, padding_mode='circular')
+#opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
 verbose=False
-verbose=True
+# verbose=True
 
 class Encoder(nn.Module):
     def __init__(self, verbose=verbose):
