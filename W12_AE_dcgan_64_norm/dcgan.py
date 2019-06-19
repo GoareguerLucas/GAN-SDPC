@@ -83,7 +83,7 @@ class Encoder(nn.Module):
 
         self.init_size = opt.img_size // opts_conv['stride']**4
         self.vector = nn.Linear(self.max_filters * self.init_size ** 2, opt.latent_dim)
-        self.sigmoid = nn.Sequential(nn.Sigmoid(),)
+        # self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 
     def forward(self, img):
         if self.verbose: print("Encoder")
@@ -100,8 +100,8 @@ class Encoder(nn.Module):
         out = out.view(out.shape[0], -1)
         if self.verbose: print("View out : ",out.shape)
         z = self.vector(out)
-        z = self.sigmoid(z)
-        if self.verbose: print("Z : ",z.shape)
+        # z = self.sigmoid(z)
+        # if self.verbose: print("Z : ",z.shape)
 
         return z
 
@@ -300,8 +300,25 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # print("std.pow(2) out : ", std.pow(2).shape)
         # e_loss += e_lambda_dev * std.pow(2)
         # e_loss += e_lambda_norm * (std - 1).pow(2)
-        # Backward
-        e_loss.backward()
+
+        # import numpy as np
+        # import torch
+        # Tensor =  torch.FloatTensor
+        # from torch.autograd import Variable
+        # z = Variable(Tensor(z))
+        # loss = nn.MSELoss()
+        # import torch.nn as nn
+        # loss = nn.MSELoss()
+        # z_zeros = Variable(Tensor(400, 100).fill_(0), requires_grad=False)
+        # z = np.random.normal(0, 1, (400, 100))
+        # z.mean()
+        # z.std()
+        # z = Variable(Tensor(z))
+        # loss(z, z_zeros)
+        # z_ones = Variable(Tensor(400, 100).fill_(1), requires_grad=False)
+        # loss(z.pow(2), z_ones)
+        # # Backward
+        # e_loss.backward()
 
         optimizer_E.step()
 
