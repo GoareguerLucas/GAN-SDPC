@@ -60,7 +60,7 @@ opts_conv = dict(kernel_size=4, stride=2, padding=2, padding_mode='circular')
 opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='circular')
 opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
 verbose=False
-verbose=True
+# verbose=True
 
 class Encoder(nn.Module):
     def __init__(self, verbose=verbose):
@@ -109,14 +109,14 @@ class Generator(nn.Module):
     def __init__(self, verbose=verbose):
         super(Generator, self).__init__()
 
-        def generator_block(in_filters, out_filters):
-            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
-
-            return block
         # def generator_block(in_filters, out_filters):
-        #     block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+        #     block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
         #
         #     return block
+        def generator_block(in_filters, out_filters):
+            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+
+            return block
 
         self.verbose = verbose
         self.max_filters = 512
