@@ -42,10 +42,18 @@ module load python3/3.6.3
 # cd ..
 
 # TODO
+#
+# cd W12_AE_dcgan_64_upsampling
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
 
-cd W12_AE_dcgan_64_upsampling
+cd W12_AE_dcgan_64_adam
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+
+cd W12_AE_dcgan_128_upsampling
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
 
 # FUTURE
-# max pooling for the generation 
+# max pooling for the generation
