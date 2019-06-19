@@ -59,7 +59,7 @@ NL = nn.LeakyReLU(0.2, inplace=True)
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
 # opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
 verbose=False
-verbose=True
+# verbose=True
 
 class Encoder(nn.Module):
     def __init__(self, verbose=verbose):

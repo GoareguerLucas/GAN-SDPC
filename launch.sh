@@ -32,17 +32,17 @@ module load python3/3.6.3
 # cd W12_AE_dcgan_64_maxfilters
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
-
-cd W12_AE_dcgan_128_kernels
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
+#
+# cd W12_AE_dcgan_128_kernels
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
 
 # TODO
 
-# cd W12_AE_dcgan_64_largekernels
-# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-# cd ..
-#
+cd W12_AE_dcgan_64_largekernels
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+# 
 # cd W12_AE_dcgan_64_upsampling
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
