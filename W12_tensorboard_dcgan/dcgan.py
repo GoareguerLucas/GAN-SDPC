@@ -333,10 +333,11 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
         
         # Tensorboard test
-        writer.add_scalar('g_loss', g_loss.item(), global_step=i + nb_batch*epoch)
-        writer.add_scalar('d_loss', d_loss.item(), global_step=i + nb_batch*epoch)
-        writer.add_histogram('D(x)', d_x, global_step=i + nb_batch*epoch)
-        writer.add_histogram('D(G(z))', d_g_z, global_step=i + nb_batch*epoch)
+        iteration = i + nb_batch*j
+        writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
+        writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
+        writer.add_histogram('D(x)', d_x, global_step=iteration)
+        writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
     
     # Save Losses and scores for plotting later
     save_hist_epoch(hist, j)
