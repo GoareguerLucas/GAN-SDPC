@@ -303,7 +303,7 @@ for epoch in range(start_epoch,opt.n_epochs+1):
 
 		# Loss measures Encoder's ability to generate vectors suitable with the generator
 		e_loss = MSE_loss(real_imgs, decoded_imgs)
-		# TODO add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+		# DONE add a loss for the distance between encoder(real_imgs) and the one we use to generate z
 		# Backward
 		e_loss.backward()
 
