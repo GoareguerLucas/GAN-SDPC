@@ -19,8 +19,11 @@ import sys
 
 import matplotlib.pyplot as plt
 import time
+import datetime
+timetag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
 
 parser = argparse.ArgumentParser()
+parser.add_argument("-t", "--tag", type=str, default='toto', help="number of epochs of training")
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
@@ -246,7 +249,7 @@ if opt.load_model == True:
 # ----------
 #  Tensorboard
 # ----------
-
+# TODO inclure timetag + opts.tag
 writer = SummaryWriter()
 bins = [0, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99, 0.999, 1.0]
 
@@ -332,7 +335,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Save Losses and scores for plotting later
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
-        
+
         # Tensorboard test
         iteration = i + nb_batch*j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
@@ -345,14 +348,14 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_histogram('D(G(z)) custom bins', d_g_z, global_step=iteration, bins=bins)
         writer.add_histogram('D(x) FD bins', d_x, global_step=iteration, bins='fd')
         writer.add_histogram('D(G(z)) FD bins', d_g_z, global_step=iteration, bins='fd')
-    
+
     # Save Losses and scores for plotting later
     save_hist_epoch(hist, j)
-    
+
     # Tensorboard test
     writer.add_scalar('G_loss', hist["G_losses"][j], global_step=epoch)
     writer.add_scalar('D_loss', hist["D_losses"][j], global_step=epoch)
-    
+
     # Save samples
     if epoch % opt.sample_interval == 0:
         sampling(fixed_noise, generator, opt.sample_path, epoch)

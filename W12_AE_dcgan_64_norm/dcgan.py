@@ -19,7 +19,7 @@ import sys
 
 import time
 import datetime
-tag = datetime.datetime.now().isoformat('_') + 'seconds'
+tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
@@ -291,7 +291,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # TODO add a loss for the distribution of z values
         z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
         z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
         # print("e_loss out : ", e_loss.shape)
         # e_lambda_norm = torch.tensor(1.)
         # e_lambda_dev = torch.tensor(1.)
