@@ -24,15 +24,15 @@ tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.00001, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.0001, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
+parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.00005, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
 parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
+parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
@@ -56,11 +56,10 @@ os.makedirs(opt.sample_path, exist_ok=True)
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
-opts_conv = dict(kernel_size=4, stride=2, padding=2, padding_mode='circular')
-opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='circular')
-opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
+opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
+# opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
 verbose=False
-# verbose=True
+verbose=True
 
 class Encoder(nn.Module):
     def __init__(self, verbose=verbose):
@@ -83,7 +82,7 @@ class Encoder(nn.Module):
 
         self.init_size = opt.img_size // opts_conv['stride']**4
         self.vector = nn.Linear(self.max_filters * self.init_size ** 2, opt.latent_dim)
-        # self.sigmoid = nn.Sequential(nn.Sigmoid(),)
+        self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 
     def forward(self, img):
         if self.verbose: print("Encoder")
@@ -100,8 +99,8 @@ class Encoder(nn.Module):
         out = out.view(out.shape[0], -1)
         if self.verbose: print("View out : ",out.shape)
         z = self.vector(out)
-        # z = self.sigmoid(z)
-        # if self.verbose: print("Z : ",z.shape)
+        z = self.sigmoid(z)
+        if self.verbose: print("Z : ",z.shape)
 
         return z
 
@@ -109,12 +108,9 @@ class Generator(nn.Module):
     def __init__(self, verbose=verbose):
         super(Generator, self).__init__()
 
-        # def generator_block(in_filters, out_filters):
-        #     block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
-        #
-        #     return block
         def generator_block(in_filters, out_filters):
-            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            opts_conv.update(padding_mode='zeros')
+            block = [nn.ConvTranspose2d(in_filters, out_filters, **opts_conv, output_padding=1), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
@@ -284,39 +280,11 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         real_imgs = Variable(imgs.type(Tensor))
 
         optimizer_E.zero_grad()
-        z_imgs = encoder(real_imgs)
-        decoded_imgs = generator(z_imgs)
+
+        decoded_imgs = generator(encoder(real_imgs))
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
-        # DONE add a loss for the distance between of z values
-        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
-        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
-        # print("e_loss out : ", e_loss.shape)
-        # e_lambda_norm = torch.tensor(1.)
-        # e_lambda_dev = torch.tensor(1.)
-        # std = torch.sqrt(z_imgs.pow(2).mean(1))
-        # print("std out : ", std.shape)
-        # print("std.pow(2) out : ", std.pow(2).shape)
-        # e_loss += e_lambda_dev * std.pow(2)
-        # e_loss += e_lambda_norm * (std - 1).pow(2)
-
-        # import numpy as np
-        # import torch
-        # Tensor =  torch.FloatTensor
-        # from torch.autograd import Variable
-        # z = Variable(Tensor(z))
-        # loss = nn.MSELoss()
-        # import torch.nn as nn
-        # loss = nn.MSELoss()
-        # z_zeros = Variable(Tensor(400, 100).fill_(0), requires_grad=False)
-        # z = np.random.normal(0, 1, (400, 100))
-        # z.mean()
-        # z.std()
-        # z = Variable(Tensor(z))
-        # loss(z, z_zeros)
-        # z_ones = Variable(Tensor(400, 100).fill_(1), requires_grad=False)
-        # loss(z.pow(2), z_ones)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) # DONE add a loss for the distance between encoder(real_imgs) and the one we use to generate z
         # Backward
         e_loss.backward()
 
