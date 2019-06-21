@@ -352,9 +352,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Tensorboard test
     writer.add_scalar('G_loss', hist["G_losses"][j], global_step=epoch)
     writer.add_scalar('D_loss', hist["D_losses"][j], global_step=epoch)
-    writer.add_graph(discriminator, real_imgs)
-    writer.add_graph(discriminator, gen_imgs)
-    writer.add_graph(generator, z)
     
     # Save samples
     if epoch % opt.sample_interval == 0:
