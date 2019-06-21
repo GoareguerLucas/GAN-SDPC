@@ -248,6 +248,7 @@ if opt.load_model == True:
 # ----------
 
 writer = SummaryWriter()
+bins = [0, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99, 0.999, 1.0]
 
 # ----------
 #  Training
@@ -338,6 +339,12 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
         writer.add_histogram('D(x)', d_x, global_step=iteration)
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
+        writer.add_histogram('D(x) epochs', d_x, global_step=epoch)
+        writer.add_histogram('D(G(z)) epochs', d_g_z, global_step=epoch)
+        writer.add_histogram('D(x) custom bins', d_x, global_step=iteration, bins=bins)
+        writer.add_histogram('D(G(z)) custom bins', d_g_z, global_step=iteration, bins=bins)
+        writer.add_histogram('D(x) FD bins', d_x, global_step=iteration, bins='FD')
+        writer.add_histogram('D(G(z)) FD bins', d_g_z, global_step=iteration, bins='FD')
     
     # Save Losses and scores for plotting later
     save_hist_epoch(hist, j)
