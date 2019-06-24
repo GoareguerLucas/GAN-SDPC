@@ -378,14 +378,11 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_histogram('D(G(z)) custom bins', d_g_z, global_step=iteration, bins=bins)
         
     # Save Losses and scores for plotting later
-    save_hist_epoch(hist, j)
+    save_hist_epoch(hist, j, E_losses=True)
     
     # Tensorboard test
     writer.add_scalar('G_loss', hist["G_losses"][j], global_step=epoch)
     writer.add_scalar('D_loss', hist["D_losses"][j], global_step=epoch)
-
-    # Save Losses and scores for plotting later
-    save_hist_epoch(hist, j, E_losses=True)
 
     # Save samples
     if epoch % opt.sample_interval == 0:
