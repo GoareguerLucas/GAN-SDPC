@@ -56,10 +56,11 @@ os.makedirs(opt.sample_path, exist_ok=True)
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.2, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
-opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='circular')
-# opts_conv = dict(kernel_size=8, stride=2, padding=6, padding_mode='circular')
+opts_conv = dict(kernel_size=4, stride=2, padding=2, padding_mode='circular')
+opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='circular')
+opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
 verbose=False
-verbose=True
+# verbose=True
 
 class Encoder(nn.Module):
     def __init__(self, verbose=verbose):
@@ -280,11 +281,39 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         real_imgs = Variable(imgs.type(Tensor))
 
         optimizer_E.zero_grad()
-
-        decoded_imgs = generator(encoder(real_imgs))
+        z_imgs = encoder(real_imgs)
+        decoded_imgs = generator(z_imgs)
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
-        e_loss = MSE_loss(real_imgs, decoded_imgs) # DONE add a loss for the distance between encoder(real_imgs) and the one we use to generate z
+        # DONE add a loss for the distance between of z values
+        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+        # print("e_loss out : ", e_loss.shape)
+        # e_lambda_norm = torch.tensor(1.)
+        # e_lambda_dev = torch.tensor(1.)
+        # std = torch.sqrt(z_imgs.pow(2).mean(1))
+        # print("std out : ", std.shape)
+        # print("std.pow(2) out : ", std.pow(2).shape)
+        # e_loss += e_lambda_dev * std.pow(2)
+        # e_loss += e_lambda_norm * (std - 1).pow(2)
+
+        # import numpy as np
+        # import torch
+        # Tensor =  torch.FloatTensor
+        # from torch.autograd import Variable
+        # z = Variable(Tensor(z))
+        # loss = nn.MSELoss()
+        # import torch.nn as nn
+        # loss = nn.MSELoss()
+        # z_zeros = Variable(Tensor(400, 100).fill_(0), requires_grad=False)
+        # z = np.random.normal(0, 1, (400, 100))
+        # z.mean()
+        # z.std()
+        # z = Variable(Tensor(z))
+        # loss(z, z_zeros)
+        # z_ones = Variable(Tensor(400, 100).fill_(1), requires_grad=False)
+        # loss(z.pow(2), z_ones)
         # Backward
         e_loss.backward()
 
