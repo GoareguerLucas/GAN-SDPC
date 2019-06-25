@@ -120,7 +120,9 @@ class Generator(nn.Module):
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
         if self.verbose:
             print("Channels Conv out : ", img.shape)
-
+            
+        return img
+        
     def _name(self):
         return "Generator"
 
