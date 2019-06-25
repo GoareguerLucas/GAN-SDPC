@@ -7,10 +7,10 @@
 #SBATCH -N 1 # <-- The number of node you want to use
 #SBATCH -o test.out  # <-- the name of the file where the output of the simulation is written
 #SBATCH -e error.err  # <-- the name of the file where errors of the simulation are written
-
-module purge
-module load userspace/all
-module load python3/3.6.3
+# 
+# module purge
+# module load userspace/all
+# module load python3/3.6.3
 
 # cd W11_AE_dcgan_64
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
@@ -48,31 +48,33 @@ module load python3/3.6.3
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
 
-# cd W12_AE_dcgan_128_upsampling
-# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-# cd ..
 
 # cd W12_AE_dcgan_64_norm
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
 
-#
-# cd W12_AE_dcgan_128_norm
-# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-# cd ..
-
-# cd W12_AE_dcgan_128_kernels
-# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-# cd ..
 
 # cd W12_AE_dcgan_64_leaky
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
 #
-# cd W12_AE_dcgan_128_adam
-# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-# cd ..
-
-cd W13_AE_dcgan_128_small
+#
+cd W12_AE_dcgan_128_norm
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
+
+cd W12_AE_dcgan_128_kernels
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+
+cd W12_AE_dcgan_128_upsampling
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+
+cd W12_AE_dcgan_128_adam
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
+
+# cd W13_AE_dcgan_128_small
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
