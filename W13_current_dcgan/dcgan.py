@@ -262,10 +262,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
         gen_imgs = generator(z)
         
-        print(imgs.shape)
-        print(gen_imgs)
-        print(z.shape)
-        
         # ---------------------
         #  Train Discriminator
         # ---------------------
