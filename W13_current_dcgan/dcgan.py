@@ -44,6 +44,8 @@ parser.add_argument('--load_model', action="store_true",
                     help="Load model present in model_save_path/Last_*.pt, if present.")
 parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="Afficher des informations complémentaire.")
 opt = parser.parse_args()
 print(opt)
 
@@ -64,7 +66,7 @@ os.makedirs(opt.model_save_path, exist_ok=True)
 cuda = True if torch.cuda.is_available() else False
 
 class Generator(nn.Module):
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
 
         def generator_block(in_filters, out_filters, kernel=4, stride=2):
@@ -124,7 +126,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=opt.verbose):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True, kernel=4, stride=2, padding=1):
@@ -205,7 +207,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data(depth + "../../cropped/cp/", opt.img_size, opt.batch_size, rand_hflip=True)
+dataloader = load_data(depth + "../../cropped_clear/cp/", opt.img_size, opt.batch_size, rand_hflip=True)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
