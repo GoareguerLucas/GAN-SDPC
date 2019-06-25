@@ -61,7 +61,7 @@ def load_data(path, img_size, batch_size, Fast=True, rand_hflip=False, rand_affi
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    print("[Loading Time: ", time.strftime("%Mm:%Ss", time.gmtime(time.time() - t_total)), "]\n")
+    print("[Loading Time: ", time.strftime("%Mm:%Ss", time.gmtime(time.time() - t_total)), "] [Numbers of samples :",len(dataset)," ]\n")
 
     if return_dataset == True:
         return dataloader, dataset
