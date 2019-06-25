@@ -261,7 +261,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         gen_imgs = generator(z)
         
         print(imgs.shape)
-        print(gen_imgs.shape)
+        print(gen_imgs)
         print(z.shape)
         
         # ---------------------
