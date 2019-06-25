@@ -20,7 +20,7 @@ import sys
 import matplotlib.pyplot as plt
 import time
 import datetime
-timetag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+timetag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_') + '_'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--tag", type=str, default='toto', help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")

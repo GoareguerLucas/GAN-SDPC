@@ -65,27 +65,6 @@ os.makedirs(opt.model_save_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
 
-def weights_init_normal(m, factor=1.0):
-    classname = m.__class__.__name__
-    if classname.find("Conv") != -1:
-        n = float(m.in_channels * m.kernel_size[0] * m.kernel_size[1])
-        n += float(m.kernel_size[0] * m.kernel_size[1] * m.out_channels)
-        n = n / 2.0
-        m.weight.data.normal_(0, np.sqrt(factor / n))
-        m.bias.data.zero_()
-        #torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
-    elif classname.find("Linear") != -1:
-        n = float(m.in_features + m.out_features)
-        n = n / 2.0
-        m.weight.data.normal_(0, np.sqrt(factor / n))
-        m.bias.data.zero_()
-    elif classname.find("BatchNorm2d") != -1:
-        m.weight.data.fill_(1.0)
-        m.bias.data.zero_()
-        #torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
-        #torch.nn.init.constant_(m.bias.data, 0.0)
-
-
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
