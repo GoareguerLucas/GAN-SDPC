@@ -23,7 +23,8 @@ import datetime
 timetag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='current/200e64i64b/', help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
+parser.add_argument("-r", "--runs_path", type=str, default='Current13/200e64i64b/',
+                    help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
@@ -37,7 +38,8 @@ parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
-parser.add_argument("-m", "--model_save_interval", type=int, default=2500, help="interval between image sampling. If model_save_interval > n_epochs, no save")
+parser.add_argument("-m", "--model_save_interval", type=int, default=2500,
+                    help="interval between image sampling. If model_save_interval > n_epochs, no save")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true",
                     help="Load model present in model_save_path/Last_*.pt, if present.")
@@ -80,6 +82,7 @@ def weights_init_normal(m, factor=1.0):
         m.weight.data.fill_(1.0)
         m.bias.data.zero_()
 
+
 class Generator(nn.Module):
     def __init__(self, verbose=False):
         super(Generator, self).__init__()
@@ -107,27 +110,34 @@ class Generator(nn.Module):
         )
 
     def forward(self, z):
-		if self.verbose: print("G")
-		# Dim : opt.latent_dim
-		out = self.l1(z)
-		if self.verbose: print("l1 out : ", out.shape)
-		out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
-		# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
-		
-		if self.verbose: print("View out : ", out.shape)
-		out = self.conv1(out)
-		# Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
-		if self.verbose: print("Conv1 out : ", out.shape)
-		out = self.conv2(out)
-		# Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
-		if self.verbose: print("Conv2 out : ", out.shape)
-		out = self.conv3(out)
-		# Dim : (self.max_filters/8, opt.img_size, opt.img_size)
-		if self.verbose: print("Conv3 out : ", out.shape)
+        if self.verbose:
+            print("G")
+        # Dim : opt.latent_dim
+        out = self.l1(z)
+        if self.verbose:
+            print("l1 out : ", out.shape)
+        out = out.view(out.shape[0], self.max_filters, self.init_size, self.init_size)
+        # Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
 
-		img = self.conv_blocks(out)
-		# Dim : (opt.chanels, opt.img_size, opt.img_size)
-		if self.verbose: print("Channels Conv out : ", img.shape)
+        if self.verbose:
+            print("View out : ", out.shape)
+        out = self.conv1(out)
+        # Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
+        if self.verbose:
+            print("Conv1 out : ", out.shape)
+        out = self.conv2(out)
+        # Dim : (self.max_filters/4, opt.img_size/2, opt.img_size/2)
+        if self.verbose:
+            print("Conv2 out : ", out.shape)
+        out = self.conv3(out)
+        # Dim : (self.max_filters/8, opt.img_size, opt.img_size)
+        if self.verbose:
+            print("Conv3 out : ", out.shape)
+
+        img = self.conv_blocks(out)
+        # Dim : (opt.chanels, opt.img_size, opt.img_size)
+        if self.verbose:
+            print("Channels Conv out : ", img.shape)
 
     def _name(self):
         return "Generator"
@@ -157,28 +167,36 @@ class Discriminator(nn.Module):
         self.adv_layer = nn.Sequential(nn.Linear(self.max_filters * self.init_size ** 2, 1))  # , nn.Sigmoid()
 
     def forward(self, img):
-		if self.verbose: print("D")
-		# Dim : (opt.chanels, opt.img_size, opt.img_size)
-		if self.verbose: print("Image shape : ", img.shape)
-		
-		out = self.conv1(img)
-		# Dim : (self.max_filters/8, opt.img_size/2, opt.img_size/2)
-		if self.verbose: print("Conv1 out : ", out.shape)
-		out = self.conv2(out)
-		# Dim : (self.max_filters/4, opt.img_size/4, opt.img_size/4)
-		if self.verbose: print("Conv2 out : ", out.shape)
-		out = self.conv3(out)
-		# Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
-		if self.verbose: print("Conv3 out : ", out.shape)
-		out = self.conv4(out)
-		# Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
-		if self.verbose: print("Conv4 out : ", out.shape)
+        if self.verbose:
+            print("D")
+        # Dim : (opt.chanels, opt.img_size, opt.img_size)
+        if self.verbose:
+            print("Image shape : ", img.shape)
 
-		out = out.view(out.shape[0], -1)
-		if self.verbose: print("View out : ", out.shape)
-		validity = self.adv_layer(out)
-		# Dim : (1)
-		if self.verbose: print("Val out : ", validity.shape)
+        out = self.conv1(img)
+        # Dim : (self.max_filters/8, opt.img_size/2, opt.img_size/2)
+        if self.verbose:
+            print("Conv1 out : ", out.shape)
+        out = self.conv2(out)
+        # Dim : (self.max_filters/4, opt.img_size/4, opt.img_size/4)
+        if self.verbose:
+            print("Conv2 out : ", out.shape)
+        out = self.conv3(out)
+        # Dim : (self.max_filters/2, opt.img_size/4, opt.img_size/4)
+        if self.verbose:
+            print("Conv3 out : ", out.shape)
+        out = self.conv4(out)
+        # Dim : (self.max_filters, opt.img_size/8, opt.img_size/8)
+        if self.verbose:
+            print("Conv4 out : ", out.shape)
+
+        out = out.view(out.shape[0], -1)
+        if self.verbose:
+            print("View out : ", out.shape)
+        validity = self.adv_layer(out)
+        # Dim : (1)
+        if self.verbose:
+            print("Val out : ", validity.shape)
 
         return validity
 
@@ -225,10 +243,10 @@ if opt.load_model == True:
 # ----------
 #  Tensorboard
 # ----------
-# Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path. 
-os.makedirs(depth+"../runs/"+opt.runs_path, exist_ok=True)
+# Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
+os.makedirs(depth + "../runs/" + opt.runs_path, exist_ok=True)
 
-writer = SummaryWriter(log_dir=depth+"../runs/"+opt.runs_path)
+writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path)
 
 # ----------
 #  Training
@@ -314,23 +332,23 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
         # Tensorboard test
-        iteration = i + nb_batch*j
+        iteration = i + nb_batch * j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
-        
+
         writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
         writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
-        
+
         writer.add_scalar('d_x_cv', hist["d_x_cv"][i], global_step=iteration)
         writer.add_scalar('d_g_z_cv', hist["d_g_z_cv"][i], global_step=iteration)
-        
+
         writer.add_histogram('D(x)', d_x, global_step=iteration)
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
 
-	writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
-	writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
-	writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
-	writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
+    writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
+    writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
+    writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
+    writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
 
     # Save samples
     if epoch % opt.sample_interval == 0:
@@ -349,7 +367,7 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 
 # Save model for futur training
 if opt.model_save_interval < opt.n_epochs + 1:
-	save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
-	save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
+    save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
+    save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
 
 writer.close()
