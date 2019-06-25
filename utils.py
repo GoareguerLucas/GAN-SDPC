@@ -244,9 +244,9 @@ def sampling(noise, generator, path, epoch, tag=''):
     generator.train()
 
 def tensorboard_sampling(noise, generator, writer, epoch):
-"""
-Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
-"""
+    """
+    Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
+    """
     generator.eval()
     gen_imgs = generator(noise)
     grid = torchvision.utils.make_grid(gen_imgs)
