@@ -19,7 +19,7 @@ import sys
 import matplotlib.pyplot as plt
 import time
 import datetime
-timetag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+timetag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_') + '_'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='Current13/200e64i64b/',
