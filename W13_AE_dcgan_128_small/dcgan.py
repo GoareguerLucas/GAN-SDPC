@@ -19,8 +19,12 @@ import sys
 
 import time
 import datetime
-tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
-
+try:
+    tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+except TypeError:
+    # Python 3.5 and below
+    # 'timespec' is an invalid keyword argument for this function
+    tag = datetime.datetime.now().isoformat().split(".")[0]
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
