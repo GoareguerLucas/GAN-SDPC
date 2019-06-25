@@ -229,7 +229,7 @@ if opt.load_model == True:
 # Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
 os.makedirs(depth + "../runs/" + opt.runs_path, exist_ok=True)
 
-writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path + timetag)
+writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path + timetag + "/")
 
 # ----------
 #  Training
