@@ -243,6 +243,16 @@ def sampling(noise, generator, path, epoch, tag=''):
     save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=5, normalize=True)
     generator.train()
 
+def tensorboard_sampling(noise, generator, writer, epoch):
+"""
+Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
+"""
+    generator.eval()
+    gen_imgs = generator(noise)
+    grid = torchvision.utils.make_grid(gen_imgs)
+    writer.add_image('Images générer', grid, epoch)
+    generator.train()
+
 
 def AE_sampling(imgs, encoder, generator, path, epoch):
     generator.eval()
