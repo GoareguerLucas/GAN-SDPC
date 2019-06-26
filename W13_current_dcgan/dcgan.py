@@ -20,11 +20,12 @@ import matplotlib.pyplot as plt
 import time
 import datetime
 try:
-    tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+    tag = datetime.datetime.now().isoformat(sep='_', timespec='seconds')
 except TypeError:
     # Python 3.5 and below
     # 'timespec' is an invalid keyword argument for this function
-    tag = datetime.datetime.now().isoformat().split(".")[0]
+    tag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_')
+tag.replace(':','.')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='Current13/200e64i64b/',
