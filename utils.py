@@ -209,6 +209,7 @@ def scan(exp_name, params):
         print("Lancement de : ",com)
         ret = os.system(commande)
         print("Retour : ", ret)
+        trash = input()
         
     print("Les commandes suivantes on terminer leurs exécution ")
 
