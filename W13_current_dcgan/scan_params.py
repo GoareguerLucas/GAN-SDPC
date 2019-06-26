@@ -17,6 +17,6 @@ Il ne faut pas ajouter à params l'argument --runs_path (-r), tout est gérer da
 exp_name = "Current13"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.01,0.001,0.0001], "--lrD": [0.0001,0.00001], "--eps" : [0.0,0.1,0.5]}
+params = {"--lrG": [0.001,0.0001], "--lrD": [0.0001,0.00001], "--eps" : [0.0,0.1,0.5]}
 
 scan(exp_name, params)
