@@ -167,7 +167,7 @@ def generate_animation(path):
 def scan(exp_name, params):
     """
     Lance le fichier dcgan.py présent dans le dossier courant avec toutes les combinaisons de paramètres possible.
-    exp_names : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
+    exp_name : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
     params : Un dictionnaire où les clefs sont des noms de paramètre (ex : --lrG) et les valeurs sont les différentes
             valeurs à tester pour ce paramètre.
     """
