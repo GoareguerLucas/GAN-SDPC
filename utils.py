@@ -197,16 +197,20 @@ def scan(exp_name, params):
     base = "python3 dcgan.py -r " + exp_name + "/"
     commandes = list()
     for j, values in enumerate(perm):
-        commande = base + names[j] + "/"
+        com = base + names[j] + "/"
         for i, a in enumerate(params.keys()):
-            commande = commande + " " + str(a) + " " + str(values[i])
-        print(commande)
-        commandes.append(commande)
+            com = com + " " + str(a) + " " + str(values[i])
+        print(com)
+        commandes.append(com)
     print("Nombre de commande à lancer :", len(commandes))
 
     # Appelle successif des script avec différents paramètres
-    for comande in commandes:
-        os.system(commande)
+    for com in commandes:
+        print("Lancement de : ",com)
+        ret = os.system(commande)
+        print("Retour : ", ret)
+        
+    print("Les commandes suivantes on terminer leurs exécution ")
 
 
 if __name__ == "__main__":
