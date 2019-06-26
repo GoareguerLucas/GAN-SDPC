@@ -321,10 +321,10 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         d_x = sigmoid(d_x)
         d_g_z = sigmoid(d_g_z)
 
-        # Save Losses and scores for plotting later
+        # Save Losses and scores for Tensorboard
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
-        # Tensorboard test
+        # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
@@ -337,7 +337,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         writer.add_histogram('D(x)', d_x, global_step=iteration)
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
-
+    
     writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
     writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
     writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
