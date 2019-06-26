@@ -13,6 +13,6 @@ keys et leurs valeurs respective comme values.
 exp_name = "Current13"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"-e": [25, 50], "-i": [32, 64]}
+params = {"-e": [1, 2], "-i": [32, 64]}
 
 scan(exp_name, params)
