@@ -205,13 +205,15 @@ def scan(exp_name, params):
     print("Nombre de commande à lancer :", len(commandes))
 
     # Appelle successif des script avec différents paramètres
+    log = list()
     for com in commandes:
         print("Lancement de : ",com)
         ret = os.system(com)
-        print("Retour : ", ret)
-        trash = input()
+        log.append(ret)
         
-    print("Les commandes suivantes on terminer leurs exécution ")
+    # Récapitulatif
+    for idx,com in enumerate(commandes):
+        print("Code retour : ",log[idx]" Commandes ", com)
 
 
 if __name__ == "__main__":
