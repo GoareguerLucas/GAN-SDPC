@@ -228,10 +228,12 @@ if opt.load_model == True:
 # ----------
 #  Tensorboard
 # ----------
-path_data = depth + "../runs/" + opt.runs_path + timetag[:-1] + "/"
+path_data1 = depth + "../runs/" + opt.runs_path
+path_data2 = depth + "../runs/" + opt.runs_path + timetag[:-1] + "/"
 
 # Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
-os.makedirs(path_data, exist_ok=True)
+os.makedirs(path_data1, exist_ok=True)
+os.makedirs(path_data2, exist_ok=True)
 
 writer = SummaryWriter(log_dir=path_data)
 
