@@ -170,7 +170,6 @@ def scan(exp_name, params):
     exp_names : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
     params : Un dictionnaire où les clefs sont des noms de paramètre (ex : --lrG) et les valeurs sont les différentes
             valeurs à tester pour ce paramètre.
-    Le script utiliser (dcgan.py) doit être compatible avec le paramètre --runs_path pour utiliser cette fonction.
     """
   # Création d'une liste contenant les liste de valeurs à tester
     val_tab = list()
@@ -213,7 +212,7 @@ def scan(exp_name, params):
         
     # Récapitulatif
     for idx,com in enumerate(commandes):
-        print("Code retour : ",log[idx],"/t| Commandes ", com)
+        print("Code retour : ",log[idx],"\t| Commandes ", com)
 
 
 if __name__ == "__main__":
