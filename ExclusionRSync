@@ -16,7 +16,7 @@ launch.sh
 */*/models/[0-9]_*.pt
 test.py
 *.md
-ExlusionRSync
+ExclusionRSync
 Makefile
 *.pkl
 .git*
