@@ -206,7 +206,7 @@ def scan(exp_name, params):
     # Demande de validation
     print("Valider ? (Y/N)")
     reponse = input()
-    if reponse == N:
+    if reponse == 'N':
         print("Annulation !")
         exit(0)
 
