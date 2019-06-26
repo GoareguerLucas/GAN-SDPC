@@ -19,7 +19,12 @@ import sys
 import matplotlib.pyplot as plt
 import time
 import datetime
-timetag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_') + '_'
+try:
+    tag = datetime.datetime.now().isoformat(timespec='seconds') + '_'
+except TypeError:
+    # Python 3.5 and below
+    # 'timespec' is an invalid keyword argument for this function
+    tag = datetime.datetime.now().isoformat().split(".")[0]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='Current13/200e64i64b/',
@@ -63,6 +68,7 @@ os.makedirs(opt.sample_path, exist_ok=True)
 os.makedirs(opt.model_save_path, exist_ok=True)
 
 cuda = True if torch.cuda.is_available() else False
+
 
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
@@ -119,9 +125,9 @@ class Generator(nn.Module):
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
         if self.verbose:
             print("Channels Conv out : ", img.shape)
-            
+
         return img
-        
+
     def _name(self):
         return "Generator"
 
@@ -229,7 +235,7 @@ if opt.load_model == True:
 # Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
 os.makedirs(depth + "../runs/" + opt.runs_path, exist_ok=True)
 
-writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path + timetag + "/")
+writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path + timetag[:-1] + "/")
 
 # ----------
 #  Training
@@ -241,7 +247,7 @@ nb_epochs = 1 + opt.n_epochs - start_epoch
 hist = init_hist(nb_epochs, nb_batch)
 
 # Vecteur z fixe pour faire les samples
-fixed_noise = Variable(Tensor(np.random.normal(0, 1, (25, opt.latent_dim))))
+fixed_noise = Variable(Tensor(np.random.normal(0, 1, (24, opt.latent_dim))))
 
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
@@ -260,7 +266,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Generate a batch of images
         z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
         gen_imgs = generator(z)
-        
+
         # ---------------------
         #  Train Discriminator
         # ---------------------
