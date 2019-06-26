@@ -240,7 +240,7 @@ os.makedirs(path_data1, exist_ok=True)
 os.makedirs(path_data2, exist_ok=True)
 
 writer = SummaryWriter(log_dir=path_data2)
-
+write = trek
 # ----------
 #  Training
 # ----------
