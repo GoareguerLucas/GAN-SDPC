@@ -19,13 +19,6 @@ import sys
 import matplotlib.pyplot as plt
 import time
 import datetime
-try:
-    tag = datetime.datetime.now().isoformat(sep='_', timespec='seconds')
-except TypeError:
-    # Python 3.5 and below
-    # 'timespec' is an invalid keyword argument for this function
-    tag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_')
-tag.replace(':','.')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='Current13/200e64i64b/',
@@ -64,8 +57,18 @@ from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 from utils import *
 from plot import *
 
-cuda = True if torch.cuda.is_available() else False
+# Gestion du time tag
+try:
+    tag = datetime.datetime.now().isoformat(sep='_', timespec='seconds')
+except TypeError:
+    # Python 3.5 and below
+    # 'timespec' is an invalid keyword argument for this function
+    tag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_')
+tag = tag.replace(':','.')
 
+
+
+cuda = True if torch.cuda.is_available() else False
 
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
