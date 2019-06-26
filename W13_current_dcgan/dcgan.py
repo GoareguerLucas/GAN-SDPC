@@ -235,7 +235,7 @@ path_data2 = depth + "../runs/" + opt.runs_path + timetag[:-1] + "/"
 os.makedirs(path_data1, exist_ok=True)
 os.makedirs(path_data2, exist_ok=True)
 
-writer = SummaryWriter(log_dir=path_data)
+writer = SummaryWriter(log_dir=path_data2)
 
 # ----------
 #  Training
