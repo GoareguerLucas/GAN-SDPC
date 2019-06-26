@@ -2,7 +2,7 @@ default: rsync
 
 clean_models:
 	rm */models/*.pt; rm */*/models/*.pt
-	
+
 start_ssh:
 	sudo systemctl start ssh
 
@@ -44,3 +44,6 @@ rsync:
 
 meso_rsync:
 	rsync --progress -avhuz --exclude-from=ExclusionRSync lperrinet@login.mesocentre.univ-amu.fr:/scratch/lperrinet/SDPC/GAN-SDPC/ .
+
+babbage_rsync:
+	rsync --progress -avhuz --exclude-from=ExclusionRSync laurent@10.164.7.21:science/GAN-SDPC/GAN-SDPC/ .
