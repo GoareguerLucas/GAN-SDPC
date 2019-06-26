@@ -207,7 +207,7 @@ def scan(exp_name, params):
     # Appelle successif des script avec différents paramètres
     for com in commandes:
         print("Lancement de : ",com)
-        ret = os.system(commande)
+        ret = os.system(com)
         print("Retour : ", ret)
         trash = input()
         
