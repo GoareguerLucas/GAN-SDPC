@@ -63,10 +63,6 @@ from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 from utils import *
 from plot import *
 
-# Dossier de sauvegarde
-os.makedirs(opt.sample_path, exist_ok=True)
-os.makedirs(opt.model_save_path, exist_ok=True)
-
 cuda = True if torch.cuda.is_available() else False
 
 

@@ -5,6 +5,7 @@ __pycache__
 *.py[cod]
 *.py
 *$py.class
+test.py
 
 #Directory
 save
@@ -14,7 +15,6 @@ data
 launch.sh
 */models/[0-9]_*.pt
 */*/models/[0-9]_*.pt
-test.py
 *.md
 ExclusionRSync
 Makefile
