@@ -202,6 +202,13 @@ def scan(exp_name, params):
         print(com)
         commandes.append(com)
     print("Nombre de commande à lancer :", len(commandes))
+    
+    # Demande de validation
+    print("Valider ? (Y/N)")
+    reponse = input()
+    if reponse == N:
+        print("Annulation !")
+        exit(0)
 
     # Appelle successif des script avec différents paramètres
     log = list()
