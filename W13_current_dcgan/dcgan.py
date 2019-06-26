@@ -228,10 +228,12 @@ if opt.load_model == True:
 # ----------
 #  Tensorboard
 # ----------
-# Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
-os.makedirs(depth + "../runs/" + opt.runs_path, exist_ok=True)
+path_data = depth + "../runs/" + opt.runs_path + timetag[:-1] + "/"
 
-writer = SummaryWriter(log_dir=depth + "../runs/" + opt.runs_path + timetag[:-1] + "/")
+# Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
+os.makedirs(path_data, exist_ok=True)
+
+writer = SummaryWriter(log_dir=path_data)
 
 # ----------
 #  Training
