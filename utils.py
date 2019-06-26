@@ -213,7 +213,7 @@ def scan(exp_name, params):
         
     # Récapitulatif
     for idx,com in enumerate(commandes):
-        print("Code retour : ",log[idx]," Commandes ", com)
+        print("Code retour : ",log[idx],"/t| Commandes ", com)
 
 
 if __name__ == "__main__":
