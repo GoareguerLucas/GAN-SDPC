@@ -122,8 +122,8 @@ def tensorboard_sampling(noise, generator, writer, epoch):
     """
     generator.eval()
     gen_imgs = generator(noise)
-    grid = torchvision.utils.make_grid(gen_imgs)
-    writer.add_image('Images générer', grid, epoch, normalize=True)
+    grid = torchvision.utils.make_grid(gen_imgs, normalize=True)
+    writer.add_image('Images générer', grid, epoch)
     generator.train()
 
 
