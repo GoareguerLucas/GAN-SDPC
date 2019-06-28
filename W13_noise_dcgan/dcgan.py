@@ -21,7 +21,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='LatentDim/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Noise/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
 parser.add_argument("--noise", type=float, default=0.1, help="Puissance maximal du bruit")
