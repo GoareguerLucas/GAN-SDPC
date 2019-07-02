@@ -164,12 +164,14 @@ def generate_animation(path):
         images.append(imageio.imread(i))
     imageio.mimsave(path + 'training.gif', images, fps=1)
 
-def scan(exp_name, params):
+def scan(exp_name, params, permutation=True):
     """
     Lance le fichier dcgan.py présent dans le dossier courant avec toutes les combinaisons de paramètres possible.
     exp_name : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
     params : Un dictionnaire où les clefs sont des noms de paramètre (ex : --lrG) et les valeurs sont les différentes
             valeurs à tester pour ce paramètre.
+    permutation : Si == True alors toute les permutations (sans répétition) possible de params sont tester,
+                  Sinon tout paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
     """
   # Création d'une liste contenant les liste de valeurs à tester
     val_tab = list()
@@ -179,8 +181,12 @@ def scan(exp_name, params):
     # print(val_tab)
 
     # Création d'une liste contenant tout les combinaisons de paramètres à tester
-    perm = product(*val_tab)
-
+    if permutation:
+        perm = list(product(*val_tab))
+    else:
+        perm = list(zip(*val_tab))
+    #print(perm)
+    
     # Construction du noms de chaque test en fonction des paramètre qui la compose
     names = list()
     for values in perm:
@@ -189,10 +195,9 @@ def scan(exp_name, params):
         l = list(zip(e, b))
         l_str = [str(ele) for el in l for ele in el]
         names.append(''.join(l_str).replace('-', ''))
-    # print(names)
+    #print(names)
 
     # Construction de toutes les commandes à lancer
-    perm = product(*val_tab)
     base = "python3 dcgan.py -r " + exp_name + "/"
     commandes = list()
     for j, values in enumerate(perm):
