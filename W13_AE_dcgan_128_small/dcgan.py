@@ -24,7 +24,7 @@ try:
 except TypeError:
     # Python 3.5 and below
     # 'timespec' is an invalid keyword argument for this function
-    tag = datetime.datetime.now().isoformat().split(".")[0]
+    tag = datetime.datetime.now().isoformat().split(".")[0] + '_'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
