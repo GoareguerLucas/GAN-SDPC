@@ -12,6 +12,8 @@ import numpy as np
 import random
 import torch
 import time
+from itertools import product
+import os
 
 import sys
 sys.path.append("../")  # ../../GAN-SDPC/
@@ -22,16 +24,16 @@ from SimpsonsDataset import *
 def weights_init_normal(m, factor=1.0):
     classname = m.__class__.__name__
     if classname.find("Conv") != -1:
-        n=float(m.in_channels*m.kernel_size[0]*m.kernel_size[1])
-        n+=float(m.kernel_size[0]*m.kernel_size[1]*m.out_channels)
-        n=n/2.0
-        m.weight.data.normal_(0, np.sqrt(factor/n))
+        n = float(m.in_channels * m.kernel_size[0] * m.kernel_size[1])
+        n += float(m.kernel_size[0] * m.kernel_size[1] * m.out_channels)
+        n = n / 2.0
+        m.weight.data.normal_(0, np.sqrt(factor / n))
         m.bias.data.zero_()
         #torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
     elif classname.find("Linear") != -1:
-        n=float(m.in_features+m.out_features)
-        n=n/2.0
-        m.weight.data.normal_(0, np.sqrt(factor/n))
+        n = float(m.in_features + m.out_features)
+        n = n / 2.0
+        m.weight.data.normal_(0, np.sqrt(factor / n))
         m.bias.data.zero_()
     elif classname.find("BatchNorm2d") != -1:
         m.weight.data.fill_(1.0)
@@ -61,7 +63,8 @@ def load_data(path, img_size, batch_size, Fast=True, rand_hflip=False, rand_affi
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    print("[Loading Time: ", time.strftime("%Mm:%Ss", time.gmtime(time.time() - t_total)), "] [Numbers of samples :",len(dataset)," ]\n")
+    print("[Loading Time: ", time.strftime("%Mm:%Ss", time.gmtime(time.time() - t_total)),
+          "] [Numbers of samples :", len(dataset), " ]\n")
 
     if return_dataset == True:
         return dataloader, dataset
@@ -102,146 +105,16 @@ def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, mo
 
     return start_epoch + 1  # La dernière epoch est déjà faite
 
-
-def plot_scores(D_x, D_G_z, start_epoch=1, current_epoch=-1):
-    if len(D_x) <= 0 or len(D_G_z) <= 0:
-        return None
-
-    if current_epoch == -1:  # C'est pour surcharger la fonction pour les versions passer
-        current_epoch = len(D_x) * 10
-
-    # Plot game score
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("Generator and Discriminator scores During Training")
-    plt.plot(D_x, label="D(x)")
-    plt.plot(D_G_z, label="D(G(z))")
-    plt.xlabel("Epochs")
-    plt.ylabel("Scores")
-    plt.legend()
-    # Gradutation
-    plt.yticks(np.arange(0.0, 1.2, 0.1))
-    positions = np.linspace(0, len(D_x), num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig("scores.png", format="png")
-    plt.close(fig)
-
-
-def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, E_losses=[], tag='', path="losses.png"):
-    if len(G_losses) <= 0 or len(D_losses) <= 0:
-        return None
-
-    if current_epoch == -1:  # C'est pour surcharger la fonction pour les versions passer
-        current_epoch = len(D_losses) * 10
-
-    # Plot losses
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("Loss During Training")
-    plt.plot(E_losses, label="E")
-    plt.plot(D_losses, label="D")
-    plt.plot(G_losses, label="G")
-    plt.xlabel("Epochs")
-    plt.ylabel("Loss")
-    plt.legend()
-    # Gradutation
-    positions = np.linspace(0, len(D_losses), num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig(tag+path, format="png")
-    plt.close(fig)
-
-
-def plot_began(M, k, start_epoch=1, current_epoch=-1):
-    if len(M) <= 0 or len(k) <= 0:
-        return None
-
-    if current_epoch == -1:  # C'est pour surcharger la fonction pour les versions passer
-        current_epoch = len(M) * 10
-
-    # Plot M and k value
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("M and k Value During Training")
-    plt.plot(M, label="M")
-    plt.plot(k, label="k")
-    plt.xlabel("Epochs")
-    plt.ylabel("Value")
-    plt.legend()
-    # Gradutation
-    plt.yticks(np.arange(0.0, 1.2, 0.1))
-    positions = np.linspace(0, len(M), num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig("M_k.png", format="png")
-    plt.close(fig)
-
-
-def plot_lr(lr, start_epoch=1, current_epoch=-1):
-    if len(lr) <= 0:
-        return None
-
-    if current_epoch == -1:  # C'est pour surcharger la fonction pour les versions passer
-        current_epoch = len(lr) * 10
-
-    # Plot lr
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("lr Value During Training")
-    plt.plot(lr, label="lr")
-    plt.xlabel("Epochs")
-    plt.ylabel("Value")
-    plt.legend()
-    # Gradutation
-    positions = np.linspace(0, len(lr), num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig("lr.png", format="png")
-    plt.close(fig)
-
-
-def plot_reset(trainG, save_point, load_point, start_epoch=1, current_epoch=-1):
-    if len(trainG) <= 0:
-        return None
-
-    if current_epoch == -1:  # C'est pour surcharger la fonction pour les versions passer
-        current_epoch = len(trainG) * 10
-
-    # Plot trainG
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("trainG Value During Training")
-    plt.plot(trainG, label="State trainG")
-    plt.scatter(save_point, np.zeros(len(save_point)), s=60, color='r', marker="|", label="Save point")
-    plt.scatter(load_point, np.zeros(len(load_point)), color='g', marker="+", label="Load point")
-    plt.xlabel("Epochs")
-    plt.ylabel("Value")
-    plt.legend()
-    # Gradutation
-    positions = np.linspace(0, len(trainG), num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig("resetD.png", format="png")
-    plt.close(fig)
-
-
-"""
-Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
-Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
-"""
-
-
 def sampling(noise, generator, path, epoch, tag=''):
+    """
+    Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
+    Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
+    """
     generator.eval()
     gen_imgs = generator(noise)
     save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=5, normalize=True)
     generator.train()
+
 
 def tensorboard_sampling(noise, generator, writer, epoch):
     """
@@ -249,7 +122,7 @@ def tensorboard_sampling(noise, generator, writer, epoch):
     """
     generator.eval()
     gen_imgs = generator(noise)
-    grid = torchvision.utils.make_grid(gen_imgs)
+    grid = torchvision.utils.make_grid(gen_imgs, normalize=True)
     writer.add_image('Images générer', grid, epoch)
     generator.train()
 
@@ -291,49 +164,67 @@ def generate_animation(path):
         images.append(imageio.imread(i))
     imageio.mimsave(path + 'training.gif', images, fps=1)
 
+def scan(exp_name, params, permutation=True):
+    """
+    Lance le fichier dcgan.py présent dans le dossier courant avec toutes les combinaisons de paramètres possible.
+    exp_name : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
+    params : Un dictionnaire où les clefs sont des noms de paramètre (ex : --lrG) et les valeurs sont les différentes
+            valeurs à tester pour ce paramètre.
+    permutation : Si == True alors toute les permutations (sans répétition) possible de params sont tester,
+                  Sinon tout paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
+    """
+  # Création d'une liste contenant les liste de valeurs à tester
+    val_tab = list()
+    for v in params.values():
+        val_tab.append(v)
+        # print(v)
+    # print(val_tab)
 
-def histogram(D_x, D_G_z, epoch, i):
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("D(x) réponse pour l'epochs " + str(epoch))
-    plt.hist(D_x, bins=16)
-    plt.scatter(D_x, np.zeros(64), s=60, color='r', marker="|")
-    plt.xlabel("Value")
-    plt.ylabel("Frequency")
+    # Création d'une liste contenant tout les combinaisons de paramètres à tester
+    if permutation:
+        perm = list(product(*val_tab))
+    else:
+        perm = list(zip(*val_tab))
+    #print(perm)
+    
+    # Construction du noms de chaque test en fonction des paramètre qui la compose
+    names = list()
+    for values in perm:
+        b = values
+        e = params.keys()
+        l = list(zip(e, b))
+        l_str = [str(ele) for el in l for ele in el]
+        names.append(''.join(l_str).replace('-', ''))
+    #print(names)
 
-    plt.savefig("hist/dx_" + str(epoch) + "_" + str(i) + ".png", format="png")
-    plt.close(fig)
+    # Construction de toutes les commandes à lancer
+    base = "python3 dcgan.py -r " + exp_name + "/"
+    commandes = list()
+    for j, values in enumerate(perm):
+        com = base + names[j] + "/"
+        for i, a in enumerate(params.keys()):
+            com = com + " " + str(a) + " " + str(values[i])
+        print(com)
+        commandes.append(com)
+    print("Nombre de commande à lancer :", len(commandes))
+    
+    # Demande de validation
+    print("Valider ? (Y/N)")
+    reponse = input()
+    if reponse == 'N':
+        print("Annulation !")
+        exit(0)
 
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("D(G(z)) réponse pour l'epochs " + str(epoch))
-    plt.hist(D_G_z, bins=16)
-    plt.scatter(D_G_z, np.zeros(64), s=60, color='r', marker="|")
-    plt.xlabel("Value")
-    plt.ylabel("Frequency")
-
-    plt.savefig("hist/dgz_" + str(epoch) + "_" + str(i) + ".png", format="png")
-    plt.close(fig)
-
-
-def plot_extrem(D_x, D_G_z, nb_batch, start_epoch=1, current_epoch=-1, name="extremum.png"):
-    if len(D_x) <= 0 or len(D_G_z) <= 0:
-        return None
-
-    # Plot D_x and D_x value
-    fig = plt.figure(figsize=(10, 5))
-    plt.title("Extrem response of D During Training")
-    plt.plot(D_x, label="Log10(D_x.min())")
-    plt.plot(D_G_z, label="Log10(D_G_z.min())")
-    plt.xlabel("Epochs")
-    plt.ylabel("Value")
-    plt.legend()
-    # Gradutation
-    positions = np.linspace(0, current_epoch * nb_batch, num=6)
-    labels = np.linspace(start_epoch - 1, current_epoch, num=6)
-    plt.xticks(positions, labels)
-
-    plt.grid(True)
-    plt.savefig(name, format="png")
-    plt.close(fig)
+    # Appelle successif des script avec différents paramètres
+    log = list()
+    for com in commandes:
+        print("Lancement de : ",com)
+        ret = os.system(com)
+        log.append(ret)
+        
+    # Récapitulatif
+    for idx,com in enumerate(commandes):
+        print("Code retour : ",log[idx],"\t| Commandes ", com)
 
 
 if __name__ == "__main__":

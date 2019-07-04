@@ -1,16 +1,23 @@
 # Byte-compiled / optimized / DLL files
+
+# Python
 __pycache__
 *.py[cod]
 *.py
 *$py.class
+test.py
+
+#Directory
 save
+data
+
+#File
+launch.sh
 */models/[0-9]_*.pt
 */*/models/[0-9]_*.pt
-test.py
 *.md
-.git*
-ExlusionRSync
+ExclusionRSync
 Makefile
 *.pkl
+.git*
 *ubyte
-data

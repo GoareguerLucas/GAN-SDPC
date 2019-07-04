@@ -35,7 +35,7 @@ def init_hist(nb_epochs, nb_batch, lossE=False):
     if lossE:
         hist["E_losses"] = np.zeros(nb_epochs)
         hist["e_losses"] = np.zeros(nb_batch)
-	
+
     # Moyenne des réponse D(x) et D(G(z)) moyenner par epochs
     hist["D_x_mean"] = np.zeros(nb_epochs)
     hist["D_G_z_mean"] = np.zeros(nb_epochs)
@@ -75,7 +75,7 @@ def save_hist_batch(hist, idx_batch, idx_epoch, g_loss, d_loss, d_x, d_g_z, e_lo
     if e_loss != -1:
         e_loss = e_loss.item()
         hist["e_losses"][idx_batch] = e_loss
-        
+
     hist["g_losses"][idx_batch] = g_loss
     hist["d_losses"][idx_batch] = d_loss
 
@@ -102,7 +102,7 @@ def save_hist_epoch(hist, idx_epoch, E_losses=False):
     """
     Sauvegarde les données de l'epoch dans l'historique
     """
-    
+
     hist["G_losses"][idx_epoch] = hist["g_losses"].mean()
     hist["D_losses"][idx_epoch] = hist["d_losses"].mean()
     if E_losses:
@@ -214,7 +214,7 @@ def plot_losses(G_losses, D_losses, start_epoch=1, current_epoch=-1, path="losse
     plt.title("Generator and Discriminator Loss During Training")
     plt.plot(D_losses, label="D")
     plt.plot(G_losses, label="G")
-    if type(E_losses).__module__ == np.__name__: # Si E_losses est un numpy array
+    if type(E_losses).__module__ == np.__name__:  # Si E_losses est un numpy array
         plt.plot(E_losses, label="E")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
