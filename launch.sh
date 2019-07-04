@@ -63,17 +63,17 @@ cd W12_AE_dcgan_128_norm
 python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 cd ..
 
-cd W12_AE_dcgan_128_kernels
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
-
-cd W12_AE_dcgan_128_upsampling
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
-
-cd W12_AE_dcgan_128_adam
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
+# cd W12_AE_dcgan_128_kernels
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+# cd W12_AE_dcgan_128_upsampling
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
+#
+# cd W12_AE_dcgan_128_adam
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
 
 # cd W13_AE_dcgan_128_small
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
