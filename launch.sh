@@ -8,9 +8,9 @@
 #SBATCH -o test.out  # <-- the name of the file where the output of the simulation is written
 #SBATCH -e error.err  # <-- the name of the file where errors of the simulation are written
 
-# module purge
-# module load userspace/all
-# module load python3/3.6.3
+module purge
+module load userspace/all
+module load python3/3.6.3
 
 # cd W11_AE_dcgan_64
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
