@@ -74,7 +74,6 @@ cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.02, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='zeros')
-verbose=False
 # verbose=True
 channels = [64, 128, 256, 512]
 channels = [16, 32, 64, 128]
@@ -144,11 +143,7 @@ class Generator(nn.Module):
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
         self.conv4 = nn.Sequential(*generator_block(channels[0], opt.channels),)
-        self.conv_blocks = nn.Sequential(
-            nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
-            nn.Tanh(),
-        )
-
+        
     def forward(self, z):
         if self.verbose: print("G")
         # Dim : opt.latent_dim
