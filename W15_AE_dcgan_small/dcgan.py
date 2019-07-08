@@ -70,7 +70,6 @@ except TypeError:
 tag = tag.replace(':','.')
 
 
-
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(0.02, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
@@ -81,7 +80,7 @@ channels = [64, 128, 256, 512]
 channels = [16, 32, 64, 128]
 
 class Encoder(nn.Module):
-    def __init__(self, verbose=verbose):
+    def __init__(self, verbose=opt.verbose):
         super(Encoder, self).__init__()
 
         def encoder_block(in_filters, out_filters, bn=True):
@@ -124,7 +123,7 @@ class Encoder(nn.Module):
         return z
 
 class Generator(nn.Module):
-    def __init__(self, verbose=verbose):
+    def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
 
         # def generator_block(in_filters, out_filters):
@@ -137,7 +136,7 @@ class Generator(nn.Module):
             return block
 
         self.verbose = verbose
-        self.init_size = opt.img_size // 8
+        self.init_size = opt.img_size // opts_conv['stride']**4
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
@@ -178,7 +177,7 @@ class Generator(nn.Module):
         return "Generator"
 
 class Discriminator(nn.Module):
-    def __init__(self,verbose=verbose):
+    def __init__(self,verbose=opt.verbose):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
