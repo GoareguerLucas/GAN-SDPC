@@ -99,7 +99,7 @@ class Encoder(nn.Module):
         self.conv4 = nn.Sequential(*encoder_block(channels[2], channels[3]),)
 
         self.init_size = opt.img_size // opts_conv['stride']**4
-        self.vector = nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2)
+        self.vector = nn.Linear(channels[3] * self.init_size ** 2, opt.latent_dim)
         # self.sigmoid = nn.Sequential(nn.Sigmoid(),)
 
     def forward(self, img):
