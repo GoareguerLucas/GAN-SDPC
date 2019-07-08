@@ -168,7 +168,7 @@ class Generator(nn.Module):
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
         img = self.conv4(out)
-        # Dim : (channels[3]/8, opt.img_size, opt.img_size)
+        # Dim : (channels[3]/16, opt.img_size, opt.img_size)
         if self.verbose: print("Conv4 out : ",out.shape)
 
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
@@ -305,7 +305,7 @@ save_dot = 1 # Nombre d'epochs avant de sauvegarder un point des courbes
 batch_on_save_dot = save_dot*len(dataloader)
 
 # Vecteur z fixe pour faire les samples
-N_samples = 5**2
+N_samples = 24
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (N_samples, opt.latent_dim))))
 
 t_total = time.time()
