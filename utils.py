@@ -171,7 +171,7 @@ def scan(exp_name, params, permutation=True):
     params : Un dictionnaire où les clefs sont des noms de paramètre (ex : --lrG) et les valeurs sont les différentes
             valeurs à tester pour ce paramètre.
     permutation : Si == True alors toute les permutations (sans répétition) possible de params sont tester,
-                  Sinon tout paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
+                  Sinon tout les paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
     """
   # Création d'une liste contenant les liste de valeurs à tester
     val_tab = list()
