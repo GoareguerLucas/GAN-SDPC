@@ -59,9 +59,9 @@ module load python3/3.6.3
 # cd ..
 #
 #
-cd W12_AE_dcgan_128_norm
-python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
-cd ..
+# cd W12_AE_dcgan_128_norm
+# python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+# cd ..
 
 # cd W12_AE_dcgan_128_kernels
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
@@ -78,3 +78,7 @@ cd ..
 # cd W13_AE_dcgan_128_small
 # python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
 # cd ..
+
+cd W14_AE_dcgan_128_small
+python3 dcgan.py  # <-- Put here the name of the python prog you want to launch
+cd ..
