@@ -1,6 +1,6 @@
 #!/bin/sh
 #SBATCH -J Job_GAN # <-- Change that
-#SBATCH -p kepler # gpu # <-- Could be also teslak40 (less memory)
+#SBATCH -p gpu # kepler # <-- Could be also teslak40 (less memory)
 #SBATCH --gres=gpu:1 # <-- Specify that you want to use 1 gpu for your python prog
 #SBATCH -A h146  # <-- Do not change, we are all working under the same project
 #SBATCH -t 2-2  # <-- IMPORTANT :  this the duration of the simulation at the format : dd-hh:mm:ss. The simulation stopped even if not finished
