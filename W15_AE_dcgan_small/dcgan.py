@@ -346,10 +346,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Configure input
         real_imgs = Variable(imgs.type(Tensor))
         # Generate a batch of images
-        if False:
-            z = np.random.uniform(0, 1, (imgs.shape[0], opt.latent_dim))
-        else:
-            z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
+        z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
         z = Variable(Tensor(z))
         gen_imgs = generator(z)
 
