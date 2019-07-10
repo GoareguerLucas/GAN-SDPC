@@ -142,9 +142,8 @@ class Generator(nn.Module):
         self.conv1 = nn.Sequential(*generator_block(channels[3], channels[2]),)
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
-        self.conv4 = nn.Sequential(*generator_block(channels[0], opt.channels),)
         self.conv_blocks = nn.Sequential(
-            nn.Conv2d(opt.channels, opt.channels, 3, stride=1, padding=1),
+            nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
         
@@ -166,9 +165,6 @@ class Generator(nn.Module):
         out = self.conv3(out)
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
-        out = self.conv4(out)
-        # Dim : (channels[3]/16, opt.img_size, opt.img_size)
-        if self.verbose: print("Conv4 out : ",out.shape)
         
         img = self.conv_blocks(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
