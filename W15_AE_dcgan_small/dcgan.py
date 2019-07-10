@@ -142,7 +142,7 @@ class Generator(nn.Module):
         self.conv1 = nn.Sequential(*generator_block(channels[3], channels[2]),)
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
-        self.conv4 = nn.Sequential(*generator_block(channels[0], opt.channels), nn.Tanh(),)
+        self.conv4 = nn.Sequential(*generator_block(channels[0], opt.channels),)
         
     def forward(self, z):
         if self.verbose: print("G")
