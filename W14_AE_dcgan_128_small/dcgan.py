@@ -43,7 +43,8 @@ parser.add_argument("--channels", type=int, default=3, help="number of image cha
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
-opt = parser.parse_args()
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="Afficher des informations complémentaire.")opt = parser.parse_args()
 print(opt)
 
 # Particular import
@@ -69,7 +70,7 @@ channels = [64, 128, 256, 512]
 channels = [16, 32, 64, 128]
 
 class Encoder(nn.Module):
-    def __init__(self, verbose=verbose):
+    def __init__(self, verbose=opt.verbose):
         super(Encoder, self).__init__()
 
         def encoder_block(in_filters, out_filters, bn=True):
@@ -112,7 +113,7 @@ class Encoder(nn.Module):
         return z
 
 class Generator(nn.Module):
-    def __init__(self, verbose=verbose):
+    def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
 
         # def generator_block(in_filters, out_filters):
@@ -166,7 +167,7 @@ class Generator(nn.Module):
         return "Generator"
 
 class Discriminator(nn.Module):
-    def __init__(self,verbose=verbose):
+    def __init__(self,verbose=opt.verbose):
         super(Discriminator, self).__init__()
 
         def discriminator_block(in_filters, out_filters, bn=True):
