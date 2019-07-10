@@ -168,7 +168,7 @@ class Generator(nn.Module):
         if self.verbose: print("Conv3 out : ",out.shape)
         out = self.conv4(out)
         # Dim : (channels[3]/16, opt.img_size, opt.img_size)
-        if self.verbose: print("Conv4 out : ",img.shape)
+        if self.verbose: print("Conv4 out : ",out.shape)
         
         img = self.conv_blocks(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
