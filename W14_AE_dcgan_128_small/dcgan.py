@@ -44,7 +44,8 @@ parser.add_argument("-s", "--sample_interval", type=int, default=10, help="inter
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-d", "--depth", action="store_true", help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
-                    help="Afficher des informations complémentaire.")opt = parser.parse_args()
+                    help="Afficher des informations complémentaire.")
+opt = parser.parse_args()
 print(opt)
 
 # Particular import
