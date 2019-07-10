@@ -135,7 +135,7 @@ class Generator(nn.Module):
             return block
 
         self.verbose = verbose
-        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.init_size = opt.img_size // opts_conv['stride']**3
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
@@ -143,7 +143,7 @@ class Generator(nn.Module):
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
         self.conv_blocks = nn.Sequential(
-            nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),
+            #nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),
             nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
