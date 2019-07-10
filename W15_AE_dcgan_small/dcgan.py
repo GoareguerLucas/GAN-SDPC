@@ -130,7 +130,7 @@ class Generator(nn.Module):
         #
         #     return block
         def generator_block(in_filters, out_filters):
-            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']), nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
@@ -346,6 +346,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
         z = Variable(Tensor(z))
         gen_imgs = generator(z)
+        
+        print("Max : ",gen_imgs.max()," Min :",gen_imgs.min())
 
         optimizer_D.zero_grad()
 
