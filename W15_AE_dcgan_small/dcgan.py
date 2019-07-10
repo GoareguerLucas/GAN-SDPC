@@ -90,7 +90,7 @@ class Encoder(nn.Module):
 
         self.verbose = verbose
         # use a different layer in the encoder using similarly max_filters
-        # channels[3] = 512
+        # channels[3] = 128
 
         self.conv1 = nn.Sequential(*encoder_block(opt.channels, channels[0], bn=False),)
         self.conv2 = nn.Sequential(*encoder_block(channels[0], channels[1]),)
@@ -143,6 +143,7 @@ class Generator(nn.Module):
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
         self.conv_blocks = nn.Sequential(
+            nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),
             nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
