@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "FDD"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.0005, 0.001, 0.0001], "--lrD": [0.00005, 0.0001, 0.00001], "--eps": [0.5, 0.0, 0.1], "--b1": [0.5, 0.1, 0.9]}
+params = {"--lrG": [0.0005, 0.001, 0.0001], "--lrD": [0.00005, 0.0001, 0.00001], "--eps": [0.5, 0.0]}
 
 scan(exp_name, params)
