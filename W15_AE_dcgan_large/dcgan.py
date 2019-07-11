@@ -30,7 +30,7 @@ parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of th
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--eps", type=float, default=0.005, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
@@ -130,21 +130,20 @@ class Generator(nn.Module):
         #
         #     return block
         def generator_block(in_filters, out_filters):
-            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']),            nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']), nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
         self.verbose = verbose
-        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.init_size = opt.img_size // opts_conv['stride']**3
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
         self.conv1 = nn.Sequential(*generator_block(channels[3], channels[2]),)
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
-        self.conv4 = nn.Sequential(*generator_block(channels[0], opt.channels),)
         self.conv_blocks = nn.Sequential(
-            nn.Conv2d(opt.channels, opt.channels, 3, stride=1, padding=1),
+            nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
         
@@ -166,9 +165,6 @@ class Generator(nn.Module):
         out = self.conv3(out)
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
-        out = self.conv4(out)
-        # Dim : (channels[3]/16, opt.img_size, opt.img_size)
-        if self.verbose: print("Conv4 out : ",out.shape)
         
         img = self.conv_blocks(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
