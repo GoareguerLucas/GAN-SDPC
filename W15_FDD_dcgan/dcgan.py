@@ -31,7 +31,7 @@ parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon f
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
-parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
+parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
