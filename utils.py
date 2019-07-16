@@ -164,7 +164,7 @@ def generate_animation(path):
         images.append(imageio.imread(i))
     imageio.mimsave(path + 'training.gif', images, fps=1)
 
-def scan(exp_name, params, permutation=True):
+def scan(exp_name, params, permutation=True, gpu_repart=False):
     """
     Lance le fichier dcgan.py présent dans le dossier courant avec toutes les combinaisons de paramètres possible.
     exp_name : Une chaîne de caractère utiliser pour nommer le sous dossier de résultats tensorboard.
@@ -172,6 +172,7 @@ def scan(exp_name, params, permutation=True):
             valeurs à tester pour ce paramètre.
     permutation : Si == True alors toute les permutations (sans répétition) possible de params sont tester,
                   Sinon tout les paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
+    gpu_repart : Si plusieurs GPU sont disponible les commandes seront répartis entre eux.
     """
   # Création d'une liste contenant les liste de valeurs à tester
     val_tab = list()
@@ -214,7 +215,19 @@ def scan(exp_name, params, permutation=True):
     if reponse == 'N':
         print("Annulation !")
         exit(0)
-
+    
+    # Répartition sur plusieurs GPU
+    if torch.cuda.is_available():
+        nb_gpu = torch.cuda.device_count()
+        if nb_gpu > 1 and gpu_repart:
+            rep_commandes = list()
+            for com in commandes:
+                for i in range(nb_gpu):
+                    rep_com.append(com+' &')
+                print(rep_com)
+                rep_commandes.append(rep_com)
+            commandes = rep_commandes
+    
     # Appelle successif des script avec différents paramètres
     log = list()
     for com in commandes:
