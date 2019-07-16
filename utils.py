@@ -230,6 +230,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
                     rep_commandes.append(stock)
                     print(stock)
                     stock = ""
+                    count_gpu = 0
             commandes = rep_commandes
             
     p = input()
