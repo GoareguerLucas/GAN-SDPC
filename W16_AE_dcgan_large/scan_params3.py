@@ -20,4 +20,4 @@ exp_name = "AE32Large"
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
 params = {"--lrG": [0.001, 0.0001, 0.00025, 0.00015], "--lrD": [0.0001, 0.00001, 0.00005, 0.00005], "--lrE": [0.001, 0.0001, 0.00025, 0.00015]}
 
-scan(exp_name, params, permutation=False)
+scan(exp_name, params, permutation=False, gpu_repart=True)
