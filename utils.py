@@ -223,11 +223,11 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
             rep_commandes = list()
             for com in commandes:
                 for i in range(nb_gpu):
-                    rep_com.append(com+' &')
+                    rep_com.append(com+"--GPU "+str(i)+" &")
                 print(rep_com)
                 rep_commandes.append(rep_com)
             commandes = rep_commandes
-    
+    p = input()
     # Appelle successif des script avec différents paramètres
     log = list()
     for com in commandes:
