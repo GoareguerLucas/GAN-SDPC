@@ -224,7 +224,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
             count_gpu = 0
             stock = ""
             for com in commandes:
-                stock = stock + com+"--GPU "+str(count_gpu)+" & "
+                stock = stock + com+" --GPU "+str(count_gpu)+" & "
                 count_gpu = count_gpu+1
                 if count_gpu == nb_gpu:
                     rep_commandes.append(stock)
