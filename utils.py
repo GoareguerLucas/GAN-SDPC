@@ -233,7 +233,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
                     stock = ""
                     count_gpu = 0
             commandes = rep_commandes
-            
+    p = input()
     # Appelle successif des script avec différents paramètres
     log = list()
     for com in commandes:
