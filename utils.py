@@ -221,12 +221,17 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
         nb_gpu = torch.cuda.device_count()
         if nb_gpu > 1 and gpu_repart:
             rep_commandes = list()
+            count_gpu = 0
+            stock = ""
             for com in commandes:
-                for i in range(nb_gpu):
-                    rep_com.append(com+"--GPU "+str(i)+" &")
-                print(rep_com)
-                rep_commandes.append(rep_com)
+                stock = stock + com+"--GPU "+str(count_gpu)+" & "
+                count_gpu = count_gpu+1
+                if count_gpu == nb_gpu:
+                    rep_commandes.append(stock)
+                    print(stock)
+                    stock = ""
             commandes = rep_commandes
+            
     p = input()
     # Appelle successif des script avec différents paramètres
     log = list()
