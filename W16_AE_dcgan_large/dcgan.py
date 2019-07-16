@@ -47,6 +47,7 @@ parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
+parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
 
@@ -248,11 +249,15 @@ print_network(discriminator)
 print_network(encoder)
 
 if cuda:
-    generator.cuda()
-    discriminator.cuda()
-    adversarial_loss.cuda()
-    encoder.cuda()
-    MSE_loss.cuda()
+    GPU = 0
+    if torch.cuda.device_count() > opt.GPU: 
+        GPU = opt.GPU
+    
+    generator.cuda(GPU)
+    discriminator.cuda(GPU)
+    adversarial_loss.cuda(GPU)
+    encoder.cuda(GPU)
+    MSE_loss.cuda(GPU)
 
 # Initialize weights
 generator.apply(weights_init_normal)
