@@ -48,7 +48,7 @@ parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
-parser.add_argument("--GPU", type=int, default=1, help="Identifiant du GPU à utiliser.")
+parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
 
@@ -251,7 +251,7 @@ print_network(discriminator)
 print_network(encoder)
 
 if cuda:
-    print("Nombre de GPU : ",torch.cuda.device_count())
+    #print("Nombre de GPU : ",torch.cuda.device_count())
     if torch.cuda.device_count() > opt.GPU: 
         torch.cuda.set_device(opt.GPU)
     
