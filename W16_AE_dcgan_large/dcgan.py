@@ -72,6 +72,7 @@ except TypeError:
 tag = tag.replace(':','.')
 
 
+
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
@@ -250,15 +251,14 @@ print_network(discriminator)
 print_network(encoder)
 
 if cuda:
-    GPU = 0
     if torch.cuda.device_count() > opt.GPU: 
-        GPU = opt.GPU
+        torch.cuda.device(opt.GPU)
     
-    generator.cuda(GPU)
-    discriminator.cuda(GPU)
-    adversarial_loss.cuda(GPU)
-    encoder.cuda(GPU)
-    MSE_loss.cuda(GPU)
+    generator.cuda()
+    discriminator.cuda()
+    adversarial_loss.cuda()
+    encoder.cuda()
+    MSE_loss.cuda()
 
 # Initialize weights
 generator.apply(weights_init_normal)
