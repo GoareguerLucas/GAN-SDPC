@@ -251,8 +251,9 @@ print_network(discriminator)
 print_network(encoder)
 
 if cuda:
+    print("Nombre de GPU : ",torch.cuda.device_count())
     if torch.cuda.device_count() > opt.GPU: 
-        torch.cuda.device(opt.GPU)
+        torch.cuda.set_device(opt.GPU)
     
     generator.cuda()
     discriminator.cuda()
