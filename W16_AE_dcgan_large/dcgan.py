@@ -33,6 +33,7 @@ parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning ra
 parser.add_argument("--eps", type=float, default=0.0, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=32, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
@@ -47,7 +48,7 @@ parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
-parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
+parser.add_argument("--GPU", type=int, default=1, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
 
@@ -72,7 +73,7 @@ tag = tag.replace(':','.')
 
 
 cuda = True if torch.cuda.is_available() else False
-NL = nn.LeakyReLU(0.02, inplace=True)
+NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
 # verbose=True

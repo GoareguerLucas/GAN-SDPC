@@ -172,7 +172,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
             valeurs à tester pour ce paramètre.
     permutation : Si == True alors toute les permutations (sans répétition) possible de params sont tester,
                   Sinon tout les paramètres sont ziper (tout les paramètres doivent contenir le même nombres d'éléments).
-    gpu_repart : Si plusieurs GPU sont disponible les commandes seront répartis entre eux.
+    gpu_repart (Non fonctionnel) : Si plusieurs GPU sont disponible les commandes seront répartis entre eux.
     """
   # Création d'une liste contenant les liste de valeurs à tester
     val_tab = list()
@@ -216,7 +216,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
         print("Annulation !")
         exit(0)
     
-    # Répartition sur plusieurs GPU
+    """# Répartition sur plusieurs GPU
     if torch.cuda.is_available():
         nb_gpu = torch.cuda.device_count()
         if nb_gpu > 1 and gpu_repart:
@@ -229,11 +229,12 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
                 count_gpu = count_gpu+1
                 if count_gpu == nb_gpu:
                     rep_commandes.append(stock[:-3])
-                    print(stock)
+                    print(stock[:-3])
                     stock = ""
                     count_gpu = 0
             commandes = rep_commandes
-    p = input()
+    p = input()"""
+    
     # Appelle successif des script avec différents paramètres
     log = list()
     for com in commandes:
