@@ -15,9 +15,9 @@ Le script utiliser (dcgan.py) doit être compatible avec le paramètre --runs_pa
 Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout est gérer dans la fonction scan.
 """
 
-exp_name = "AE32Large"
+exp_name = "DCGAN_boost"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--eps": [0.5, 0.1, 0.0]}
+params = {"--lrG": [0.00015, 0.00025, 0.0005], "--lrD": [0.00005, 0.00005, 0.00005], "--GPU": [1,1,1]}
 
-scan(exp_name, params)
+scan(exp_name, params, permutation=False)
