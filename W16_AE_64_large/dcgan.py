@@ -33,7 +33,7 @@ parser.add_argument("--lrE", type=float, default=0.00015, help="adam: learning r
 parser.add_argument("--eps", type=float, default=0.0, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.9, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--lrelu", type=float, default=0.02, help="LeakyReLU : alpha")
+parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
