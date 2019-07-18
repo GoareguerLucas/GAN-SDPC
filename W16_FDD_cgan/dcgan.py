@@ -147,7 +147,7 @@ class Discriminator(nn.Module):
         
         self.conv2 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
         self.conv3 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
-        self.conv4 = nn.Sequential(*discriminator_block(channels[3], channels[3]),)
+        #self.conv4 = nn.Sequential(*discriminator_block(channels[3], channels[3]),)
 
         # The height and width of downsampled image
         self.init_size = opt.img_size // opts_conv['stride']**4
@@ -176,8 +176,8 @@ class Discriminator(nn.Module):
             print("Conv2 out : ",out.shape)
             out = self.conv3(out)
             print("Conv3 out : ",out.shape)
-            out = self.conv4(out)
-            print("Conv4 out : ",out.shape)
+            #out = self.conv4(out)
+            #print("Conv4 out : ",out.shape)
 
             out = out.view(out.shape[0], -1)
             print("View out : ",out.shape)
