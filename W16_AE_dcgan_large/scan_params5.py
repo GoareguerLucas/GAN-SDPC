@@ -19,6 +19,6 @@ exp_name = "AE32Large"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
 #params = {"--lrG": [0.0001, 0.0002], "--lrD": [0.00005], "--lrE": [0.0001, 0.0002], "--GPU": [1]}
-params = {"--lrG": [0.0001, 0.0002, 0.0002], "--lrD": [0.00005], "--lrE": [0.0002, 0.0001, 0.0002], "--GPU": [1]}
+params = {"--lrG": [0.0001, 0.0002, 0.0002], "--lrD": [0.00005, 0.00005, 0.00005], "--lrE": [0.0002, 0.0001, 0.0002], "--GPU": [1,1,1]}
 
 scan(exp_name, params, permutation=False, gpu_repart=False)
