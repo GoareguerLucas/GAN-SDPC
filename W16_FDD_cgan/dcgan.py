@@ -264,7 +264,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
-
+        
+        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, opt.batch_size)))
+        
         # Adversarial ground truths
         valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(
             float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
@@ -275,7 +277,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         real_imgs = Variable(imgs.type(Tensor))
         # Generate a batch of images
         z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-        gen_imgs = generator(z)
+        gen_imgs = generator(z, gen_labels)
         
         #print("Max : ",gen_imgs.max()," Min :",gen_imgs.min())
         
@@ -287,7 +289,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Real batch
         # Discriminator descision
-        d_x = discriminator(real_imgs)
+        d_x = discriminator(real_imgs, gen_labels)
         # Measure discriminator's ability to classify real from generated samples
         real_loss = adversarial_loss(d_x, valid_smooth)
         # Backward
@@ -295,7 +297,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Fake batch
         # Discriminator descision
-        d_g_z = discriminator(gen_imgs.detach())
+        d_g_z = discriminator(gen_imgs.detach(), gen_labels)
         # Measure discriminator's ability to classify real from generated samples
         fake_loss = adversarial_loss(d_g_z, fake)
         # Backward
@@ -312,7 +314,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.zero_grad()
 
         # New discriminator descision, Since we just updated D
-        d_g_z = discriminator(gen_imgs)
+        d_g_z = discriminator(gen_imgs, gen_labels)
         # Loss measures generator's ability to fool the discriminator
         g_loss = adversarial_loss(d_g_z, valid)
         # Backward
