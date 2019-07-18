@@ -126,6 +126,17 @@ def tensorboard_sampling(noise, generator, writer, epoch):
     writer.add_image('Images générer', grid, epoch)
     generator.train()
 
+def tensorboard_conditional_sampling(noise, label, generator, writer, epoch):
+    """
+    Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
+    Le générateur doit être de type conditionnel et utilise les labels.
+    """
+    generator.eval()
+    gen_imgs = generator(noise, label)
+    grid = torchvision.utils.make_grid(gen_imgs, normalize=True)
+    writer.add_image('Images générer', grid, epoch)
+    generator.train()
+
 
 def AE_sampling(imgs, encoder, generator, path, epoch):
     generator.eval()
@@ -211,7 +222,8 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
     
     # Demande de validation
     print("Valider ? (Y/N)")
-    reponse = input()
+    #reponse = input()
+    reponse = 'Y'
     if reponse == 'N':
         print("Annulation !")
         exit(0)

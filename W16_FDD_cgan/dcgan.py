@@ -105,6 +105,7 @@ class Generator(nn.Module):
         gen_input = torch.cat((z, labels), -1)
         if self.verbose: print("gen_input out : ",gen_input.shape)
         # Dim : opt.latent_dim
+        
         out = self.l1(gen_input)
         if self.verbose: print("l1 out : ",out.shape)
         out = out.view(out.shape[0], channels[3], self.init_size, self.init_size)
@@ -154,49 +155,34 @@ class Discriminator(nn.Module):
         self.adv_layer = nn.Sequential(nn.Linear(channels[3] * self.init_size ** 2, 1))#, nn.Sigmoid()
 
     def forward(self, img, labels):
-        if self.verbose:
-            print("D")
-            print("Image shape : ",img.shape)
-            
-            x = self.data(img)
-            print("Conv1 data : ",x.shape)
-            
-            # Passage de (labels.size[0], opt.n_classes) => (labels.size[0], opt.n_classes, opt.img_size, opt.img_size) 
-            labels = labels.view(labels.shape[0], opt.n_classes, 1, 1)
-            labels = labels.expand(labels.shape[0], opt.n_classes, opt.img_size, opt.img_size)
-            print("Labels : ",labels.shape)
-            y = self.label(labels)
-            print("Conv1 label : ",y.shape)
-            
-            # concat conv1_data and Conv1_label
-            out = torch.cat((x, y), dim=1)
-            print("Cat : ",out.shape)
-            
-            out = self.conv2(out)
-            print("Conv2 out : ",out.shape)
-            out = self.conv3(out)
-            print("Conv3 out : ",out.shape)
-            #out = self.conv4(out)
-            #print("Conv4 out : ",out.shape)
+        if self.verbose: print("D")
+        if self.verbose: print("Image shape : ",img.shape)
+        
+        x = self.data(img)
+        if self.verbose: print("Conv1 data : ",x.shape)
+        
+        # Passage de (labels.size[0], opt.n_classes) => (labels.size[0], opt.n_classes, opt.img_size, opt.img_size) 
+        labels = labels.view(labels.shape[0], opt.n_classes, 1, 1)
+        labels = labels.expand(labels.shape[0], opt.n_classes, opt.img_size, opt.img_size)
+        if self.verbose: print("Labels : ",labels.shape)
+        
+        y = self.label(labels)
+        if self.verbose: print("Conv1 label : ",y.shape)
+        
+        # Concat data and label
+        out = torch.cat((x, y), dim=1)
+        if self.verbose: print("Cat : ",out.shape)
+        
+        out = self.conv2(out)
+        if self.verbose: print("Conv2 out : ",out.shape)
+        out = self.conv3(out)
+        if self.verbose: print("Conv3 out : ",out.shape)
 
-            out = out.view(out.shape[0], -1)
-            print("View out : ",out.shape)
-            validity = self.adv_layer(out)
-            print("Val out : ",validity.shape)
-        else:
-            # Dim : (opt.chanels, opt.img_size, opt.img_size)
-            out = self.conv1(img)
-            # Dim : (channels[3]/8, opt.img_size/2, opt.img_size/2)
-            out = self.conv2(out)
-            # Dim : (channels[3]/4, opt.img_size/4, opt.img_size/4)
-            out = self.conv3(out)
-            # Dim : (channels[3]/2, opt.img_size/4, opt.img_size/4)
-            out = self.conv4(out)
-            # Dim : (channels[3], opt.img_size/8, opt.img_size/8)
-
-            out = out.view(out.shape[0], -1)
-            validity = self.adv_layer(out)
-            # Dim : (1)
+        out = out.view(out.shape[0], -1)
+        if self.verbose: print("View out : ",out.shape)
+        validity = self.adv_layer(out)
+        if self.verbose: print("Val out : ",validity.shape)
+        
 
         return validity
 
@@ -262,7 +248,9 @@ nb_epochs = 1 + opt.n_epochs - start_epoch
 hist = init_hist(nb_epochs, nb_batch)
 
 # Vecteur z fixe pour faire les samples
-fixed_noise = Variable(Tensor(np.random.normal(0, 1, (24, opt.latent_dim))))
+n_sample = 24
+fixed_noise = Variable(Tensor(np.random.normal(0, 1, (n_sample, opt.latent_dim))))
+fixed_label = Variable(Tensor(torch.tensor([[1,0,0],[0,1,0],[0,0,1]]).view(3,3,1).epxand(3,3,8)))
 
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
