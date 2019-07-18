@@ -33,7 +33,7 @@ parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of firs
 parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
 parser.add_argument("--n_classes", type=int, default=3, help="number of classes for dataset")
-parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
+parser.add_argument("-i", "--img_size", type=int, default=64, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
@@ -144,8 +144,8 @@ class Discriminator(nn.Module):
 
         self.verbose = verbose
         
-        self.data = discriminator_block(opt.channels, channels[0], bn=False)
-        self.label = discriminator_block(opt.channels, channels[0], bn=False)
+        self.data = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
+        self.label = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
         
         self.conv2 = nn.Sequential(*discriminator_block(channels[0], channels[1]),)
         self.conv3 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
