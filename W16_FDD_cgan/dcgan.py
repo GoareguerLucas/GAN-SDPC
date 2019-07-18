@@ -150,7 +150,7 @@ class Discriminator(nn.Module):
         #self.conv4 = nn.Sequential(*discriminator_block(channels[3], channels[3]),)
 
         # The height and width of downsampled image
-        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.init_size = opt.img_size // opts_conv['stride']**3
         self.adv_layer = nn.Sequential(nn.Linear(channels[3] * self.init_size ** 2, 1))#, nn.Sigmoid()
 
     def forward(self, img, labels):
