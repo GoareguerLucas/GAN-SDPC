@@ -166,7 +166,7 @@ class Discriminator(nn.Module):
             print("Conv1 label : ",y.shape)
             
             # concat conv1_data and Conv1_label
-            out = torch.cat((x, y), dim=1)
+            out = torch.cat((x, y))
             print("Cat : ",out.shape)
             
             out = self.conv2(out)
