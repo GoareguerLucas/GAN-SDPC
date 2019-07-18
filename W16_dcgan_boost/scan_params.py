@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "DCGAN_boost"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.00015, 0.00025, 0.0005], "--lrD": [0.00005, 0.00005, 0.00005], "--GPU": [1,1,1]}
+params = {"--lrG": [0.00015, 0.00025, 0.0005], "--GPU": [1,1,1]}
 
 scan(exp_name, params, permutation=False)

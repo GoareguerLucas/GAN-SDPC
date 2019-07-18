@@ -222,8 +222,8 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
     
     # Demande de validation
     print("Valider ? (Y/N)")
-    reponse = input()
-    #reponse = 'Y'
+    #reponse = input()
+    reponse = 'Y'
     if reponse == 'N':
         print("Annulation !")
         exit(0)
