@@ -40,7 +40,7 @@ parser.add_argument("--channels", type=int, default=3, help="number of image cha
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
 parser.add_argument("-m", "--model_save_interval", type=int, default=2500,
-                    help="interval between image sampling. If model_save_interval > n_epochs, no save")
+                    help="interval between image sampling. If model_save_interval > n_epochs : no save")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true",
                     help="Load model present in model_save_path/Last_*.pt, if present.")
