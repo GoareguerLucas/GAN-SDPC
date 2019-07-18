@@ -103,7 +103,8 @@ class Generator(nn.Module):
         
     def forward(self, z, labels):
         if self.verbose: print("G")
-        gen_input = torch.cat((self.label_emb(labels), z), -1)
+        if self.verbose: print("z and labels : ", z.shape, labels.shape)
+        gen_input = torch.cat((z, self.label_emb(labels)), -1)
         if self.verbose: print("gen_input out : ",gen_input.shape)
         # Dim : opt.latent_dim
         out = self.l1(gen_input)
