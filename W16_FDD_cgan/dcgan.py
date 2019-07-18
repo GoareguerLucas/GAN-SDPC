@@ -161,8 +161,8 @@ class Discriminator(nn.Module):
             print("Image shape : ",img.shape)
             
             x = self.data(img)
-            y = self.label(labels)
             print("Conv1 data : ",x.shape)
+            y = self.label(labels)
             print("Conv1 label : ",y.shape)
             
             # concat conv1_data and Conv1_label
@@ -268,7 +268,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
         
-        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, opt.batch_size)))
+        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, (opt.batch_size, opt.n_classes))))
         
         # Adversarial ground truths
         valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(
