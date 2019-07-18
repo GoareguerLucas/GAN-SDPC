@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "AE32Large"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.0001, 0.0002], "--lrD": [0.000025], "--lrE": [0.0001, 0.0002]}
+params = {"--lrG": [0.0001, 0.0002], "--lrD": [0.00005], "--lrE": [0.0001, 0.0002]}
 
 scan(exp_name, params, permutation=True, gpu_repart=False)
