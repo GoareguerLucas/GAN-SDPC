@@ -143,7 +143,7 @@ class Discriminator(nn.Module):
         self.verbose = verbose
         
         self.data = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
-        self.label = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
+        self.label = nn.Sequential(*discriminator_block(opt.n_classes, channels[0], bn=False),)
         
         self.conv2 = nn.Sequential(*discriminator_block(channels[0], channels[1]),)
         self.conv3 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
@@ -160,6 +160,8 @@ class Discriminator(nn.Module):
             
             x = self.data(img)
             print("Conv1 data : ",x.shape)
+            labels = labels.view(opt.batch_size, opt.n_classes, 1, 1)
+            print("Labels : ",labels.shape)
             y = self.label(labels)
             print("Conv1 label : ",y.shape)
             
