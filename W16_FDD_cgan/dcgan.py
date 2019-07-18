@@ -145,9 +145,9 @@ class Discriminator(nn.Module):
         self.data = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
         self.label = nn.Sequential(*discriminator_block(opt.n_classes, channels[0], bn=False),)
         
-        self.conv2 = nn.Sequential(*discriminator_block(channels[0], channels[1]),)
-        self.conv3 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
-        self.conv4 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
+        self.conv2 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
+        self.conv3 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
+        self.conv4 = nn.Sequential(*discriminator_block(channels[3], channels[3]),)
 
         # The height and width of downsampled image
         self.init_size = opt.img_size // opts_conv['stride']**4
