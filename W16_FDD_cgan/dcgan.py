@@ -251,6 +251,8 @@ writer = SummaryWriter(log_dir=path_data2)
 #  Training
 # ----------
 
+LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
+
 nb_batch = len(dataloader)
 nb_epochs = 1 + opt.n_epochs - start_epoch
 
@@ -265,7 +267,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
         
-        gen_labels = Variable(Tensor(np.random.randint(0, opt.n_classes, opt.batch_size)))
+        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, opt.batch_size)))
         
         # Adversarial ground truths
         valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(
