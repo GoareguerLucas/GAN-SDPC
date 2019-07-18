@@ -205,7 +205,7 @@ def scan(exp_name, params, permutation=True, gpu_repart=False):
         b = values
         e = params.keys()
         l = list(zip(e, b))
-        l_str = [str(ele) for el in l for ele in el if ele is not "--GPU"]
+        l_str = [if ele is not "--GPU": str(ele) for el in l for ele in el]
         names.append(''.join(l_str).replace('-', ''))
     #print(names)
 
