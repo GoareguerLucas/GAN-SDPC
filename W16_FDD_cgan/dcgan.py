@@ -162,8 +162,8 @@ class Discriminator(nn.Module):
             print("Conv1 data : ",x.shape)
             
             # Passage de (labels.size[0], opt.n_classes) => (labels.size[0], opt.n_classes, opt.img_size, opt.img_size) 
-            labels = labels.view(labels.size[0], opt.n_classes, 1, 1)
-            labels = labels.expand(labels.size[0], opt.n_classes, opt.img_size, opt.img_size)
+            labels = labels.view(labels.shape[0], opt.n_classes, 1, 1)
+            labels = labels.expand(labels.shape[0], opt.n_classes, opt.img_size, opt.img_size)
             print("Labels : ",labels.shape)
             y = self.label(labels)
             print("Conv1 label : ",y.shape)
