@@ -81,8 +81,6 @@ class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
         
-        self.label_emb = nn.Embedding(opt.n_classes, opt.n_classes)
-        
         def generator_block(in_filters, out_filters):
             block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']), nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=1, padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
@@ -104,7 +102,7 @@ class Generator(nn.Module):
     def forward(self, z, labels):
         if self.verbose: print("G")
         if self.verbose: print("z and labels : ", z.shape, labels.shape)
-        gen_input = torch.cat((z, self.label_emb(labels)), -1)
+        gen_input = torch.cat((z, labels), -1)
         if self.verbose: print("gen_input out : ",gen_input.shape)
         # Dim : opt.latent_dim
         out = self.l1(gen_input)
