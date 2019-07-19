@@ -19,6 +19,6 @@ exp_name = "AE32Large"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
 #params = {"--lrelu": [0.01, 0.1, 0.5, 1.0]}
-params = {"--lrelu": [0.0, 0.5], "-e": [600]}
+params = {"--lrelu": [0.0000001, 0.5], "-e": [600]}
 
 scan(exp_name, params)
