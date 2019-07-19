@@ -18,6 +18,7 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "AE32Large"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrelu": [0.01, 0.1, 0.5, 1.0]}
+#params = {"--lrelu": [0.01, 0.1, 0.5, 1.0]}
+params = {"--lrelu": [0.0, 0.5], "-e": [600]}
 
-scan(exp_name, params, permutation=False)
+scan(exp_name, params)
