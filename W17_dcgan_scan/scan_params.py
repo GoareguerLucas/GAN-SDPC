@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "DCscanW17"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--latent_dim": [8, 16, 24, 32]}
+params = {"--latent_dim": [8, 16, 24, 32], "--GPU": [1]}
 
 scan(exp_name, params)
