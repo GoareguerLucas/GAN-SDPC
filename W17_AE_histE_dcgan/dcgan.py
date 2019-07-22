@@ -329,8 +329,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z_imgs = encoder(real_imgs)
         decoded_imgs = generator(z_imgs)
         
+        # Save E answer for futur plot
         rep_E[i] = z_imgs[0].detach().cpu().numpy()
-        print(z_imgs[0].shape)
+        #print(z_imgs[0].shape)
         
         # Loss measures Encoder's ability to generate vectors suitable with the generator
         # DONE add a loss for the distance between of z values
@@ -423,8 +424,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_histogram('D(x)', d_x, global_step=iteration)
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
        
-    for k in range(6):
-        writer.add_histogram('E(x)['+str(k)+']', rep_E[:,k], global_step=iteration)
+    for k in [0,3,7,15,23,28,31]:
+        writer.add_histogram('E(x)'+str(k), rep_E[:,k], global_step=iteration)
 
     writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
     writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
