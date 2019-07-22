@@ -329,7 +329,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z_imgs = encoder(real_imgs)
         decoded_imgs = generator(z_imgs)
         
-        rep_E[i] = z_imgs[0]
+        rep_E[i] = z_imgs[0].detach().numpy()
         print(z_ims[0].shape)
         
         # Loss measures Encoder's ability to generate vectors suitable with the generator
