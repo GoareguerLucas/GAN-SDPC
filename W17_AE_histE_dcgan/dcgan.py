@@ -312,7 +312,7 @@ N_samples = 24
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (N_samples, opt.latent_dim))))
 
 # Observation réponse de E
-rep_E = np.zeros(nb_batch, opt.latent_dim)
+rep_E = np.zeros((nb_batch, opt.latent_dim))
 
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
