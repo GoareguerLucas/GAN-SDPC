@@ -328,10 +328,10 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_E.zero_grad()
         z_imgs = encoder(real_imgs)
         decoded_imgs = generator(z_imgs)
-		
-		rep_E[i] = z_imgs[0]
-		print(z_ims[0].shape)
-		
+        
+        rep_E[i] = z_imgs[0]
+        print(z_ims[0].shape)
+        
         # Loss measures Encoder's ability to generate vectors suitable with the generator
         # DONE add a loss for the distance between of z values
         z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
@@ -424,7 +424,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
        
     for k in range(6):
-		writer.add_histogram('E(x)['+str(k)+']', rep_E[:,k], global_step=iteration)
+        writer.add_histogram('E(x)['+str(k)+']', rep_E[:,k], global_step=iteration)
 
     writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
     writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
