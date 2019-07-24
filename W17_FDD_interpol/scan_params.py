@@ -15,9 +15,9 @@ Le script utiliser (dcgan.py) doit être compatible avec le paramètre --runs_pa
 Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout est gérer dans la fonction scan.
 """
 
-exp_name = "CGAN"
+exp_name = "Interpol"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.0005, 0.001, 0.0001], "--lrD": [0.00005, 0.0001, 0.00001], "--eps": [0.5, 0.0]}
+params = {"--lrG": [0.001, 0.0001], "--lrD": [0.0001, 0.00001]}
 
-scan(exp_name, params)
+scan(exp_name, params, permutation=False)
