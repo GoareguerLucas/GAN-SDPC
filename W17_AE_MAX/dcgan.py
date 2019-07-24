@@ -23,10 +23,10 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='AE64Large/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='AE_MAX/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
-parser.add_argument("-e", "--n_epochs", type=int, default=600, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=8, help="size of the batches")
+parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00005, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00015, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.00015, help="adam: learning rate for E")
