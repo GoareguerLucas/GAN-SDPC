@@ -264,7 +264,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         real_imgs = Variable(imgs.type(Tensor))
         # Generate a batch of images
         z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
-        gen_imgs = generator(z, gen_labels)
+        gen_imgs = generator(z)
         
         #print("Max : ",gen_imgs.max()," Min :",gen_imgs.min())
         
