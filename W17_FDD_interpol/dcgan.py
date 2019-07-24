@@ -247,16 +247,13 @@ hist = init_hist(nb_epochs, nb_batch)
 # Vecteur z fixe pour faire les samples
 n_sample = 24
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (n_sample, opt.latent_dim))))
-fixed_label = Variable(Tensor(torch.tensor([[1,0,0],[0,1,0],[0,0,1]]).view(3,3,1).epxand(3,3,8)))
 
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
-        
-        gen_labels = Variable(Tensor(np.random.randint(0, opt.n_classes, (opt.batch_size, opt.n_classes))*1.0))
-        
+
         # Adversarial ground truths
         valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(
             float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
@@ -279,7 +276,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Real batch
         # Discriminator descision
-        d_x = discriminator(real_imgs, gen_labels)
+        d_x = discriminator(real_imgs)
         # Measure discriminator's ability to classify real from generated samples
         real_loss = adversarial_loss(d_x, valid_smooth)
         # Backward
@@ -287,7 +284,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Fake batch
         # Discriminator descision
-        d_g_z = discriminator(gen_imgs.detach(), gen_labels)
+        d_g_z = discriminator(gen_imgs.detach())
         # Measure discriminator's ability to classify real from generated samples
         fake_loss = adversarial_loss(d_g_z, fake)
         # Backward
@@ -304,7 +301,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.zero_grad()
 
         # New discriminator descision, Since we just updated D
-        d_g_z = discriminator(gen_imgs, gen_labels)
+        d_g_z = discriminator(gen_imgs)
         # Loss measures generator's ability to fool the discriminator
         g_loss = adversarial_loss(d_g_z, valid)
         # Backward
