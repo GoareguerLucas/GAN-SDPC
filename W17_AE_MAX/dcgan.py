@@ -428,6 +428,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         num = str(int(epoch / opt.model_save_interval))
         save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
+        save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
     print("[Epoch Time: ", time.time() - t_epoch, "s]")
 
@@ -438,5 +439,6 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 if opt.model_save_interval < opt.n_epochs + 1:
     save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
+    save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
 writer.close()
