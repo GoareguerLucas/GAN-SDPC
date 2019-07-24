@@ -16,7 +16,7 @@ parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
                     help="Chemin vers le générateur à charger")
 parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
                     help="Chemin vers le fichier contenant les seeds à générer.")
-parser.add_argument("-r", "--results_path", type=str, default='results.png',
+parser.add_argument("-r", "--results_path", type=str, default='results',
                     help="Nom du fichier contenant les résultats")
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
@@ -28,11 +28,13 @@ parser.add_argument("-v", "--verbose", action="store_true",
 opt = parser.parse_args()
 print(opt)
 
+# Dossier de sauvegarde
+os.makedirs(opt.results_path, exist_ok=True)
+
 # Initialize generator 
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='zeros')
 channels = [64, 128, 256, 512]
-
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
