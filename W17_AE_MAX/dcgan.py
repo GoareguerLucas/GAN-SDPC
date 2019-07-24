@@ -39,7 +39,7 @@ parser.add_argument("-i", "--img_size", type=int, default=128, help="size of eac
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
-parser.add_argument("-m", "--model_save_interval", type=int, default=600,
+parser.add_argument("-m", "--model_save_interval", type=int, default=150,
                     help="interval between image sampling. If model_save_interval > n_epochs : no save")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true",
