@@ -35,7 +35,7 @@ parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
-parser.add_argument("-m", "--model_save_interval", type=int, default=100,
+parser.add_argument("-m", "--model_save_interval", type=int, default=3000,
                     help="interval between image sampling. If model_save_interval >= n_epochs, no save")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true",
