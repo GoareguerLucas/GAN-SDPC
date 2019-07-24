@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "Interpol"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.001, 0.0001], "--lrD": [0.0001, 0.00001]}
+params = {"--lrG": [0.001, 0.0001], "--lrD": [0.0001, 0.00001], "--GPU": [1,1]}
 
 scan(exp_name, params, permutation=False)
