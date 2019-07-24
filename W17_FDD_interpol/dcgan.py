@@ -89,7 +89,7 @@ class Generator(nn.Module):
 
         self.verbose = verbose
         self.init_size = opt.img_size // opts_conv['stride']**3
-        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim+opt.n_classes, channels[3] * self.init_size ** 2), NL)
+        self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
         self.conv1 = nn.Sequential(*generator_block(channels[3], channels[2]),)
@@ -100,14 +100,10 @@ class Generator(nn.Module):
             nn.Tanh(),
         )
         
-    def forward(self, z, labels):
+    def forward(self, z):
         if self.verbose: print("G")
-        if self.verbose: print("z and labels : ", z.shape, labels.shape)
-        gen_input = torch.cat((z, labels), -1)
-        if self.verbose: print("gen_input out : ",gen_input.shape)
         # Dim : opt.latent_dim
-        
-        out = self.l1(gen_input)
+        out = self.l1(z)
         if self.verbose: print("l1 out : ",out.shape)
         out = out.view(out.shape[0], channels[3], self.init_size, self.init_size)
         # Dim : (channels[3], opt.img_size/8, opt.img_size/8)
@@ -135,7 +131,7 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self,verbose=opt.verbose):
         super(Discriminator, self).__init__()
-        
+
         def discriminator_block(in_filters, out_filters, bn=True):
             block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]#, nn.Dropout2d(0.25)
             if bn:
@@ -143,53 +139,53 @@ class Discriminator(nn.Module):
             return block
 
         self.verbose = verbose
-        
-        self.data = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
-        self.label = nn.Sequential(*discriminator_block(opt.n_classes, channels[0], bn=False),)
-        
-        self.conv2 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
-        self.conv3 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
-        #self.conv4 = nn.Sequential(*discriminator_block(channels[3], channels[3]),)
+
+        self.conv1 = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
+        self.conv2 = nn.Sequential(*discriminator_block(channels[0], channels[1]),)
+        self.conv3 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
+        self.conv4 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
 
         # The height and width of downsampled image
-        self.init_size = opt.img_size // opts_conv['stride']**3
+        self.init_size = opt.img_size // opts_conv['stride']**4
         self.adv_layer = nn.Sequential(nn.Linear(channels[3] * self.init_size ** 2, 1))#, nn.Sigmoid()
 
-    def forward(self, img, labels):
-        if self.verbose: print("D")
-        if self.verbose: print("Image shape : ",img.shape)
-        
-        x = self.data(img)
-        if self.verbose: print("Conv1 data : ",x.shape)
-        
-        # Passage de (labels.size[0], opt.n_classes) => (labels.size[0], opt.n_classes, opt.img_size, opt.img_size) 
-        labels = labels.view(labels.shape[0], opt.n_classes, 1, 1)
-        labels = labels.expand(labels.shape[0], opt.n_classes, opt.img_size, opt.img_size)
-        if self.verbose: print("Labels : ",labels.shape)
-        
-        y = self.label(labels)
-        if self.verbose: print("Conv1 label : ",y.shape)
-        
-        # Concat data and label
-        out = torch.cat((x, y), dim=1)
-        if self.verbose: print("Cat : ",out.shape)
-        
-        out = self.conv2(out)
-        if self.verbose: print("Conv2 out : ",out.shape)
-        out = self.conv3(out)
-        if self.verbose: print("Conv3 out : ",out.shape)
+    def forward(self, img):
+        if self.verbose:
+            print("D")
+            print("Image shape : ",img.shape)
+            out = self.conv1(img)
+            print("Conv1 out : ",out.shape)
+            out = self.conv2(out)
+            print("Conv2 out : ",out.shape)
+            out = self.conv3(out)
+            print("Conv3 out : ",out.shape)
+            out = self.conv4(out)
+            print("Conv4 out : ",out.shape)
 
-        out = out.view(out.shape[0], -1)
-        if self.verbose: print("View out : ",out.shape)
-        validity = self.adv_layer(out)
-        if self.verbose: print("Val out : ",validity.shape)
-        
+            out = out.view(out.shape[0], -1)
+            print("View out : ",out.shape)
+            validity = self.adv_layer(out)
+            print("Val out : ",validity.shape)
+        else:
+            # Dim : (opt.chanels, opt.img_size, opt.img_size)
+            out = self.conv1(img)
+            # Dim : (channels[3]/8, opt.img_size/2, opt.img_size/2)
+            out = self.conv2(out)
+            # Dim : (channels[3]/4, opt.img_size/4, opt.img_size/4)
+            out = self.conv3(out)
+            # Dim : (channels[3]/2, opt.img_size/4, opt.img_size/4)
+            out = self.conv4(out)
+            # Dim : (channels[3], opt.img_size/8, opt.img_size/8)
+
+            out = out.view(out.shape[0], -1)
+            validity = self.adv_layer(out)
+            # Dim : (1)
 
         return validity
 
     def _name(self):
         return "Discriminator"
-
+        
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
 sigmoid = nn.Sigmoid()
