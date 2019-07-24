@@ -1,12 +1,15 @@
 import sys
 import argparse
 import numpy as np
-from torch.autograd import Variable
+
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
 
 sys.path.append("../")  # ../../GAN-SDPC/
 
-from utils import load_model, sampling
+from utils import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
@@ -15,6 +18,13 @@ parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
                     help="Chemin vers le fichier contenant les seeds à générer.")
 parser.add_argument("-r", "--results_path", type=str, default='results.png',
                     help="Nom du fichier contenant les résultats")
+parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
+parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
+parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
+parser.add_argument("--channels", type=int, default=3, help="number of image channels")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="Afficher des informations complémentaire.")
 opt = parser.parse_args()
 print(opt)
 
