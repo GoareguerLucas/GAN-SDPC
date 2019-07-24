@@ -150,7 +150,7 @@ def build_dataset(size=5, seuil=0.85):
         
     return count
         
-def one_image(fonction=Symmetric_Icon, vals=[0.01, 0.01, 1.8, 0.0, 1.0, 0.1, -1.93, 5], color=inferno, path='test.png', alpha=True, width=128, height=128):
+def one_image(fonction=Symmetric_Icon, vals=[0.01, 0.01, 1.8, 0.0, 1.0, 0.1, -1.93, 5], color=inferno, path='test.png', alpha=True, width=128, height=128, seuil=None):
     """
     Construit et sauvegarde une image.
     Paramètres :
@@ -162,7 +162,14 @@ def one_image(fonction=Symmetric_Icon, vals=[0.01, 0.01, 1.8, 0.0, 1.0, 0.1, -1.
         width et height : largeur et longueur de l'image. 
     """
     agg = dsplot(fonction, vals=vals, width=width, height=height)
-
+    
+    # Vérification de l'image
+    if seuil is not None:
+        succes = empty_detection(agg, seuil=seuil)
+        if succes is False:
+            print("Image trop vide pour être générer !")
+            return False
+    
     # Conversion en PIL image
     img = tf.shade(agg, cmap=color, alpha=255)
     img = tf.Image.to_pil(img)
@@ -174,12 +181,55 @@ def one_image(fonction=Symmetric_Icon, vals=[0.01, 0.01, 1.8, 0.0, 1.0, 0.1, -1.
         background.save(path, 'PNG', quality=100)
     else: # Ou non
         img.save(path, 'PNG', quality=100)
+    
+    return True
+    
+def interpolation():
+    """
+    Construit les images situer sur une droite séparent deux point donnée dans l'espace latent.
+    Les coordonnées des images générer sont sauvegarder dans un fichier text.
+    """
+    # Interpolation dans l'espace latent
+    A = [-0.01912328814372577, -0.43132429560200747, -1.8001643726204097, -0.976276020559967, -2.1391547758767095,  -0.4893988506062848]
+    B = [-0.73291622421858, -0.4019173232487002, 0.15126560658777777, 1.7250616301030905, 2.2194671674611004,  2.0385498130952038]
+    A = np.asarray(A,dtype=np.float64)
+    B = np.asarray(B,dtype=np.float64)
+    print(A)
+    print(B)
+
+    nb_point = 1000
+
+    inter = np.linspace(A,B,nb_point,dtype=np.float64) 
+    print(inter.shape)
+    #print(inter)
+
+    # Sauvegarde des seeds dans un fichiers
+    f = open("interpolation/seeds.txt", "w")
+
+
+    for i,point in enumerate(inter):
+        print("Point n°",i)
         
+        point = point.tolist()
+        point_str = str(point)[1:-1]
+        
+        path = "interpolation/"+point_str+".png"
+        print(path)
+        
+        rep = one_image(fonction=Fractal_Dream, vals=point, color=kbc, path=path, seuil=0.85)
+        
+        if rep is not False:
+            f.write(point_str+"\n")
+        
+    f.close()
+    
 palette["viridis"]=viridis
 palette["inferno"]=inferno
 palette["kbc"]=kbc
 
 #build_dataset(size=12000)
 
-one_image(path='test2.png')
-one_image(path='test3.png',alpha=False)
+#one_image(path='test2.png')
+#one_image(path='test3.png',alpha=False)
+
+interpolation()

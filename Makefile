@@ -3,13 +3,13 @@ default: rsync
 clean_models:
 	rm */models/*.pt; rm */*/models/*.pt
 
-start_ssh:
+ssh_start:
 	sudo systemctl start ssh
 
-stop_ssh:
+ssh_stop:
 	sudo systemctl stop ssh
 
-connect_ssh:
+ssh_connect:
 	ssh albert@147.94.234.202
 
 connect_gt2:
