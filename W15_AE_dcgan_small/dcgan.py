@@ -9,7 +9,7 @@ from torchvision.utils import save_image
 try:
     from torch.utils.tensorboard import SummaryWriter
     do_tensorboard = True
-except ImportError:
+except: # ImportError:
     do_tensorboard = False
 
 from torch.utils.data import DataLoader
