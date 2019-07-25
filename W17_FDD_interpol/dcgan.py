@@ -76,8 +76,6 @@ cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 # (N + 2*p - k) / s +1 cf https://pytorch.org/docs/stable/nn.html#conv2d
 opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='zeros')
-# verbose=True
-channels = [16, 32, 64, 128]
 channels = [64, 128, 256, 512]
 
 class Encoder(nn.Module):
@@ -245,22 +243,24 @@ print_network(generator)
 print_network(discriminator)
 print_network(encoder)
 
+print("CUDA available : ",cuda)
+
 if cuda:
     #print("Nombre de GPU : ",torch.cuda.device_count())
     if torch.cuda.device_count() > opt.GPU: 
         torch.cuda.set_device(opt.GPU)
-    
+    print("CUDA available : ",cuda)
     generator.cuda()
     discriminator.cuda()
     adversarial_loss.cuda()
     encoder.cuda()
     MSE_loss.cuda()
-
+print("CUDA available : ",cuda)
 # Initialize weights
 generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 encoder.apply(weights_init_normal)
-
+print("CUDA available : ",cuda)
 # Configure data loader
 dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, rand_hflip=False)
 
