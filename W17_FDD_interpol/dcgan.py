@@ -1,6 +1,7 @@
 import argparse
 import os
 import numpy as np
+import itertools
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -30,7 +31,7 @@ parser.add_argument("--lrG", type=float, default=0.001, help="adam: learning rat
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
+parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
