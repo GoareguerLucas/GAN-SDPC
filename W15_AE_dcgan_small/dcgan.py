@@ -21,7 +21,8 @@ import torch.nn.functional as F
 import torch
 
 import sys
-
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import time
 import datetime
