@@ -25,7 +25,7 @@ import datetime
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='DCGAN_MAX/200e16i128b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
-parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00005, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00025, help="adam: learning rate for G")
@@ -60,6 +60,9 @@ sys.path.append(depth + "../")  # ../../GAN-SDPC/
 from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 from utils import *
 from plot import *
+
+# Dossier de sauvegarde
+os.makedirs(opt.model_save_path, exist_ok=True)
 
 # Gestion du time tag
 try:

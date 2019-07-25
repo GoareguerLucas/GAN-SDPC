@@ -62,6 +62,9 @@ from SimpsonsDataset import SimpsonsDataset, FastSimpsonsDataset
 from utils import *
 from plot import *
 
+# Dossier de sauvegarde
+os.makedirs(opt.model_save_path, exist_ok=True)
+
 # Gestion du time tag
 try:
     tag = datetime.datetime.now().isoformat(sep='_', timespec='seconds')
