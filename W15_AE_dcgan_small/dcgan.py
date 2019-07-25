@@ -423,9 +423,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
         writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
 
-    # Save samples
-    if epoch % opt.sample_interval == 0:
-        tensorboard_sampling(fixed_noise, generator, writer, epoch)
+        # Save samples
+        if epoch % opt.sample_interval == 0:
+            tensorboard_sampling(fixed_noise, generator, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0:
