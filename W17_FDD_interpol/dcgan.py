@@ -79,6 +79,49 @@ opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='zeros')
 channels = [16, 32, 64, 128]
 channels = [64, 128, 256, 512]
 
+class Encoder(nn.Module):
+    def __init__(self, verbose=opt.verbose):
+        super(Encoder, self).__init__()
+
+        def encoder_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]
+            if bn:
+                block.append(nn.BatchNorm2d(out_filters, opt.eps))
+            return block
+
+        self.verbose = verbose
+        # use a different layer in the encoder using similarly max_filters
+        # channels[3] = 512
+
+        self.conv1 = nn.Sequential(*encoder_block(opt.channels, channels[0], bn=False),)
+        self.conv2 = nn.Sequential(*encoder_block(channels[0], channels[1]),)
+        self.conv3 = nn.Sequential(*encoder_block(channels[1], channels[2]),)
+        self.conv4 = nn.Sequential(*encoder_block(channels[2], channels[3]),)
+
+        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.vector = nn.Linear(channels[3] * self.init_size ** 2, opt.latent_dim)
+        # self.sigmoid = nn.Sequential(nn.Sigmoid(),)
+
+    def forward(self, img):
+        if self.verbose: print("Encoder")
+        if self.verbose: print("Image shape : ",img.shape)
+        out = self.conv1(img)
+        if self.verbose: print("Conv1 out : ",out.shape)
+        out = self.conv2(out)
+        if self.verbose: print("Conv2 out : ",out.shape)
+        out = self.conv3(out)
+        if self.verbose: print("Conv3 out : ",out.shape)
+        out = self.conv4(out)
+        if self.verbose: print("Conv4 out : ",out.shape, " init_size=", self.init_size)
+
+        out = out.view(out.shape[0], -1)
+        if self.verbose: print("View out : ",out.shape)
+        z = self.vector(out)
+        # z = self.sigmoid(z)
+        if self.verbose: print("Z : ",z.shape)
+
+        return z
+
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
@@ -189,27 +232,33 @@ class Discriminator(nn.Module):
         
 # Loss function
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
+MSE_loss = torch.nn.MSELoss()
 sigmoid = nn.Sigmoid()
 
 # Initialize generator and discriminator
 generator = Generator()
 discriminator = Discriminator()
+encoder = Encoder()
 
 print_network(generator)
 print_network(discriminator)
+print_network(encoder)
 
 if cuda:
-	#print("Nombre de GPU : ",torch.cuda.device_count())
+    #print("Nombre de GPU : ",torch.cuda.device_count())
     if torch.cuda.device_count() > opt.GPU: 
         torch.cuda.set_device(opt.GPU)
     
     generator.cuda()
     discriminator.cuda()
     adversarial_loss.cuda()
+    encoder.cuda()
+    MSE_loss.cuda()
 
 # Initialize weights
 generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
+encoder.apply(weights_init_normal)
 
 # Configure data loader
 dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, rand_hflip=False)
@@ -217,9 +266,9 @@ dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, r
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
+optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
 
 # ----------
 #  Load models
@@ -257,25 +306,42 @@ t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
-        t_batch = time.time()
+        # ---------------------
+        #  Train Encoder
+        # ---------------------
+
+        real_imgs = Variable(imgs.type(Tensor))
+
+        optimizer_E.zero_grad()
+        z_imgs = encoder(real_imgs)
+        decoded_imgs = generator(z_imgs)
+
+        # Loss measures Encoder's ability to generate vectors suitable with the generator
+        # DONE add a loss for the distance between of z values
+        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+
+        # Backward
+        e_loss.backward()
+
+        optimizer_E.step()
+
+        # ---------------------
+        #  Train Discriminator
+        # ---------------------
 
         # Adversarial ground truths
-        valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(
-            float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+        valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
         valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
         fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
 
         # Configure input
         real_imgs = Variable(imgs.type(Tensor))
         # Generate a batch of images
-        z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))
+        z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
+        z = Variable(Tensor(z))
         gen_imgs = generator(z)
-        
-        #print("Max : ",gen_imgs.max()," Min :",gen_imgs.min())
-        
-        # ---------------------
-        #  Train Discriminator
-        # ---------------------
 
         optimizer_D.zero_grad()
 
@@ -315,8 +381,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i + 1, len(dataloader), d_loss.item(), g_loss.item(), time.time() - t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), d_loss.item(), g_loss.item(), time.time()-t_batch)
         )
 
         # Compensation pour le BCElogits
@@ -328,6 +394,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Tensorboard save
         iteration = i + nb_batch * j
+        writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
@@ -339,7 +406,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         writer.add_histogram('D(x)', d_x, global_step=iteration)
         writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
-    
+
     writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
     writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
     writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
@@ -354,6 +421,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         num = str(int(epoch / opt.model_save_interval))
         save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
+        save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
     print("[Epoch Time: ", time.time() - t_epoch, "s]")
 
@@ -364,5 +432,6 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 if opt.model_save_interval < opt.n_epochs + 1:
     save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
+    save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
 writer.close()
