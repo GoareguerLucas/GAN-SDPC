@@ -86,3 +86,7 @@ module load python3/3.6.3
 cd W15_AE_dcgan_small
 python3 dcgan.py
 cd ..
+
+cd W17_AE_dcgan_small
+python3 dcgan.py
+cd ..

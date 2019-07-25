@@ -427,6 +427,11 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         if epoch % opt.sample_interval == 0:
             tensorboard_sampling(fixed_noise, generator, writer, epoch)
 
+    # Save samples
+    if epoch % opt.sample_interval == 0:
+        sampling(fixed_noise, generator, opt.sample_path, epoch, tag)
+        do_plot(hist, start_epoch, epoch, E_losses=True)
+    
     # Save models
     if epoch % opt.model_save_interval == 0:
         num = str(int(epoch / opt.model_save_interval))
