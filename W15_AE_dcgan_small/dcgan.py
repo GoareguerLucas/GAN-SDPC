@@ -6,7 +6,11 @@ import itertools
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
-from torch.utils.tensorboard import SummaryWriter
+try:
+    from torch.utils.tensorboard import SummaryWriter
+    do_tensorboard = True
+except: # ImportError:
+    do_tensorboard = False
 
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -17,7 +21,8 @@ import torch.nn.functional as F
 import torch
 
 import sys
-
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import time
 import datetime
@@ -146,7 +151,7 @@ class Generator(nn.Module):
             nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
-        
+
     def forward(self, z):
         if self.verbose: print("G")
         # Dim : opt.latent_dim
@@ -165,7 +170,7 @@ class Generator(nn.Module):
         out = self.conv3(out)
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
-        
+
         img = self.conv_blocks(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
         if self.verbose: print("img out : ", img.shape)
@@ -286,7 +291,7 @@ path_data2 = depth + "../runs/" + opt.runs_path + tag[:-1] + "/"
 os.makedirs(path_data1, exist_ok=True)
 os.makedirs(path_data2, exist_ok=True)
 
-writer = SummaryWriter(log_dir=path_data2)
+if do_tensorboard: writer = SummaryWriter(log_dir=path_data2)
 
 # ----------
 #  Training
@@ -344,7 +349,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
         z = Variable(Tensor(z))
         gen_imgs = generator(z)
-        
+
         #print("Max : ",gen_imgs.max()," Min :",gen_imgs.min())
 
         optimizer_D.zero_grad()
@@ -398,27 +403,29 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Tensorboard save
         iteration = i + nb_batch * j
-        writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
-        writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
-        writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
+        if do_tensorboard:
+            writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
+            writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
+            writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
-        writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
-        writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
+            writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
+            writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
 
-        writer.add_scalar('d_x_cv', hist["d_x_cv"][i], global_step=iteration)
-        writer.add_scalar('d_g_z_cv', hist["d_g_z_cv"][i], global_step=iteration)
+            writer.add_scalar('d_x_cv', hist["d_x_cv"][i], global_step=iteration)
+            writer.add_scalar('d_g_z_cv', hist["d_g_z_cv"][i], global_step=iteration)
 
-        writer.add_histogram('D(x)', d_x, global_step=iteration)
-        writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
+            writer.add_histogram('D(x)', d_x, global_step=iteration)
+            writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
 
-    writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
-    writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
-    writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
-    writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
+    if do_tensorboard:
+        writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
+        writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
+        writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
+        writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
 
-    # Save samples
-    if epoch % opt.sample_interval == 0:
-        tensorboard_sampling(fixed_noise, generator, writer, epoch)
+        # Save samples
+        if epoch % opt.sample_interval == 0:
+            tensorboard_sampling(fixed_noise, generator, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0:
@@ -436,4 +443,4 @@ if opt.model_save_interval < opt.n_epochs + 1:
     save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
 
-writer.close()
+if do_tensorboard: writer.close()
