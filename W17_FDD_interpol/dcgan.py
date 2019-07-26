@@ -28,6 +28,7 @@ parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of e
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.001, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
@@ -243,24 +244,22 @@ print_network(generator)
 print_network(discriminator)
 print_network(encoder)
 
-print("CUDA available : ",cuda)
-
 if cuda:
     #print("Nombre de GPU : ",torch.cuda.device_count())
     if torch.cuda.device_count() > opt.GPU: 
         torch.cuda.set_device(opt.GPU)
-    print("CUDA available : ",cuda)
+        
     generator.cuda()
     discriminator.cuda()
     adversarial_loss.cuda()
     encoder.cuda()
     MSE_loss.cuda()
-print("CUDA available : ",cuda)
+    
 # Initialize weights
 generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 encoder.apply(weights_init_normal)
-print("CUDA available : ",cuda)
+
 # Configure data loader
 dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, rand_hflip=False)
 
