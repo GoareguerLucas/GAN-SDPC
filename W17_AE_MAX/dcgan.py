@@ -149,7 +149,7 @@ class Generator(nn.Module):
             nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
         )
-        
+
     def forward(self, z):
         if self.verbose: print("G")
         # Dim : opt.latent_dim
@@ -168,7 +168,7 @@ class Generator(nn.Module):
         out = self.conv3(out)
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
-        
+
         img = self.conv_blocks(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
         if self.verbose: print("img out : ", img.shape)
@@ -252,9 +252,9 @@ print_network(encoder)
 
 if cuda:
     #print("Nombre de GPU : ",torch.cuda.device_count())
-    if torch.cuda.device_count() > opt.GPU: 
+    if torch.cuda.device_count() > opt.GPU:
         torch.cuda.set_device(opt.GPU)
-    
+
     generator.cuda()
     discriminator.cuda()
     adversarial_loss.cuda()
