@@ -82,11 +82,11 @@ module load python3/3.6.3
 # cd W14_AE_dcgan_128_small
 # python3 dcgan.py
 # cd ..
+# 
+# cd W15_AE_dcgan_small
+# python3 dcgan.py
+# cd ..
 
-cd W15_AE_dcgan_small
-python3 dcgan.py
-cd ..
-
-cd W17_AE_dcgan_small
-python3 dcgan.py
+cd W17_AEGEAN
+python3 aegean.py
 cd ..
