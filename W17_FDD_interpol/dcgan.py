@@ -306,7 +306,7 @@ t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
-		t_batch = time.time()
+        t_batch = time.time()
         # ---------------------
         #  Train Encoder
         # ---------------------
