@@ -128,7 +128,7 @@ def tensorboard_sampling(noise, generator, writer, epoch, encoder=None, imgs=Non
     writer.add_image('Images générer', grid, epoch)
     generator.train()
 
-def tensorboard_AE_comparator(img, generator, encoder, writer, epoch):
+def tensorboard_AE_comparator(imgs, generator, encoder, writer, epoch):
     """
     Sauvegarde dans tensorboard une imgs (image du dataset) sous forme normale et après encodage et décodage. 
     """
