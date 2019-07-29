@@ -26,13 +26,13 @@ parser.add_argument("-r", "--runs_path", type=str, default='Interpol/200e64i64b/
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
-parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.001, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--lrD", type=float, default=0.00007, help="adam: learning rate for D")
+parser.add_argument("--lrG", type=float, default=0.0007, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0007, help="adam: learning rate for E")
+parser.add_argument("--eps", type=float, default=0.3, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
+parser.add_argument("--lrelu", type=float, default=0.05, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
@@ -416,6 +416,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save samples
     if epoch % opt.sample_interval == 0:
         tensorboard_sampling(fixed_noise, generator, writer, epoch)
+        tensorboard_AE_comparator(real_imgs, generator, encoder, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0:

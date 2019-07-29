@@ -118,7 +118,7 @@ def sampling(noise, generator, path, epoch, tag=''):
     generator.train()
 
 
-def tensorboard_sampling(noise, generator, writer, epoch):
+def tensorboard_sampling(noise, generator, writer, epoch, encoder=None, imgs=None):
     """
     Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
     """
@@ -127,6 +127,24 @@ def tensorboard_sampling(noise, generator, writer, epoch):
     grid = torchvision.utils.make_grid(gen_imgs, normalize=True)
     writer.add_image('Images générer', grid, epoch)
     generator.train()
+
+def tensorboard_AE_comparator(img, generator, encoder, writer, epoch):
+    """
+    Sauvegarde dans tensorboard une imgs (image du dataset) sous forme normale et après encodage et décodage. 
+    """
+    generator.eval()
+    encoder.eval()
+    
+    enc_imgs = encoder(imgs)
+    dec_imgs = generator(enc_imgs)
+    
+    grid_imgs = torchvision.utils.make_grid(imgs, normalize=True)
+    grid_dec = torchvision.utils.make_grid(dec_imgs, normalize=True)
+    writer.add_image('Images dataset', grid_imgs, epoch)
+    writer.add_image('Images encoder puis décoder', grid_dec, epoch)
+    
+    generator.train()
+    encoder.train()
 
 def tensorboard_conditional_sampling(noise, label, generator, writer, epoch):
     """
