@@ -297,9 +297,9 @@ init_epoch = 50
 
 t_total = time.time()
 for epoch in range(1,init_epoch+1):
-	t_epoch = time.time()
-	for i, (imgs, _) in enumerate(dataloader):
-		t_batch = time.time()
+    t_epoch = time.time()
+    for i, (imgs, _) in enumerate(dataloader):
+        t_batch = time.time()
         # ---------------------
         #  Train AE
         # ---------------------
@@ -319,19 +319,19 @@ for epoch in range(1,init_epoch+1):
         e_loss.backward()
 
         optimizer_E.step()
-		
-		print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
-			% (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
-		
-		# Tensorboard save
+        
+        print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
+            % (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
+        
+        # Tensorboard save
         iteration = i + nb_batch * j
-		writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
-		
-	# Save samples
+        writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
+        
+    # Save samples
     if epoch % opt.sample_interval == 0:
         tensorboard_AE_comparator(real_imgs, generator, encoder, writer, epoch)
-	
-	print("[Epoch Time: ",time.time()-t_epoch,"s]")
+    
+    print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
 print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
