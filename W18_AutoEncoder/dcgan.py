@@ -329,36 +329,13 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_E.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), d_loss.item(), g_loss.item(), time.time()-t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), time.time()-t_batch)
         )
-
-        # Compensation pour le BCElogits
-        d_x = sigmoid(d_x)
-        d_g_z = sigmoid(d_g_z)
-
-        # Save Losses and scores for Tensorboard
-        save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
         # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
-        writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
-        writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
-
-        writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
-        writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
-
-        writer.add_scalar('d_x_cv', hist["d_x_cv"][i], global_step=iteration)
-        writer.add_scalar('d_g_z_cv', hist["d_g_z_cv"][i], global_step=iteration)
-
-        writer.add_histogram('D(x)', d_x, global_step=iteration)
-        writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
-
-    writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
-    writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
-    writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
-    writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
 
     # Save samples
     if epoch % opt.sample_interval == 0:
@@ -368,7 +345,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save models
     if epoch % opt.model_save_interval == 0:
         num = str(int(epoch / opt.model_save_interval))
-        save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
         save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
@@ -379,7 +355,6 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 
 # Save model for futur training
 if opt.model_save_interval < opt.n_epochs + 1:
-    save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
     save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
