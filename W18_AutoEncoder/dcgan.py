@@ -298,7 +298,7 @@ nb_epochs = 1 + opt.n_epochs - start_epoch
 init_epoch = 50
 
 t_total = time.time()
-for epoch in range(1,init_epoch+1):
+for j, epoch in enumerate(range(1, init_epoch + 1)):
     t_epoch = time.time()
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
