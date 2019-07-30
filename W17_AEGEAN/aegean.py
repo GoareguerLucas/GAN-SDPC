@@ -3,10 +3,10 @@ import AEGEAN as AG
 
 # VANILLA
 
-opt = AG.init()
-print(opt)
-#if os.path.isdir('runs/vanilla')
-AG.learn(opt)
+# opt = AG.init()
+# print(opt)
+# #if os.path.isdir('runs/vanilla')
+# AG.learn(opt)
 
 # what's the effect of a smaller latent_dim ?
 opt = AG.init()
