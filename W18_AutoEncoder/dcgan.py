@@ -292,6 +292,8 @@ writer = SummaryWriter(log_dir=path_data2)
 # ----------
 #  Initalisation AE
 # ----------
+nb_batch = len(dataloader)
+nb_epochs = 1 + opt.n_epochs - start_epoch
 
 init_epoch = 50
 
@@ -337,11 +339,7 @@ print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total
 
 # ----------
 #  Training
-# ----------
-
-nb_batch = len(dataloader)
-nb_epochs = 1 + opt.n_epochs - start_epoch
-
+# -----------
 hist = init_hist(nb_epochs, nb_batch)
 
 # Vecteur z fixe pour faire les samples
