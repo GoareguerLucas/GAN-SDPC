@@ -22,13 +22,13 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='Interpol/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='AutoEncoder/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
+parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00007, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.0007, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.0007, help="adam: learning rate for E")
+parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.3, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
@@ -327,59 +327,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         e_loss.backward()
 
         optimizer_E.step()
-
-        # ---------------------
-        #  Train Discriminator
-        # ---------------------
-
-        # Adversarial ground truths
-        valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
-        valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
-        fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
-
-        # Configure input
-        real_imgs = Variable(imgs.type(Tensor))
-        # Generate a batch of images
-        z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
-        z = Variable(Tensor(z))
-        gen_imgs = generator(z)
-
-        optimizer_D.zero_grad()
-
-        # Real batch
-        # Discriminator descision
-        d_x = discriminator(real_imgs)
-        # Measure discriminator's ability to classify real from generated samples
-        real_loss = adversarial_loss(d_x, valid_smooth)
-        # Backward
-        real_loss.backward()
-
-        # Fake batch
-        # Discriminator descision
-        d_g_z = discriminator(gen_imgs.detach())
-        # Measure discriminator's ability to classify real from generated samples
-        fake_loss = adversarial_loss(d_g_z, fake)
-        # Backward
-        fake_loss.backward()
-
-        d_loss = real_loss + fake_loss
-
-        optimizer_D.step()
-
-        # -----------------
-        #  Train Generator
-        # -----------------
-
-        optimizer_G.zero_grad()
-
-        # New discriminator descision, Since we just updated D
-        d_g_z = discriminator(gen_imgs)
-        # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(d_g_z, valid)
-        # Backward
-        g_loss.backward()
-
-        optimizer_G.step()
 
         print(
             "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
