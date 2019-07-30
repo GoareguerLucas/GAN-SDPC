@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='AutoEncoder/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
+parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00005, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00005, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.00015, help="adam: learning rate for E")
@@ -266,8 +266,8 @@ dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, r
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
-optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
-#optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
+#optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
+optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -353,6 +353,27 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     for i, (imgs, _) in enumerate(dataloader):
         t_batch = time.time()
         # ---------------------
+        #  Train Encoder
+        # ---------------------
+
+        real_imgs = Variable(imgs.type(Tensor))
+
+        optimizer_E.zero_grad()
+        z_imgs = encoder(real_imgs)
+        decoded_imgs = generator(z_imgs)
+
+        # Loss measures Encoder's ability to generate vectors suitable with the generator
+        # DONE add a loss for the distance between of z values
+        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+
+        # Backward
+        e_loss.backward()
+
+        optimizer_E.step()
+
+        # ---------------------
         #  Train Discriminator
         # ---------------------
 
@@ -404,28 +425,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         g_loss.backward()
 
         optimizer_G.step()
-        
-        # ---------------------
-        #  Train Encoder
-        # ---------------------
-
-        real_imgs = Variable(imgs.type(Tensor))
-
-        optimizer_E.zero_grad()
-        z_imgs = encoder(real_imgs)
-        decoded_imgs = generator(z_imgs)
-
-        # Loss measures Encoder's ability to generate vectors suitable with the generator
-        # DONE add a loss for the distance between of z values
-        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
-        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = MSE_loss(real_imgs, decoded_imgs.detach()) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
-
-        # Backward
-        e_loss.backward()
-
-        optimizer_E.step()
-
 
         print(
             "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
