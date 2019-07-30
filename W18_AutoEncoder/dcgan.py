@@ -22,13 +22,13 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='AutoEncoder/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Interpol/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00007, help="adam: learning rate for D")
-parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
+parser.add_argument("--lrG", type=float, default=0.0007, help="adam: learning rate for G")
+parser.add_argument("--lrE", type=float, default=0.0007, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.3, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
@@ -290,6 +290,52 @@ os.makedirs(path_data2, exist_ok=True)
 writer = SummaryWriter(log_dir=path_data2)
 
 # ----------
+#  Initalisation AE
+# ----------
+
+init_epoch = 50
+
+t_total = time.time()
+for epoch in range(1,init_epoch+1):
+	t_epoch = time.time()
+	for i, (imgs, _) in enumerate(dataloader):
+		t_batch = time.time()
+        # ---------------------
+        #  Train AE
+        # ---------------------
+        real_imgs = Variable(imgs.type(Tensor))
+
+        optimizer_E.zero_grad()
+        z_imgs = encoder(real_imgs)
+        decoded_imgs = generator(z_imgs)
+
+        # Loss measures Encoder's ability to generate vectors suitable with the generator
+        # DONE add a loss for the distance between of z values
+        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+
+        # Backward
+        e_loss.backward()
+
+        optimizer_E.step()
+		
+		print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
+			% (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
+		
+		# Tensorboard save
+        iteration = i + nb_batch * j
+		writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
+		
+	# Save samples
+    if epoch % opt.sample_interval == 0:
+        tensorboard_AE_comparator(real_imgs, generator, encoder, writer, epoch)
+	
+	print("[Epoch Time: ",time.time()-t_epoch,"s]")
+
+print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
+
+# ----------
 #  Training
 # ----------
 
@@ -328,14 +374,90 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_E.step()
 
+        # ---------------------
+        #  Train Discriminator
+        # ---------------------
+
+        # Adversarial ground truths
+        valid_smooth = Variable(Tensor(imgs.shape[0], 1).fill_(float(np.random.uniform(0.9, 1.0, 1))), requires_grad=False)
+        valid = Variable(Tensor(imgs.size(0), 1).fill_(1), requires_grad=False)
+        fake = Variable(Tensor(imgs.size(0), 1).fill_(0), requires_grad=False)
+
+        # Configure input
+        real_imgs = Variable(imgs.type(Tensor))
+        # Generate a batch of images
+        z = np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))
+        z = Variable(Tensor(z))
+        gen_imgs = generator(z)
+
+        optimizer_D.zero_grad()
+
+        # Real batch
+        # Discriminator descision
+        d_x = discriminator(real_imgs)
+        # Measure discriminator's ability to classify real from generated samples
+        real_loss = adversarial_loss(d_x, valid_smooth)
+        # Backward
+        real_loss.backward()
+
+        # Fake batch
+        # Discriminator descision
+        d_g_z = discriminator(gen_imgs.detach())
+        # Measure discriminator's ability to classify real from generated samples
+        fake_loss = adversarial_loss(d_g_z, fake)
+        # Backward
+        fake_loss.backward()
+
+        d_loss = real_loss + fake_loss
+
+        optimizer_D.step()
+
+        # -----------------
+        #  Train Generator
+        # -----------------
+
+        optimizer_G.zero_grad()
+
+        # New discriminator descision, Since we just updated D
+        d_g_z = discriminator(gen_imgs)
+        # Loss measures generator's ability to fool the discriminator
+        g_loss = adversarial_loss(d_g_z, valid)
+        # Backward
+        g_loss.backward()
+
+        optimizer_G.step()
+
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), time.time()-t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), d_loss.item(), g_loss.item(), time.time()-t_batch)
         )
+
+        # Compensation pour le BCElogits
+        d_x = sigmoid(d_x)
+        d_g_z = sigmoid(d_g_z)
+
+        # Save Losses and scores for Tensorboard
+        save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
         # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
+        writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
+        writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
+
+        writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
+        writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
+
+        writer.add_scalar('d_x_cv', hist["d_x_cv"][i], global_step=iteration)
+        writer.add_scalar('d_g_z_cv', hist["d_g_z_cv"][i], global_step=iteration)
+
+        writer.add_histogram('D(x)', d_x, global_step=iteration)
+        writer.add_histogram('D(G(z))', d_g_z, global_step=iteration)
+
+    writer.add_scalar('D_x_max', hist["D_x_max"][j], global_step=epoch)
+    writer.add_scalar('D_x_min', hist["D_x_min"][j], global_step=epoch)
+    writer.add_scalar('D_G_z_min', hist["D_G_z_min"][j], global_step=epoch)
+    writer.add_scalar('D_G_z_max', hist["D_G_z_max"][j], global_step=epoch)
 
     # Save samples
     if epoch % opt.sample_interval == 0:
@@ -345,6 +467,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save models
     if epoch % opt.model_save_interval == 0:
         num = str(int(epoch / opt.model_save_interval))
+        save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
         save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
@@ -355,6 +478,7 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 
 # Save model for futur training
 if opt.model_save_interval < opt.n_epochs + 1:
+    save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
     save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
