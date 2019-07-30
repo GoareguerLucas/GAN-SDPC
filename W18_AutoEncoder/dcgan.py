@@ -22,7 +22,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='Interpol/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='AutoEncoder/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
@@ -266,7 +266,8 @@ dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, r
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
-optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
+optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
+#optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -292,58 +293,58 @@ writer = SummaryWriter(log_dir=path_data2)
 # ----------
 #  Initalisation AE
 # ----------
-nb_batch = len(dataloader)
-nb_epochs = 1 + opt.n_epochs - start_epoch
+# init_epoch = 50
 
-init_epoch = 50
+# t_total = time.time()
+# for j, epoch in enumerate(range(1, init_epoch + 1)):
+    # t_epoch = time.time()
+    # for i, (imgs, _) in enumerate(dataloader):
+        # t_batch = time.time()
+        # # ---------------------
+        # #  Train AE
+        # # ---------------------
+        # real_imgs = Variable(imgs.type(Tensor))
 
-t_total = time.time()
-for j, epoch in enumerate(range(1, init_epoch + 1)):
-    t_epoch = time.time()
-    for i, (imgs, _) in enumerate(dataloader):
-        t_batch = time.time()
-        # ---------------------
-        #  Train AE
-        # ---------------------
-        real_imgs = Variable(imgs.type(Tensor))
+        # optimizer_E.zero_grad()
+        # z_imgs = encoder(real_imgs)
+        # decoded_imgs = generator(z_imgs)
 
-        optimizer_E.zero_grad()
-        z_imgs = encoder(real_imgs)
-        decoded_imgs = generator(z_imgs)
+        # # Loss measures Encoder's ability to generate vectors suitable with the generator
+        # # DONE add a loss for the distance between of z values
+        # z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
+        # z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
+        # e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
 
-        # Loss measures Encoder's ability to generate vectors suitable with the generator
-        # DONE add a loss for the distance between of z values
-        z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
-        z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+        # # Backward
+        # e_loss.backward()
 
-        # Backward
-        e_loss.backward()
-
-        optimizer_E.step()
+        # optimizer_E.step()
         
-        print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
-            % (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
+        # print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
+            # % (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
         
-        # Tensorboard save
-        iteration = i + nb_batch * j
-        writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
+        # # Tensorboard save
+        # iteration = i + nb_batch * j
+        # writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
         
-    # Save samples
-    if epoch % opt.sample_interval == 0:
-        tensorboard_AE_comparator(real_imgs, generator, encoder, writer, epoch)
+    # # Save samples
+    # if epoch % opt.sample_interval == 0:
+        # tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
     
-    print("[Epoch Time: ",time.time()-t_epoch,"s]")
+    # print("[Epoch Time: ",time.time()-t_epoch,"s]")
 
-print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
+# print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
 # ----------
 #  Training
 # -----------
+nb_batch = len(dataloader)
+nb_epochs = 1 + opt.n_epochs - start_epoch
+n_sample = 24
+
 hist = init_hist(nb_epochs, nb_batch)
 
 # Vecteur z fixe pour faire les samples
-n_sample = 24
 fixed_noise = Variable(Tensor(np.random.normal(0, 1, (n_sample, opt.latent_dim))))
 
 t_total = time.time()
@@ -460,7 +461,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save samples
     if epoch % opt.sample_interval == 0:
         tensorboard_sampling(fixed_noise, generator, writer, epoch)
-        tensorboard_AE_comparator(real_imgs, generator, encoder, writer, epoch)
+        tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0:
