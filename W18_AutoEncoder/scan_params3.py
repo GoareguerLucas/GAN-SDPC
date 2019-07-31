@@ -20,6 +20,6 @@ exp_name = "AutoEncoder"
 # Suite de scan_params.py, recherche autour de lrD0.0001lrE0.001lrG1e05
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--b1": [0.7, 0.9], "--eps": [0.0, 0.1, 0.5], "--lrelu": [0.000001, 0.01, 0.2]}
+params = {"--b1": [0.7, 0.9], "--eps": [0.0, 0.1, 0.5], "--lrelu": [0.000001, 0.01, 0.2], "--lrG": [0.00001], "--lrE": [0.001], "--lrD": [0.0001], "--GPU": [1]}
 
 scan(exp_name, params)
