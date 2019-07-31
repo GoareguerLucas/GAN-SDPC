@@ -17,7 +17,9 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 
 exp_name = "AutoEncoder"
 
+# Suite de scan_params.py, recherche autour de lrD0.0001lrE0.001lrG1e05
+
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--lrG": [0.001, 0.0001, 0.00001], "--lrE": [0.001, 0.0001, 0.00001], "--lrD": [0.001, 0.0001, 0.00001]}
+params = {"--lrG": [0.00003, 0.00005], "--lrE": [0.0005, 0.0007], "--lrD": [0.0003, 0.00005]}
 
 scan(exp_name, params, permutation=True)
