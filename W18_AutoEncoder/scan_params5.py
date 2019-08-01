@@ -17,7 +17,7 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 
 exp_name = "AutoEncoder"
 
-# Suite de scan_params.py, recherche autour de lrD0.0001lrE0.001lrG1e05
+# Suite de scan_params4.py, Augmentation du nombre d'epochs des meilleurs résultats de scan 4
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
 params = {"--b1": [0.7], "--eps": [0.0, 0.1], "--lrelu": [0.000001, 0.01], "--GPU": [1], "-e": [200]}
