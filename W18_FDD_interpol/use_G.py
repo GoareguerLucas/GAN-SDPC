@@ -94,11 +94,11 @@ load_model(generator, None, opt.model_path)
 with open(opt.seed_path, "r") as f:
     text = f.read().splitlines()
     
-    params = []
-    for line in text:
-        line = line.replace(',','').split()
-        print(line)
-        params.append(line)
+	params = []
+	for line in text:
+		line = line.replace(',','').split()
+		print(line)
+		params.append(line)
     
     #print(params)
     
