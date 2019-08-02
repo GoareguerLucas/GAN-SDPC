@@ -20,6 +20,6 @@ exp_name = "AutoEncoder/scan8"
 # Suite de scan_params6.py, Test en kernels de taille 9 et sauvegarde des models G
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--b1": [0.7,0.7,0.7], "--eps": [0.0,0.01,0.01], "--lrelu": [0.01,0.01,0.000001], "--GPU": [1,1,1], "--kernels_size": [9,9,9], "--padding": [4,4,4]}
+params = {"--b1": [0.7,0.7,0.7], "--eps": [0.0,0.1,0.1], "--lrelu": [0.01,0.01,0.000001], "--GPU": [1,1,1], "--kernels_size": [9,9,9], "--padding": [4,4,4]}
 
 scan(exp_name, params, permutation=False)
