@@ -30,7 +30,7 @@ parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning ra
 parser.add_argument("--lrG", type=float, default=0.00001, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.05, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b1", type=float, default=0.7, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--lrelu", type=float, default=0.02, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
