@@ -21,6 +21,6 @@ exp_name = "AutoEncoder/scan7"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
 #params = {"--b1": [0.7,0.7,0.7], "--eps": [0.0,0.1,0.1], "--lrelu": [0.01,0.01,0.000001], "--GPU": [1,1,1]}
-params = {"--b1": [0.7,0.7], "--eps": [0.0,0.1], "--lrelu": [0.01,0.01], "--GPU": [1,1], "--model_save_path": ["models_eps0.0lrelu0.01","models_eps0.1lrelu0.01"]}
+params = {"--b1": [0.7,0.7], "--eps": [0.0,0.1], "--lrelu": [0.01,0.01], "--GPU": [1,1], "--model_save_path": ["scan7_models_eps0.0lrelu0.01","scan7_models_eps0.1lrelu0.01"]}
 
 scan(exp_name, params, permutation=False)
