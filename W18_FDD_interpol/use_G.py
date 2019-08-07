@@ -96,11 +96,11 @@ load_model(generator, None, opt.model_path)
 with open(opt.seed_path, "r") as f:
     text = f.read().splitlines()
     
-	params = []
-	for line in text:
-		line = line.replace(',','').split()
-		print(line)
-		params.append(line)
+    params = []
+    for line in text:
+        line = line.replace(',','').split()
+        print(line)
+        params.append(line)
     
     #print(params)
     
@@ -111,5 +111,5 @@ if cuda:
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
+params = Variable(Tensor(np.asarray(params,dtype=np.float64)[:25]))
 sampling(params, generator, opt.results_path, 0)
