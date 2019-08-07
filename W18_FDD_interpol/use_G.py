@@ -1,6 +1,7 @@
 import sys
 import argparse
 import numpy as np
+from PIL import Image
 
 import torch
 import torch.nn as nn
@@ -27,6 +28,7 @@ parser.add_argument("-i", "--img_size", type=int, default=128, help="size of eac
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
+parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
 
@@ -96,20 +98,34 @@ load_model(generator, None, opt.model_path)
 with open(opt.seed_path, "r") as f:
     text = f.read().splitlines()
     
+    path = []
     params = []
     for line in text:
+        path.append(line)
         line = line.replace(',','').split()
-        print(line)
+        #print(line)
         params.append(line)
-    
-    #print(params)
-    
+params = params[:25]
+print(params)
+
 # GPU paramétrisation
 cuda = True if torch.cuda.is_available() else False
 if cuda:
+    if torch.cuda.device_count() > opt.GPU: 
+        torch.cuda.set_device(opt.GPU)
     generator.cuda()
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-params = Variable(Tensor(np.asarray(params,dtype=np.float64)[:25]))
+params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
 sampling(params, generator, opt.results_path, 0)
+
+"""
+# Recherche et affichage des seeds dans le dataset
+path = [e.replace(' ','_')+".png" for e in path[:25]]
+print(path)
+
+for p in path:
+    im = Image.open("../../Dataset/FDD/data/kbc/"+p)
+    im.show()
+"""
