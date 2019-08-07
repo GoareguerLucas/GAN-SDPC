@@ -21,6 +21,8 @@ parser.add_argument("-r", "--results_path", type=str, default='results',
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
+parser.add_argument("--kernels_size", type=int, default=5, help="Taille des kernels")
+parser.add_argument("--padding", type=int, default=2, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-v", "--verbose", action="store_true",
@@ -33,7 +35,7 @@ os.makedirs(opt.results_path, exist_ok=True)
 
 # Initialize generator 
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
-opts_conv = dict(kernel_size=5, stride=2, padding=2, padding_mode='zeros')
+opts_conv = dict(kernel_size=opt.kernels_size, stride=2, padding=opt.padding, padding_mode='zeros')
 channels = [64, 128, 256, 512]
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
