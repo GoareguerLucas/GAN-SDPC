@@ -12,6 +12,10 @@ sys.path.append("../")  # ../../GAN-SDPC/
 
 from utils import *
 
+#########
+# python use_G.py -p scan7_models_eps0.1lrelu1e06/last_G.pt -s seed_dataset_kdc.txt --eps 0.1 --lrelu 0.000001 --GPU 1
+#########
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
                     help="Chemin vers le générateur à charger")
@@ -19,8 +23,8 @@ parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
                     help="Chemin vers le fichier contenant les seeds à générer.")
 parser.add_argument("-r", "--results_path", type=str, default='results',
                     help="Nom du fichier contenant les résultats")
-parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--lrelu", type=float, default=0.2, help="LeakyReLU : alpha")
+parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
 parser.add_argument("--kernels_size", type=int, default=5, help="Taille des kernels")
 parser.add_argument("--padding", type=int, default=2, help="Taille du padding")
