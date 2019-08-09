@@ -24,7 +24,7 @@ parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
                     help="Chemin vers le fichier contenant les seeds à générer.")
 parser.add_argument("-r", "--results_path", type=str, default='results',
                     help="Dossier contenant les résultats")
-parser.add_argument("-t", "--tag", type=str, default='images',
+parser.add_argument("-t", "--tag", type=str, default='image',
                     help="Nom du fichier contenant les résultats")
 parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
