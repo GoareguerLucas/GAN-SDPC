@@ -14,6 +14,7 @@ from utils import *
 
 #########
 # python use_G.py -p scan7_models_eps0.1lrelu1e06/last_G.pt -s seed_dataset_kdc.txt --eps 0.1 --lrelu 0.000001 --GPU 1
+# python use_G.py -p models_eps0.0lrelu0.01/last_G.pt -s seed_dataset_kdc.txt --eps 0.0 --lrelu 0.01 --GPU 1 --kernels_size 9 --padding 4
 #########
 
 parser = argparse.ArgumentParser()
@@ -22,6 +23,8 @@ parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
 parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
                     help="Chemin vers le fichier contenant les seeds à générer.")
 parser.add_argument("-r", "--results_path", type=str, default='results',
+                    help="Dossier contenant les résultats")
+parser.add_argument("-t", "--tag", type=str, default='images',
                     help="Nom du fichier contenant les résultats")
 parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
@@ -122,7 +125,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
 params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
-sampling(params, generator, opt.results_path, 0)
+sampling(params, generator, opt.results_path, 0, tag=opt.tag)
 
 """
 # Recherche et affichage des seeds dans le dataset
