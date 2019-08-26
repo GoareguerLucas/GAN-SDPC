@@ -102,7 +102,7 @@ print_network(generator)
 load_model(generator, None, opt.model_path)
 
 # Lecture des seeds
-with open("../seed_dataset_kbc.txt", "r") as f:
+with open("../seed_dataset_kdc.txt", "r") as f:
     text = f.read().splitlines()
     
     path = []
