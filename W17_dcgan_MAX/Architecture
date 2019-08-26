@@ -1,0 +1,55 @@
+Discriminator(
+  (conv1): Sequential(
+    (0): Conv2d(3, 64, kernel_size=(9, 9), stride=(2, 2), padding=(4, 4))
+    (1): LeakyReLU(negative_slope=1e-06, inplace)
+  )
+  (conv2): Sequential(
+    (0): Conv2d(64, 128, kernel_size=(9, 9), stride=(2, 2), padding=(4, 4))
+    (1): LeakyReLU(negative_slope=1e-06, inplace)
+    (2): BatchNorm2d(128, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (conv3): Sequential(
+    (0): Conv2d(128, 256, kernel_size=(9, 9), stride=(2, 2), padding=(4, 4))
+    (1): LeakyReLU(negative_slope=1e-06, inplace)
+    (2): BatchNorm2d(256, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (conv4): Sequential(
+    (0): Conv2d(256, 512, kernel_size=(9, 9), stride=(2, 2), padding=(4, 4))
+    (1): LeakyReLU(negative_slope=1e-06, inplace)
+    (2): BatchNorm2d(512, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (adv_layer): Sequential(
+    (0): Linear(in_features=32768, out_features=1, bias=True)
+  )
+)
+Total number of parameters: 13985665
+
+Generator(
+  (l1): Sequential(
+    (0): Linear(in_features=6, out_features=131072, bias=True)
+    (1): LeakyReLU(negative_slope=1e-06, inplace)
+  )
+  (conv1): Sequential(
+    (0): UpsamplingNearest2d(scale_factor=2.0, mode=nearest)
+    (1): Conv2d(512, 256, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4))
+    (2): BatchNorm2d(256, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+    (3): LeakyReLU(negative_slope=1e-06, inplace)
+  )
+  (conv2): Sequential(
+    (0): UpsamplingNearest2d(scale_factor=2.0, mode=nearest)
+    (1): Conv2d(256, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4))
+    (2): BatchNorm2d(128, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+    (3): LeakyReLU(negative_slope=1e-06, inplace)
+  )
+  (conv3): Sequential(
+    (0): UpsamplingNearest2d(scale_factor=2.0, mode=nearest)
+    (1): Conv2d(128, 64, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4))
+    (2): BatchNorm2d(64, eps=0.5, momentum=0.1, affine=True, track_running_stats=True)
+    (3): LeakyReLU(negative_slope=1e-06, inplace)
+  )
+  (conv_blocks): Sequential(
+    (0): Conv2d(64, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): Tanh()
+  )
+)
+Total number of parameters: 14855171

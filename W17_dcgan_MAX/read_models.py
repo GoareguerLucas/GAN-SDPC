@@ -26,11 +26,11 @@ parser.add_argument("-r", "--results_path", type=str, default='results',
                     help="Dossier contenant les résultats")
 parser.add_argument("-t", "--tag", type=str, default='image',
                     help="Nom du fichier contenant les résultats")
-parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
-parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
-parser.add_argument("--kernels_size", type=int, default=5, help="Taille des kernels")
-parser.add_argument("--padding", type=int, default=2, help="Taille du padding")
+parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
+parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
+parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
+parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-v", "--verbose", action="store_true",
@@ -40,7 +40,7 @@ opt = parser.parse_args()
 print(opt)
 
 # Dossier de sauvegarde
-os.makedirs(opt.results_path, exist_ok=True)
+#os.makedirs(opt.results_path, exist_ok=True)
 
 # Initialize generator 
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
@@ -95,32 +95,95 @@ class Generator(nn.Module):
 
     def _name(self):
         return "Generator"
+
+class Discriminator(nn.Module):
+    def __init__(self,verbose=opt.verbose):
+        super(Discriminator, self).__init__()
+
+        def discriminator_block(in_filters, out_filters, bn=True):
+            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]#, nn.Dropout2d(0.25)
+            if bn:
+                block.append(nn.BatchNorm2d(out_filters, opt.eps))
+            return block
+
+        self.verbose = verbose
+
+        self.conv1 = nn.Sequential(*discriminator_block(opt.channels, channels[0], bn=False),)
+        self.conv2 = nn.Sequential(*discriminator_block(channels[0], channels[1]),)
+        self.conv3 = nn.Sequential(*discriminator_block(channels[1], channels[2]),)
+        self.conv4 = nn.Sequential(*discriminator_block(channels[2], channels[3]),)
+
+        # The height and width of downsampled image
+        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.adv_layer = nn.Sequential(nn.Linear(channels[3] * self.init_size ** 2, 1))#, nn.Sigmoid()
+
+    def forward(self, img):
+        if self.verbose:
+            print("D")
+            print("Image shape : ",img.shape)
+            out = self.conv1(img)
+            print("Conv1 out : ",out.shape)
+            out = self.conv2(out)
+            print("Conv2 out : ",out.shape)
+            out = self.conv3(out)
+            print("Conv3 out : ",out.shape)
+            out = self.conv4(out)
+            print("Conv4 out : ",out.shape)
+
+            out = out.view(out.shape[0], -1)
+            print("View out : ",out.shape)
+            validity = self.adv_layer(out)
+            print("Val out : ",validity.shape)
+        else:
+            # Dim : (opt.chanels, opt.img_size, opt.img_size)
+            out = self.conv1(img)
+            # Dim : (channels[3]/8, opt.img_size/2, opt.img_size/2)
+            out = self.conv2(out)
+            # Dim : (channels[3]/4, opt.img_size/4, opt.img_size/4)
+            out = self.conv3(out)
+            # Dim : (channels[3]/2, opt.img_size/4, opt.img_size/4)
+            out = self.conv4(out)
+            # Dim : (channels[3], opt.img_size/8, opt.img_size/8)
+
+            out = out.view(out.shape[0], -1)
+            validity = self.adv_layer(out)
+            # Dim : (1)
+
+        return validity
+
+    def _name(self):
+        return "Discriminator"
 generator = Generator()
+discriminator = Discriminator()
+
+print_network(discriminator)
 print_network(generator)
 
 # Chargement
-#load_model(generator, None, opt.model_path)
-
-# Lecture des seeds
-with open("../seed_dataset_kbc.txt", "r") as f:
-    text = f.read().splitlines()
+def load_model(model, optimizer, path):
+    print("Load model :", model._name())
     
-    path = []
-    params = []
-    for line in text:
-        path.append(line)
-        line = line.replace(',','').split()
-        #print(line)
-        params.append(line)
-params = params[:25]
-print(params)
+    device = torch.device('cpu')
+    checkpoint = torch.load(path,map_location=device)
+    
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
-# Normalization entre -1 et 1 des 4 paramètres
-for i,l in enumerate(params):
-	for j,e in enumerate(l[2:]):
-		params[i][j+2] = str(float(e)/3)
-print(params)
+    return checkpoint['epoch']
 
+load_model(generator, None, 'models/last_G.pt')
+load_model(discriminator, None, 'models/last_D.pt')
+
+# Create the right input shape (e.g. for an image)
+dummy_input_G = torch.randn(16, 32)
+dummy_input_D = torch.randn(16, 3, 128, 128)
+
+torch.onnx.export(generator, dummy_input_G, "last_G.onnx")
+torch.onnx.export(discriminator, dummy_input_D, "last_D.onnx")
+
+"""
 # GPU paramétrisation
 cuda = True if torch.cuda.is_available() else False
 if cuda:
@@ -132,13 +195,4 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 # Génération
 params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
 sampling(params, generator, opt.results_path, 0, tag=opt.tag)
-
-"""
-# Recherche et affichage des seeds dans le dataset
-path = [e.replace(' ','_')+".png" for e in path[:25]]
-print(path)
-
-for p in path:
-    im = Image.open("../../Dataset/FDD/data/kbc/"+p)
-    im.show()
 """
