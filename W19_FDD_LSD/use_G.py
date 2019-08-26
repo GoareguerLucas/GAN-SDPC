@@ -99,7 +99,7 @@ generator = Generator()
 print_network(generator)
 
 # Chargement
-#load_model(generator, None, opt.model_path)
+load_model(generator, None, opt.model_path)
 
 # Lecture des seeds
 with open("../seed_dataset_kbc.txt", "r") as f:
