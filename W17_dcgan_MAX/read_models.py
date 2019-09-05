@@ -155,7 +155,7 @@ class Discriminator(nn.Module):
         return "Discriminator"
 generator = Generator()
 
-load_model(generator, None, 'models/last_G.pt')
+load_model(generator, None, opt.model_path)
 
 # GPU paramétrisation
 cuda = True if torch.cuda.is_available() else False

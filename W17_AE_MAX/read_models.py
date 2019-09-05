@@ -28,7 +28,7 @@ parser.add_argument("-t", "--tag", type=str, default='image',
                     help="Nom du fichier contenant les résultats")
 parser.add_argument("--eps", type=float, default=0.01, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.1, help="LeakyReLU : alpha")
-parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
+parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
 parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
 parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")

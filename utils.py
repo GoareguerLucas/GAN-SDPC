@@ -114,7 +114,7 @@ def sampling(noise, generator, path, epoch, tag=''):
     """
     generator.eval()
     gen_imgs = generator(noise)
-    save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=5, normalize=False)
+    save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=5, normalize=True)
     generator.train()
 
 
