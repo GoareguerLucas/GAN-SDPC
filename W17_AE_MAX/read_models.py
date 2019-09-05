@@ -40,7 +40,7 @@ opt = parser.parse_args()
 print(opt)
 
 # Dossier de sauvegarde
-#os.makedirs(opt.results_path, exist_ok=True)
+os.makedirs(opt.results_path, exist_ok=True)
 
 # Initialize generator 
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
@@ -260,18 +260,10 @@ class Discriminator(nn.Module):
     def _name(self):
         return "Discriminator"
 generator = Generator()
-discriminator = Discriminator()
-encoder = Encoder()
-
-print_network(generator)
-print_network(discriminator)
-print_network(encoder)
 
 # Chargement
-#load_model(generator, None, opt.model_path)
+load_model(generator, None, opt.model_path)
 
-
-"""
 # GPU paramétrisation
 cuda = True if torch.cuda.is_available() else False
 if cuda:
@@ -281,6 +273,7 @@ if cuda:
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
-sampling(params, generator, opt.results_path, 0, tag=opt.tag)
-"""
+N = 24
+noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag)
+

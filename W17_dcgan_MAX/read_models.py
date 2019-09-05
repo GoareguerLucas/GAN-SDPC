@@ -40,7 +40,7 @@ opt = parser.parse_args()
 print(opt)
 
 # Dossier de sauvegarde
-#os.makedirs(opt.results_path, exist_ok=True)
+os.makedirs(opt.results_path, exist_ok=True)
 
 # Initialize generator 
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
@@ -154,36 +154,9 @@ class Discriminator(nn.Module):
     def _name(self):
         return "Discriminator"
 generator = Generator()
-discriminator = Discriminator()
-
-print_network(discriminator)
-print_network(generator)
-
-# Chargement
-def load_model(model, optimizer, path):
-    print("Load model :", model._name())
-    
-    device = torch.device('cpu')
-    checkpoint = torch.load(path,map_location=device)
-    
-    model.load_state_dict(checkpoint['model_state_dict'])
-    
-    if optimizer is not None:
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-
-    return checkpoint['epoch']
 
 load_model(generator, None, 'models/last_G.pt')
-load_model(discriminator, None, 'models/last_D.pt')
 
-# Create the right input shape (e.g. for an image)
-dummy_input_G = torch.randn(16, 32)
-dummy_input_D = torch.randn(16, 3, 128, 128)
-
-torch.onnx.export(generator, dummy_input_G, "last_G.onnx")
-torch.onnx.export(discriminator, dummy_input_D, "last_D.onnx")
-
-"""
 # GPU paramétrisation
 cuda = True if torch.cuda.is_available() else False
 if cuda:
@@ -193,6 +166,7 @@ if cuda:
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-params = Variable(Tensor(np.asarray(params,dtype=np.float64)))
-sampling(params, generator, opt.results_path, 0, tag=opt.tag)
-"""
+N = 24
+noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag)
+
