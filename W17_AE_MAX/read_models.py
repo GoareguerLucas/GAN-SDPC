@@ -273,7 +273,7 @@ if cuda:
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-N = 24
+N = 25
 noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag)
 
