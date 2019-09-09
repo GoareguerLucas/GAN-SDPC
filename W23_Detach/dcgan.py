@@ -23,10 +23,10 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='Detach/200e16i128b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Detach/300e16i128b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
+parser.add_argument("-b", "--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00004, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.0004, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.0004, help="adam: learning rate for E")
@@ -80,7 +80,7 @@ tag = tag.replace(':','.')
 
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
-opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
+opts_conv = dict(kernel_size=7, stride=2, padding=3, padding_mode='zeros')
 channels = [64, 128, 256, 512]
 
 class Encoder(nn.Module):
