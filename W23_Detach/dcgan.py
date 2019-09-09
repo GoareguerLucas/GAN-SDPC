@@ -279,9 +279,9 @@ optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
 if opt.detach:
-	optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
+    optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
 else:
-	optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
+    optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -335,9 +335,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         z_imgs = encoder(real_imgs)
         
         if opt.detach:
-			decoded_imgs = generator(z_imgs).detach()
-		else:
-			decoded_imgs = generator(z_imgs)
+            decoded_imgs = generator(z_imgs).detach()
+        else:
+            decoded_imgs = generator(z_imgs)
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
         # DONE add a loss for the distance between of z values
