@@ -22,10 +22,10 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='AutoEncoder/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Detach_FDD/200e64i64b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
-parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
-parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
+parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00001, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
@@ -34,8 +34,8 @@ parser.add_argument("--b1", type=float, default=0.7, help="adam: decay of first 
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
-parser.add_argument("--kernels_size", type=int, default=5, help="Taille des kernels")
-parser.add_argument("--padding", type=int, default=2, help="Taille du padding")
+parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
+parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
@@ -470,7 +470,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         num = str(int(epoch / opt.model_save_interval))
         #save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
-        #save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
+        save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
     print("[Epoch Time: ", time.time() - t_epoch, "s]")
 
@@ -481,6 +481,6 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 if opt.model_save_interval < opt.n_epochs + 1:
     #save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
-    #save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
+    save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
 writer.close()
