@@ -34,6 +34,8 @@ parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first 
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
+parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
+parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
@@ -76,7 +78,7 @@ tag = tag.replace(':','.')
 
 cuda = True if torch.cuda.is_available() else False
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
-opts_conv = dict(kernel_size=9, stride=2, padding=4, padding_mode='zeros')
+opts_conv = dict(kernel_size=opt.kernels_size, stride=2, padding=opt.padding, padding_mode='zeros')
 channels = [64, 128, 256, 512]
 
 class Generator(nn.Module):
