@@ -48,6 +48,8 @@ parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
+parser.add_argument("--detach", action="store_true",
+                    help="Détermine si le loss de l'auto-encoder affecte les poids du générateur.")
 parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
@@ -268,8 +270,11 @@ dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, r
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
-#optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
-optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
+
+if opt.detach:
+    optimizer_E = torch.optim.Adam(encoder.parameters(), lr=opt.lrE, betas=(opt.b1, opt.b2))
+else:
+    optimizer_E = torch.optim.Adam(itertools.chain(encoder.parameters(), generator.parameters()), lr=opt.lrE, betas=(opt.b1, opt.b2))
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
@@ -291,51 +296,6 @@ os.makedirs(path_data1, exist_ok=True)
 os.makedirs(path_data2, exist_ok=True)
 
 writer = SummaryWriter(log_dir=path_data2)
-
-# ----------
-#  Initalisation AE
-# ----------
-# init_epoch = 50
-
-# t_total = time.time()
-# for j, epoch in enumerate(range(1, init_epoch + 1)):
-    # t_epoch = time.time()
-    # for i, (imgs, _) in enumerate(dataloader):
-        # t_batch = time.time()
-        # # ---------------------
-        # #  Train AE
-        # # ---------------------
-        # real_imgs = Variable(imgs.type(Tensor))
-
-        # optimizer_E.zero_grad()
-        # z_imgs = encoder(real_imgs)
-        # decoded_imgs = generator(z_imgs)
-
-        # # Loss measures Encoder's ability to generate vectors suitable with the generator
-        # # DONE add a loss for the distance between of z values
-        # z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
-        # z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        # e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
-
-        # # Backward
-        # e_loss.backward()
-
-        # optimizer_E.step()
-        
-        # print( "[Epoch %d/%d] [Batch %d/%d] [Init loss: %f] [Time: %fs]"
-            # % (epoch, init_epoch, i+1, len(dataloader), e_loss.item(), time.time()-t_batch) )
-        
-        # # Tensorboard save
-        # iteration = i + nb_batch * j
-        # writer.add_scalar('init_loss', e_loss.item(), global_step=iteration)
-        
-    # # Save samples
-    # if epoch % opt.sample_interval == 0:
-        # tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
-    
-    # print("[Epoch Time: ",time.time()-t_epoch,"s]")
-
-# print("[Init Time: ",time.strftime("%Hh:%Mm:%Ss",time.gmtime(time.time()-t_total)),"]")
 
 # ----------
 #  Training
@@ -362,7 +322,11 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_E.zero_grad()
         z_imgs = encoder(real_imgs)
-        decoded_imgs = generator(z_imgs)
+        
+        if opt.detach:
+            decoded_imgs = generator(z_imgs).detach()
+        else:
+            decoded_imgs = generator(z_imgs)
 
         # Loss measures Encoder's ability to generate vectors suitable with the generator
         # DONE add a loss for the distance between of z values
