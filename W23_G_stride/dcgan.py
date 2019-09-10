@@ -91,7 +91,7 @@ class Generator(nn.Module):
             return block
 
         self.verbose = verbose
-        self.init_size = opt.img_size // opts_conv['stride']**4
+        self.init_size = opt.img_size // opts_conv['stride']**3
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
