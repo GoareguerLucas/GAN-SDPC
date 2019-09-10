@@ -155,6 +155,8 @@ class Discriminator(nn.Module):
         return "Discriminator"
 generator = Generator()
 
+print_network(generator)
+
 load_model(generator, None, opt.model_path)
 
 # GPU paramétrisation
