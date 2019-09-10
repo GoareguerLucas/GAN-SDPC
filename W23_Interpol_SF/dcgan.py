@@ -23,7 +23,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='DCGAN_MAX/200e16i128b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Interpol_SF/200e16i128b/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=300, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
@@ -38,8 +38,8 @@ parser.add_argument("-i", "--img_size", type=int, default=128, help="size of eac
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
 parser.add_argument("--sample_path", type=str, default='images')
-parser.add_argument("-m", "--model_save_interval", type=int, default=150,
-                    help="interval between image sampling. If model_save_interval > n_epochs : no save")
+parser.add_argument("-m", "--model_save_interval", type=int, default=100,
+                    help="interval between model save. If model_save_interval > n_epochs : no save")
 parser.add_argument('--model_save_path', type=str, default='models')
 parser.add_argument('--load_model', action="store_true",
                     help="Load model present in model_save_path/Last_*.pt, if present.")

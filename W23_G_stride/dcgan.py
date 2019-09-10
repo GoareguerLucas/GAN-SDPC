@@ -25,7 +25,7 @@ import datetime
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='G_stride/stride2/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
-parser.add_argument("-e", "--n_epochs", type=int, default=50, help="number of epochs of training")
+parser.add_argument("-e", "--n_epochs", type=int, default=100, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=64, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.00005, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00025, help="adam: learning rate for G")
@@ -98,7 +98,7 @@ class Generator(nn.Module):
         self.conv1 = nn.Sequential(*generator_block(channels[3], channels[2]),)
         self.conv2 = nn.Sequential(*generator_block(channels[2], channels[1]),)
         self.conv3 = nn.Sequential(*generator_block(channels[1], channels[0]),)
-        self.conv_blocks = nn.Sequential(*generator_block(channels[0], 3),nn.Tanh(),)
+        self.conv4 = nn.Sequential(*generator_block(channels[0], 3),nn.Tanh(),)
         """self.conv_blocks = nn.Sequential(
             nn.Conv2d(channels[0], opt.channels, 3, stride=1, padding=1),
             nn.Tanh(),
@@ -123,7 +123,7 @@ class Generator(nn.Module):
         # Dim : (channels[3]/8, opt.img_size, opt.img_size)
         if self.verbose: print("Conv3 out : ",out.shape)
         
-        img = self.conv_blocks(out)
+        img = self.conv4(out)
         # Dim : (opt.chanels, opt.img_size, opt.img_size)
         if self.verbose: print("img out : ", img.shape)
 
