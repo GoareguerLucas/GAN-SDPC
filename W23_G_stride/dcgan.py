@@ -86,12 +86,12 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         
         def generator_block(in_filters, out_filters):
-            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']), nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=opts_conv['stride'], padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
+            block = [nn.UpsamplingNearest2d(scale_factor=opts_conv['stride']*2), nn.Conv2d(in_filters, out_filters, kernel_size=opts_conv['kernel_size'], stride=opts_conv['stride'], padding=opts_conv['padding'], padding_mode=opts_conv['padding_mode']), nn.BatchNorm2d(out_filters, opt.eps), NL]
 
             return block
 
         self.verbose = verbose
-        self.init_size = opt.img_size // opts_conv['stride']**3
+        self.init_size = opt.img_size // opts_conv['stride']**4
         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, channels[3] * self.init_size ** 2), NL)
 
 
