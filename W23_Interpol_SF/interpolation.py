@@ -232,6 +232,7 @@ noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
 tensorboard_sampling(noise, generator, writer, 0, nrow=points, image_type="Interpolation A vers B")
 for i,line in enumerate(c):
+	print(line.shape)
 	sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=opt.tag+"_"+str(i), nrow=1)
 
 # Analyse de l'espace
