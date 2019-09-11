@@ -177,7 +177,7 @@ b = np.random.normal(0, 1, (N, opt.latent_dim))
 c = list()
 for i in range(N):
     c.append(np.linspace(a[i], b[i], points, endpoint=True))
-c = np.asarray(c)
+c = np.asarray(c).reshape((N*points,opt.latent_dim))
 print(c)
 print(c.shape)
 
