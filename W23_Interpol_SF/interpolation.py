@@ -179,6 +179,7 @@ for i in range(N):
     c.append(np.linspace(a[i], b[i], points, endpoint=True))
 c = np.asarray(c)
 print(c.shape)
+print(c)
 
 # Génération
 noise = Variable(Tensor(c))
