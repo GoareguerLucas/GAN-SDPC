@@ -8,6 +8,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+from torch.utils.tensorboard import SummaryWriter
+
 sys.path.append("../")  # ../../GAN-SDPC/
 
 from utils import *
@@ -37,6 +39,8 @@ parser.add_argument("--points", type=int, default=5, help="number of inter point
 parser.add_argument("--sample", type=int, default=3, help="number of interpolation")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
+parser.add_argument("-r", "--runs_path", type=str, default='Interpol_SF/inter/',
+                    help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
@@ -44,7 +48,9 @@ print(opt)
 # Dossier de sauvegarde
 os.makedirs(opt.results_path, exist_ok=True)
 
+# ----------
 # Initialize generator 
+# ----------
 NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 opts_conv = dict(kernel_size=opt.kernels_size, stride=2, padding=opt.padding, padding_mode='zeros')
 channels = [64, 128, 256, 512]
@@ -161,7 +167,9 @@ print_network(generator)
 
 load_model(generator, None, opt.model_path)
 
+# ----------
 # GPU paramétrisation
+# ----------
 cuda = True if torch.cuda.is_available() else False
 if cuda:
     if torch.cuda.device_count() > opt.GPU: 
@@ -169,11 +177,38 @@ if cuda:
     generator.cuda()
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
+# ----------
+#  Tensorboard
+# ----------
+path_data1 = "../runs/" + opt.runs_path
+path_data2 = "../runs/" + opt.runs_path + tag[:-1] + "/"
+
+# Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
+os.makedirs(path_data1, exist_ok=True)
+os.makedirs(path_data2, exist_ok=True)
+
+writer = SummaryWriter(log_dir=path_data2)
+
+# ----------
 # Interpolation noise
+# ----------
 N = opt.sample
 points = opt.points
-a = np.random.normal(0, 1, (N, opt.latent_dim))
-b = np.random.normal(0, 1, (N, opt.latent_dim))
+
+# Select 2 points
+ans = "n"
+while ans != "y":
+	a = np.random.normal(0, 1, (N, opt.latent_dim))
+	tensorboard_sampling(a, generator, writer, 0)
+	print("Le point tiré convient-il ? (y/n)")
+	ans = input()
+ans = "n"
+while ans != "y":
+	b = np.random.normal(0, 1, (N, opt.latent_dim))
+	tensorboard_sampling(b, generator, writer, 0)
+	print("Le point tiré convient-il ? (y/n)")
+	ans = input()
+
 diff = np.abs(a-b)
 
 c = list()
