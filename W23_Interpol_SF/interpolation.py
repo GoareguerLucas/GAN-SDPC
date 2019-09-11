@@ -230,7 +230,7 @@ print(c.shape)
 # Génération
 noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
-tensorboard_sampling(noise, generator, writer, 0, nrow=points, image_type="Interpolation A=>B")
+tensorboard_sampling(noise, generator, writer, 0, nrow=points, image_type="Interpolation A vers B")
 
 # Analyse de l'espace
 print(diff)
