@@ -48,6 +48,15 @@ print(opt)
 # Dossier de sauvegarde
 os.makedirs(opt.results_path, exist_ok=True)
 
+# Gestion du time tag
+try:
+    time_tag = datetime.datetime.now().isoformat(sep='_', timespec='seconds')
+except TypeError:
+    # Python 3.5 and below
+    # 'timespec' is an invalid keyword argument for this function
+    time_tag = datetime.datetime.now().replace(microsecond=0).isoformat(sep='_')
+time_tag = time_tag.replace(':','.')
+
 # ----------
 # Initialize generator 
 # ----------
@@ -181,7 +190,7 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 #  Tensorboard
 # ----------
 path_data1 = "../runs/" + opt.runs_path
-path_data2 = "../runs/" + opt.runs_path + tag[:-1] + "/"
+path_data2 = "../runs/" + opt.runs_path + time_tag[:-1] + "/"
 
 # Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
 os.makedirs(path_data1, exist_ok=True)
