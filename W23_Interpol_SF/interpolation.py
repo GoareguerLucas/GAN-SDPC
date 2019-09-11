@@ -190,3 +190,4 @@ sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
 # Analyse de l'espace
 print(diff)
 print("Mean diff : :\n",diff.mean(axis=1))
+print("Std diff : :\n",diff.std(axis=1))
