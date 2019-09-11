@@ -182,7 +182,6 @@ def comp(s):
 
     return int(num)
 
-
 def generate_animation(path, fps=1):
     import imageio
     images_path = glob(path + '[0-9]*.png')
