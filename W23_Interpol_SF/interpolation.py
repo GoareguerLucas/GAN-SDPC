@@ -39,7 +39,7 @@ parser.add_argument("--points", type=int, default=5, help="number of inter point
 parser.add_argument("--sample", type=int, default=3, help="number of interpolation")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
-parser.add_argument("-r", "--runs_path", type=str, default='Interpol_SF/inter/',
+parser.add_argument("--runs_path", type=str, default='Interpol_SF/inter/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
