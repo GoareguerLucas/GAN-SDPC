@@ -174,6 +174,8 @@ N = opt.sample
 points = opt.points
 a = np.random.normal(0, 1, (N, opt.latent_dim))
 b = np.random.normal(0, 1, (N, opt.latent_dim))
+diff = np.abs(a-b)
+
 c = list()
 for i in range(N):
     c.append(np.linspace(a[i], b[i], points, endpoint=True))
@@ -185,3 +187,6 @@ print(c.shape)
 noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
 
+# Analyse de l'espace
+print(diff)
+print("Mean diff : :\n",diff.mean(axis=1))
