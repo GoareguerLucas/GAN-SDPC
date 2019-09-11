@@ -208,13 +208,13 @@ points = opt.points
 ans = "n"
 while ans != "y":
 	a = np.random.normal(0, 1, (N, opt.latent_dim))
-	tensorboard_sampling(a, generator, writer, 0)
+	tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0)
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
 ans = "n"
 while ans != "y":
 	b = np.random.normal(0, 1, (N, opt.latent_dim))
-	tensorboard_sampling(b, generator, writer, 0)
+	tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0)
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
 
