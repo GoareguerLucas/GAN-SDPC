@@ -205,21 +205,26 @@ N = opt.sample
 points = opt.points
 
 # Select 2 points
+print("Choix du point A")
 ans = "n"
 while ans != 'y':
 	a = np.random.normal(0, 1, (N, opt.latent_dim))
+	print(a)
 	tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point A")
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
+print("Choix du point B")
 ans = "n"
 while ans != 'y':
 	b = np.random.normal(0, 1, (N, opt.latent_dim))
+	print(b)
 	tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0, image_type="Point B")
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
 
 diff = np.abs(a-b)
 
+# Compute way
 c = list()
 for i in range(N):
     c.append(np.linspace(a[i], b[i], points, endpoint=True))
@@ -230,11 +235,11 @@ print(c.shape)
 # Génération
 noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
-tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B")
+tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B", nrow=points)
 for i,line in enumerate(c):
 	line = line.reshape((1,opt.latent_dim))
-	print(line.shape)
-	sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=opt.tag+"_"+str(i), nrow=1)
+	#print(line.shape)
+	sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=str(i), nrow=1)
 
 # Analyse de l'espace
 print(diff)

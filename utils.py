@@ -183,7 +183,7 @@ def comp(s):
     return int(num)
 
 
-def generate_animation(path):
+def generate_animation(path, fps=1):
     import imageio
     images_path = glob(path + '[0-9]*.png')
 
@@ -191,9 +191,9 @@ def generate_animation(path):
 
     images = []
     for i in images_path:
-        # print(i)
+        #print(i)
         images.append(imageio.imread(i))
-    imageio.mimsave(path + 'training.gif', images, fps=1)
+    imageio.mimsave(path + 'training.gif', images, fps=fps)
 
 def scan(exp_name, params, permutation=True, gpu_repart=False):
     """
