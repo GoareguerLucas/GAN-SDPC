@@ -33,6 +33,8 @@ parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kern
 parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
+parser.add_argument("--points", type=int, default=5, help="number of inter points between interpolation")
+parser.add_argument("--sample", type=int, default=3, help="number of interpolation")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
 parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
@@ -167,8 +169,18 @@ if cuda:
     generator.cuda()
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
+# Interpolation noise
+N = opt.sample
+points = opt.points
+a = np.random.normal(0, 1, (N, opt.latent_dim))
+b = np.random.normal(0, 1, (N, opt.latent_dim))
+c = list()
+for i in range(N):
+    c.append(np.linspace(a[i], b[i], points, endpoint=True))
+c = np.asarray(c)
+print(c.shape)
+
 # Génération
-N = 25
-noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
-sampling(noise, generator, opt.results_path, 0, tag=opt.tag)
+noise = Variable(Tensor(c))
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrox=points)
 
