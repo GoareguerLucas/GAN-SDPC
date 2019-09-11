@@ -206,15 +206,15 @@ points = opt.points
 
 # Select 2 points
 ans = "n"
-while ans != "y":
+while ans != 'y':
 	a = np.random.normal(0, 1, (N, opt.latent_dim))
-	tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0)
+	tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point A")
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
 ans = "n"
-while ans != "y":
+while ans != 'y':
 	b = np.random.normal(0, 1, (N, opt.latent_dim))
-	tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0)
+	tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0, image_type="Point B")
 	print("Le point tiré convient-il ? (y/n)")
 	ans = input()
 
@@ -230,6 +230,7 @@ print(c.shape)
 # Génération
 noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
+tensorboard_sampling(noise, generator, writer, 0, nrow=points, image_type="Interpolation A=>B")
 
 # Analyse de l'espace
 print(diff)

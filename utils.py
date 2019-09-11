@@ -118,14 +118,14 @@ def sampling(noise, generator, path, epoch, tag='', nrow=5):
     generator.train()
 
 
-def tensorboard_sampling(noise, generator, writer, epoch, nrow=8):
+def tensorboard_sampling(noise, generator, writer, epoch, nrow=8, image_type='Images générer'):
     """
     Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
     """
     generator.eval()
     gen_imgs = generator(noise)
     grid = torchvision.utils.make_grid(gen_imgs, normalize=True, nrow=nrow)
-    writer.add_image('Images générer', grid, epoch)
+    writer.add_image(image_type, grid, epoch)
     generator.train()
 
 def tensorboard_AE_comparator(imgs, generator, encoder, writer, epoch):
