@@ -183,5 +183,5 @@ print(c)
 
 # Génération
 noise = Variable(Tensor(c))
-sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrox=points)
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
 
