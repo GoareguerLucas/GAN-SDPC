@@ -54,10 +54,10 @@ def load_data(path, img_size, batch_size, Fast=True, FDD=False, rand_hflip=False
     transform = transforms.Compose(transform_tmp)
 
     if Fast:
-		if FDD:
-			dataset = FastFDD(path, img_size, img_size, transform)
-		else:
-			dataset = FastSimpsonsDataset(path, img_size, img_size, transform, mode)
+        if FDD:
+            dataset = FastFDD(path, img_size, img_size, transform)
+        else:
+            dataset = FastSimpsonsDataset(path, img_size, img_size, transform, mode)
     else:
         dataset = SimpsonsDataset(path, img_size, img_size, transform)
 
