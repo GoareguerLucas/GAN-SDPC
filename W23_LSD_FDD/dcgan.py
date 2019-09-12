@@ -356,10 +356,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         print(vectors)
         print(type(vectors))
         
-        v = Variable(Tensor(vectors))
-        print(type(v))
-        
-        
         # New loss for G
         g_v = generator(vectors.type(Tensor))
         mse_g_loss = MSE_loss(real_imgs, g_v)
