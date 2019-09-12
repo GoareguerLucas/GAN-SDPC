@@ -270,7 +270,7 @@ dataloader = load_data(depth + "../../FDD/kbc/", opt.img_size, opt.batch_size, r
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lrD, betas=(opt.b1, opt.b2))
 
-Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
+Tensor = torch.cuda.DoubleTensor if cuda else torch.DoubleTensor
 
 # ----------
 #  Load models
