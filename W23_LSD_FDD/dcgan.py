@@ -309,7 +309,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     for i, (imgs, _, vectors) in enumerate(dataloader):
         t_batch = time.time()
         
-        print(vectors)
+        print(vectors[0][0])
         exit(0)
         
         # ---------------------
