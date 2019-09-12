@@ -349,6 +349,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_G.zero_grad()
         
+        print(type(z))
+        print(z.shape)
+        
         #print(vectors.shape)
         print(vectors)
         print(type(vectors))
@@ -356,12 +359,9 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         v = Variable(Tensor(vectors))
         print(type(v))
         
-        print(type(z))
-        print(z.shape)
-        
         
         # New loss for G
-        g_v = generator(vectors)
+        g_v = generator(vectors.type(Tensor))
         mse_g_loss = MSE_loss(real_imgs, g_v)
         
         # New discriminator descision, Since we just updated D
