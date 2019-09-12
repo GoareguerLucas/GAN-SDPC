@@ -22,23 +22,23 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='Detach_FDD/200e64i64b/',
+parser.add_argument("-r", "--runs_path", type=str, default='Detach_FDD/train_E/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
-parser.add_argument("-e", "--n_epochs", type=int, default=200, help="number of epochs of training")
+parser.add_argument("-e", "--n_epochs", type=int, default=50, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.00001, help="adam: learning rate for G")
 parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
-parser.add_argument("--eps", type=float, default=0.1, help="batchnorm: espilon for numerical stability")
-parser.add_argument("--b1", type=float, default=0.7, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
+parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-parser.add_argument("--lrelu", type=float, default=0.01, help="LeakyReLU : alpha")
+parser.add_argument("--lrelu", type=float, default=1e-6, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=6, help="dimensionality of the latent space")
 parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
 parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("-s", "--sample_interval", type=int, default=10, help="interval between image sampling")
+parser.add_argument("-s", "--sample_interval", type=int, default=5, help="interval between image sampling")
 parser.add_argument("-m", "--model_save_interval", type=int, default=50,
                     help="interval between image sampling. If model_save_interval >= n_epochs, no save")
 parser.add_argument('--model_save_path', type=str, default='models')
