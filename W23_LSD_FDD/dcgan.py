@@ -22,7 +22,7 @@ import time
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='Detach_FDD/train_DG/',
+parser.add_argument("-r", "--runs_path", type=str, default='LSD_FDD/First_test/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=50, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
