@@ -152,12 +152,9 @@ class FastFDD(Dataset):
             path = path[:-4] # Supp extension
             vector = path.replace('_',' ').split()
             vector = [float(e) for e in vector]
-            vector = torch.tensor(vector,dtype=torch.float64)
             print(vector)
-            print(vector[0].item())
             self.vectors.append(vector)
                 
-
     def __getitem__(self, index):
         #print("Image load : ",self.files[index])
         single_image_label = self.labels[index]

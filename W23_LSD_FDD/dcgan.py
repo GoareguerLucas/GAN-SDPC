@@ -357,19 +357,25 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # -----------------
 
         optimizer_G.zero_grad()
-
+		
+		# New loss for G
+		g_v = generator(vectors)
+		mse_g_loss = MSE_loss(real_imgs, g_v)
+		
         # New discriminator descision, Since we just updated D
         d_g_z = discriminator(gen_imgs)
         # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(d_g_z, valid)
+        adv_g_loss = adversarial_loss(d_g_z, valid)
+        
+        g_loss = adv_g_loss + mse_g_loss
         # Backward
         g_loss.backward()
 
         optimizer_G.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [MSE G loss: %f] [ADV G loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), mse_g_loss.item(), adv_g_loss.item(), time.time()-t_batch)
         )
 
         # Compensation pour le BCElogits
@@ -382,6 +388,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
+        writer.add_scalar('mse_g_loss', mse_g_loss.item(), global_step=iteration)
+        writer.add_scalar('adv_g_loss', adv_g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
         writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
@@ -401,7 +409,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save samples
     if epoch % opt.sample_interval == 0:
         tensorboard_sampling(fixed_noise, generator, writer, epoch)
-        #tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
+        tensorboard_LSD_comparator(real_imgs[:n_sample], vectors[:n_sample], generator, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0 and epoch != opt.n_epochs:

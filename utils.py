@@ -146,6 +146,21 @@ def tensorboard_AE_comparator(imgs, generator, encoder, writer, epoch):
     generator.train()
     encoder.train()
 
+def tensorboard_LSD_comparator(imgs, vectors, generator, writer, epoch):
+    """
+    Sauvegarde dans tensorboard une imgs (image du dataset) sous forme normale et une après generator(vectors).
+    """
+    generator.eval()
+    
+    g_v = generator(vectors)
+    
+    grid_imgs = torchvision.utils.make_grid(imgs, normalize=True)
+    grid_g_v = torchvision.utils.make_grid(g_v, normalize=True)
+    writer.add_image('Images dataset', grid_imgs, epoch)
+    writer.add_image('Images Generator(Vectors)', grid_g_v, epoch)
+    
+    generator.train()
+
 def tensorboard_conditional_sampling(noise, label, generator, writer, epoch):
     """
     Sauvegarde des images générer par generator dans writer pour les visualiser avec tensorboard
