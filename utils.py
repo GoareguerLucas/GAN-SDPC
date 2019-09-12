@@ -99,11 +99,11 @@ def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, mo
 
     if start_epochG is not start_epochD:
         print("Error : G trained different times of D  !!")
-        exit(0)
+        #exit(0)
     start_epoch = start_epochD
     if start_epoch >= n_epochs:
         print("Error : Nombre d'epochs demander inférieur au nombre d'epochs déjà effectuer !!")
-        exit(0)
+        #exit(0)
 
     return start_epoch + 1  # La dernière epoch est déjà faite
 
