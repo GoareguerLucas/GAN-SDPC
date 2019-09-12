@@ -152,7 +152,7 @@ class FastFDD(Dataset):
             path = path[:-4] # Supp extension
             vector = path.replace('_',' ').split()
             vector = [float(e) for e in vector]
-            print(vector)
+            #print(vector)
             self.vectors.append(vector)
                 
     def __getitem__(self, index):

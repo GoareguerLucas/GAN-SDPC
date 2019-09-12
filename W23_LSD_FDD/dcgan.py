@@ -28,7 +28,6 @@ parser.add_argument("-e", "--n_epochs", type=int, default=50, help="number of ep
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
 parser.add_argument("--lrD", type=float, default=0.0001, help="adam: learning rate for D")
 parser.add_argument("--lrG", type=float, default=0.001, help="adam: learning rate for G")
-parser.add_argument("--lrE", type=float, default=0.001, help="adam: learning rate for E")
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
@@ -48,8 +47,6 @@ parser.add_argument("-d", "--depth", action="store_true",
                     help="Utiliser si utils.py et SimpsonsDataset.py sont deux dossier au dessus.")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
-parser.add_argument("--detach", action="store_true",
-                    help="Détermine si le loss de l'auto-encoder affecte les poids du générateur.")
 parser.add_argument("--GPU", type=int, default=0, help="Identifiant du GPU à utiliser.")
 opt = parser.parse_args()
 print(opt)
@@ -282,14 +279,14 @@ if opt.load_model == True:
 # ----------
 #  Tensorboard
 # ----------
-"""path_data1 = depth + "../runs/" + opt.runs_path
+path_data1 = depth + "../runs/" + opt.runs_path
 path_data2 = depth + "../runs/" + opt.runs_path + tag[:-1] + "/"
 
 # Les runs sont sauvegarder dans un dossiers "runs" à la racine du projet, dans un sous dossiers opt.runs_path.
 os.makedirs(path_data1, exist_ok=True)
 os.makedirs(path_data2, exist_ok=True)
 
-writer = SummaryWriter(log_dir=path_data2)"""
+writer = SummaryWriter(log_dir=path_data2)
 
 # ----------
 #  Training
@@ -308,12 +305,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
     for i, (imgs, _, vectors) in enumerate(dataloader):
         t_batch = time.time()
-        
-        a = vectors[0][0]
-        print(a.item())
-        
-        exit(0)
-        
         # ---------------------
         #  Train Discriminator
         # ---------------------
