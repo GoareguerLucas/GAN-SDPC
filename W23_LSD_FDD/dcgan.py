@@ -349,15 +349,16 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_G.zero_grad()
         
-        print(vectors.shape)
+        #print(vectors.shape)
         print(vectors)
         print(type(vectors))
         
         v = Variable(Tensor(vectors))
         print(type(v))
         
-        print(z.shape)
         print(type(z))
+        print(z.shape)
+        
         
         # New loss for G
         g_v = generator(vectors)
