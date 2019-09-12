@@ -342,7 +342,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_E.step()
         """
-        e_loss = 0
         # ---------------------
         #  Train Discriminator
         # ---------------------
@@ -397,8 +396,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [E loss: %f] [D loss: %f] [G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), e_loss.item(), d_loss.item(), g_loss.item(), time.time()-t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
         )
 
         # Compensation pour le BCElogits
@@ -410,7 +409,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         # Tensorboard save
         iteration = i + nb_batch * j
-        writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
