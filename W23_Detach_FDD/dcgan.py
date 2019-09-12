@@ -125,6 +125,9 @@ class Encoder(nn.Module):
         if self.verbose: print("Z : ",z.shape)
 
         return z
+        
+    def _name(self):
+        return "Encoder"
 
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
