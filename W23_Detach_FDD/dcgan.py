@@ -320,7 +320,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # ---------------------
         #  Train Encoder
         # ---------------------
-	    """
+        """
         real_imgs = Variable(imgs.type(Tensor))
 
         optimizer_E.zero_grad()
