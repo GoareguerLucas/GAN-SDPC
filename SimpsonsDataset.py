@@ -75,21 +75,19 @@ class SimpsonsDataset(Dataset):
 
 
 class FastSimpsonsDataset(Dataset):
-    def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None, mode="RGB"):
+    def __init__(self, dir_path, height, width, transform, mode="RGB"):
         """
         Args:
                 dir_path (string): path to dir conteint exclusively images png
                 height (int): image height
                 width (int): image width
-                transform_constante: pytorch transforms for transforms and tensor conversion before training
-                transform_tmp: pytorch transforms for transforms and tensor conversion during training
+                transform: pytorch transforms for transforms and tensor conversion during training
         """
         self.files = glob(dir_path + '*')
         self.labels = np.zeros(len(self.files))
         self.height = height
         self.width = width
-        self.transform_constante = transform_constante
-        self.transform_tmp = transform_tmp
+        self.transform = transform
         self.mode = mode
 
         # Chargement des images
@@ -98,13 +96,6 @@ class FastSimpsonsDataset(Dataset):
 
             #img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
             img_as_img = Image.open(img).resize((self.height, self.width))
-            # Convert image from numpy array to PIL image
-            #img_as_img = Image.fromarray(img_as_np)
-            #img_as_img = img_as_img.convert('RGB')
-
-            # Transform image to tensor
-            # if self.transform_constante is not None:
-            #   img_as_img = self.transform_constante(img_as_np)
 
             # Use HSV format
             if self.mode == "HSV":
@@ -124,15 +115,62 @@ class FastSimpsonsDataset(Dataset):
         img_as_img = self.imgs[index]
 
         # Transform image to tensor
-        if self.transform_tmp is not None:
-            img_as_tensor = self.transform_tmp(img_as_img)
-
+        img_as_tensor = self.transform(img_as_img)
+        
         # Return image and the label
         return (img_as_tensor, single_image_label)
 
     def __len__(self):
         return len(self.files)
+
+class FastFDD(Dataset):
+    def __init__(self, dir_path, height, width, transform):
+        """
+        Args:
+                dir_path (string): path to dir conteint exclusively images png
+                height (int): image height
+                width (int): image width
+                transform: pytorch transforms for transforms and tensor conversion during training
+        """
+        self.files = glob(dir_path + '*')
+        self.labels = np.zeros(len(self.files))
+        self.height = height
+        self.width = width
+        self.transform = transform
+
+        # Chargement des images
+        self.imgs = list()
+        for img in self.files:
+            img_as_img = Image.open(img).resize((self.height, self.width))
+            self.imgs.append(img_as_img)
+            
+        # Chargement des noms des images
+        self.vectors = list()
+        # Mise en forme du nom des fichiers
+        for path in self.files:
+            path = path[len(dir_path):] # Supp path dir
+            path = path[:-4] # Supp extension
+            vector = path.replace('_',' ').split()
+            vector = [float(e) for e in vector]
+            #print(vector)
+            self.vectors.append(vector)
+                
+
+    def __getitem__(self, index):
+        #print("Image load : ",self.files[index])
+        single_image_label = self.labels[index]
+        vector = self.vectors[index]
+        img_as_img = self.imgs[index]
+
+        # Transform image to tensor
+        img_as_tensor = self.transform(img_as_img)
         
+        # Return image and the label
+        return (img_as_tensor, single_image_label, vector)
+
+    def __len__(self):
+        return len(self.files)
+
 class FastClassifiedDataset(Dataset):
     def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None,):
         """
@@ -208,21 +246,42 @@ class FastClassifiedDataset(Dataset):
 
 
 INPUT_DATA_DIR = "../cropped/cp/"
-IMAGE_SIZE = 200
+IMAGE_SIZE = 128
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
 
 
 if __name__ == "__main__":
 
+    # Name space test
+    
+    INPUT_DATA_DIR = "../Dataset/FDD/data/kbc_light/"
+    
+    transformations = transforms.Compose(
+        [transforms.Resize(IMAGE_SIZE), transforms.RandomHorizontalFlip(p=0.5), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
+    FDD = FastFDD(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations)
+
+    print(type(FDD), len(FDD))
+    
+    x = FDD.__getitem__(1)
+    print("Vecteur :",x[2])
+    print("Label :",x[1])
+    #show_tensor(x[0], 1)
+    
+    
+    """
+    # Fast Classified Dataset test
+    
     INPUT_DATA_DIR = "../Dataset/FDD/data/"
     
     transformations = transforms.Compose(
         [transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
-    FDDDataset = FastClassifiedDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations)
+    FDD = FastClassifiedDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations)
 
-    print(type(FDDDataset), len(FDDDataset))
-
-    """# HSV test
+    print(type(FDD), len(FDD))
+    """
+    
+    """
+    # HSV test
     transformations = transforms.Compose(
         [transforms.Resize(IMAGE_SIZE), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
     simpsonsDataset = SimpsonsDataset(INPUT_DATA_DIR, IMAGE_SIZE, IMAGE_SIZE, transformations, mode="HSV")
@@ -231,7 +290,10 @@ if __name__ == "__main__":
 
     show_tensor(simpsonsDataset.__getitem__(1)[0], 1)"""
 
-    """"DataNoise test
+
+
+    """"
+    #DataNoise test
     nb_images = 100
     
     images = []

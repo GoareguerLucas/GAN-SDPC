@@ -40,24 +40,24 @@ def weights_init_normal(m, factor=1.0):
         m.bias.data.zero_()
 
 
-def load_data(path, img_size, batch_size, Fast=True, rand_hflip=False, rand_affine=None, return_dataset=False, mode='RGB'):
+def load_data(path, img_size, batch_size, Fast=True, FDD=False, rand_hflip=False, rand_affine=None, return_dataset=False, mode='RGB'):
     print("Loading data...")
     t_total = time.time()
 
-    # Transformation appliquer avant et pendant l'entraînement
-    transform_constante = transforms.Compose([transforms.ToTensor(), transforms.Normalize(
-        [0.5, 0.5, 0.5], [0.5, 0.5, 0.5]), transforms.ToPILImage(mode="RGB")])
+    # Transformation appliquer pendant l'entraînement
     transform_tmp = []
     if rand_hflip:
         transform_tmp.append(transforms.RandomHorizontalFlip(p=0.5))
     if rand_affine != None:
         transform_tmp.append(transforms.RandomAffine(degrees=rand_affine[0], scale=rand_affine[1]))
     transform_tmp = transform_tmp + [transforms.ToTensor(), transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])]
-    transform_tmp = transforms.Compose(transform_tmp)
-    transform = transforms.Compose([transform_constante, transform_tmp])
+    transform = transforms.Compose(transform_tmp)
 
     if Fast:
-        dataset = FastSimpsonsDataset(path, img_size, img_size, transform_constante, transform_tmp, mode)
+		if FDD:
+			dataset = FastFDD(path, img_size, img_size, transform)
+		else:
+			dataset = FastSimpsonsDataset(path, img_size, img_size, transform, mode)
     else:
         dataset = SimpsonsDataset(path, img_size, img_size, transform)
 
