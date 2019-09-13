@@ -194,7 +194,7 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
 MSE_loss = torch.nn.MSELoss()
 sigmoid = nn.Sigmoid()
-ssim_module = SSIM(win_size=7, win_sigma=1.5, data_range=255, size_average=True, channel=3)
+ms_ssim_module = MS_SSIM(win_size=7, win_sigma=1.5, data_range=255, size_average=True, channel=3)
 
 # Initialize generator and discriminator
 generator = Generator()
@@ -310,7 +310,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # New loss for G
         vectors = vectors.type(Tensor)
         g_v = generator(vectors)
-        ms_ssim_loss = ssim_module(real_imgs,g_v)
+        ms_ssim_loss = ms_ssim_module(real_imgs,g_v)
         
         # New discriminator descision, Since we just updated D
         d_g_z = discriminator(gen_imgs)
@@ -324,7 +324,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [MSE G loss: %f] [ADV G loss: %f] [Time: %fs]"
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [MSSIM G loss: %f] [ADV G loss: %f] [Time: %fs]"
             % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), ms_ssim_loss.item(), adv_g_loss.item(), time.time()-t_batch)
         )
 
@@ -338,7 +338,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
-        writer.add_scalar('mse_g_loss', ms_ssim_loss.item(), global_step=iteration)
+        writer.add_scalar('ms_ssim', ms_ssim_loss.item(), global_step=iteration)
         writer.add_scalar('adv_g_loss', adv_g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
