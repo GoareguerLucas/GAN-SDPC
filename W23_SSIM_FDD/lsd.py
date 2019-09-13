@@ -212,7 +212,7 @@ if cuda:
     discriminator.cuda()
     adversarial_loss.cuda()
     MSE_loss.cuda()
-    ssim_module.cuda()
+    ms_ssim_module.cuda()
     
 # Initialize weights
 generator.apply(weights_init_normal)
