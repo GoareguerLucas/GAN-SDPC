@@ -317,7 +317,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Loss measures generator's ability to fool the discriminator
         adv_g_loss = adversarial_loss(d_g_z, valid)
         
-        g_loss = adv_g_loss + mse_g_loss
+        g_loss = adv_g_loss + ms_ssim_loss
         # Backward
         g_loss.backward()
 
@@ -325,7 +325,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         print(
             "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [MSE G loss: %f] [ADV G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), mse_g_loss.item(), adv_g_loss.item(), time.time()-t_batch)
+            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), ms_ssim_loss.item(), adv_g_loss.item(), time.time()-t_batch)
         )
 
         # Compensation pour le BCElogits
@@ -338,7 +338,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Tensorboard save
         iteration = i + nb_batch * j
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
-        writer.add_scalar('mse_g_loss', mse_g_loss.item(), global_step=iteration)
+        writer.add_scalar('mse_g_loss', ms_ssim_loss.item(), global_step=iteration)
         writer.add_scalar('adv_g_loss', adv_g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
