@@ -348,17 +348,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # -----------------
 
         optimizer_G.zero_grad()
-        
-        print(type(imgs))
-        
-        print(type(z))
-        print(z.shape)
-        
-        #print(vectors.shape)
-        print(vectors)
-        print(type(vectors))
-        print(type(vectors[0]))
-        
+
         # New loss for G
         g_v = generator(vectors.type(Tensor))
         mse_g_loss = MSE_loss(real_imgs, g_v)
