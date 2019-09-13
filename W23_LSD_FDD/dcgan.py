@@ -80,52 +80,6 @@ NL = nn.LeakyReLU(opt.lrelu, inplace=True)
 opts_conv = dict(kernel_size=opt.kernels_size, stride=2, padding=opt.padding, padding_mode='zeros')
 channels = [64, 128, 256, 512]
 
-class Encoder(nn.Module):
-    def __init__(self, verbose=opt.verbose):
-        super(Encoder, self).__init__()
-
-        def encoder_block(in_filters, out_filters, bn=True):
-            block = [nn.Conv2d(in_filters, out_filters, **opts_conv), NL]
-            if bn:
-                block.append(nn.BatchNorm2d(out_filters, opt.eps))
-            return block
-
-        self.verbose = verbose
-        # use a different layer in the encoder using similarly max_filters
-        # channels[3] = 512
-
-        self.conv1 = nn.Sequential(*encoder_block(opt.channels, channels[0], bn=False),)
-        self.conv2 = nn.Sequential(*encoder_block(channels[0], channels[1]),)
-        self.conv3 = nn.Sequential(*encoder_block(channels[1], channels[2]),)
-        self.conv4 = nn.Sequential(*encoder_block(channels[2], channels[3]),)
-
-        self.init_size = opt.img_size // opts_conv['stride']**4
-        self.vector = nn.Linear(channels[3] * self.init_size ** 2, opt.latent_dim)
-        # self.sigmoid = nn.Sequential(nn.Sigmoid(),)
-
-    def forward(self, img):
-        if self.verbose: print("Encoder")
-        if self.verbose: print("Image shape : ",img.shape)
-        out = self.conv1(img)
-        if self.verbose: print("Conv1 out : ",out.shape)
-        out = self.conv2(out)
-        if self.verbose: print("Conv2 out : ",out.shape)
-        out = self.conv3(out)
-        if self.verbose: print("Conv3 out : ",out.shape)
-        out = self.conv4(out)
-        if self.verbose: print("Conv4 out : ",out.shape, " init_size=", self.init_size)
-
-        out = out.view(out.shape[0], -1)
-        if self.verbose: print("View out : ",out.shape)
-        z = self.vector(out)
-        # z = self.sigmoid(z)
-        if self.verbose: print("Z : ",z.shape)
-
-        return z
-        
-    def _name(self):
-        return "Encoder"
-
 class Generator(nn.Module):
     def __init__(self, verbose=opt.verbose):
         super(Generator, self).__init__()
@@ -350,7 +304,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.zero_grad()
         
         # New loss for G
-        g_v = generator(vectors.type(Tensor))
+        vectors = vectors.type(Tensor)
+        g_v = generator(vectors)
         mse_g_loss = MSE_loss(real_imgs, g_v)
         
         # New discriminator descision, Since we just updated D
