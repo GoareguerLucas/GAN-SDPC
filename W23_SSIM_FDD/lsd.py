@@ -336,7 +336,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
         # Tensorboard save
-        iteration = i + nb_batch * j
+        iteration = i + nb_batch * epoch
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('ms_ssim', ms_ssim_loss.item(), global_step=iteration)
         writer.add_scalar('adv_g_loss', adv_g_loss.item(), global_step=iteration)
