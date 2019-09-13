@@ -24,7 +24,7 @@ import datetime
 from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--runs_path", type=str, default='LSD_FDD/First_test/',
+parser.add_argument("-r", "--runs_path", type=str, default='SSIM_FDD/LSD/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
 parser.add_argument("-e", "--n_epochs", type=int, default=50, help="number of epochs of training")
 parser.add_argument("-b", "--batch_size", type=int, default=16, help="size of the batches")
@@ -194,6 +194,7 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
 MSE_loss = torch.nn.MSELoss()
 sigmoid = nn.Sigmoid()
+ssim_module = SSIM(win_size=7, win_sigma=1.5, data_range=255, size_average=True, channel=3)
 
 # Initialize generator and discriminator
 generator = Generator()
@@ -211,6 +212,7 @@ if cuda:
     discriminator.cuda()
     adversarial_loss.cuda()
     MSE_loss.cuda()
+    ssim_module.cuda()
     
 # Initialize weights
 generator.apply(weights_init_normal)
@@ -308,7 +310,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # New loss for G
         vectors = vectors.type(Tensor)
         g_v = generator(vectors)
-        ms_ssim_loss = ms_ssim( real_imgs, g_v, data_range=255, size_average=True )
+        ms_ssim_loss = ssim_module(real_imgs,g_v)
         
         # New discriminator descision, Since we just updated D
         d_g_z = discriminator(gen_imgs)
