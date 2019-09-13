@@ -355,6 +355,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         #print(vectors.shape)
         print(vectors)
         print(type(vectors))
+        print(type(vectors[0]))
         
         # New loss for G
         g_v = generator(vectors.type(Tensor))
