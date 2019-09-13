@@ -349,6 +349,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
 
         optimizer_G.zero_grad()
         
+        print(type(imgs))
+        
         print(type(z))
         print(z.shape)
         

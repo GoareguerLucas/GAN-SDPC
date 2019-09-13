@@ -152,6 +152,8 @@ class FastFDD(Dataset):
             path = path[:-4] # Supp extension
             vector = path.replace('_',' ').split()
             vector = [float(e) for e in vector]
+            vector = torch.tensor(vector,dtype=torch.float64)
+            
             #print(vector)
             self.vectors.append(vector)
                 
