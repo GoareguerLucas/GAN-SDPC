@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 import time
 import datetime
 
+from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--runs_path", type=str, default='SSIM_FDD/AAE/',
                     help="Dossier de stockage des résultats sous la forme : Experience_names/parameters/")
@@ -241,6 +243,7 @@ class Discriminator(nn.Module):
 adversarial_loss = torch.nn.BCEWithLogitsLoss()
 MSE_loss = torch.nn.MSELoss()
 sigmoid = nn.Sigmoid()
+ms_ssim_module = MS_SSIM(win_size=7, win_sigma=1.5, data_range=255, size_average=True, channel=3)
 
 # Initialize generator and discriminator
 generator = Generator()
@@ -261,6 +264,7 @@ if cuda:
     adversarial_loss.cuda()
     encoder.cuda()
     MSE_loss.cuda()
+    ms_ssim_module.cuda()
     
 # Initialize weights
 generator.apply(weights_init_normal)
@@ -320,7 +324,6 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # ---------------------
         #  Train Encoder
         # ---------------------
-        """
         real_imgs = Variable(imgs.type(Tensor))
 
         optimizer_E.zero_grad()
@@ -335,13 +338,13 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # DONE add a loss for the distance between of z values
         z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
         z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = MSE_loss(real_imgs, decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
-
+        e_loss = ms_ssim_module(real_imgs,decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+        
         # Backward
         e_loss.backward()
 
         optimizer_E.step()
-        """
+        
         # ---------------------
         #  Train Discriminator
         # ---------------------
@@ -408,7 +411,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         save_hist_batch(hist, i, j, g_loss, d_loss, d_x, d_g_z)
 
         # Tensorboard save
-        iteration = i + nb_batch * j
+        iteration = i + nb_batch * epoch
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
 
