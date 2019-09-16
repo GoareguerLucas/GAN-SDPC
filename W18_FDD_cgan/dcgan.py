@@ -210,7 +210,7 @@ generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
 # Configure data loader
-dataloader = load_data(depth + "../../FDD/inferno/", opt.img_size, opt.batch_size, rand_hflip=True)
+dataloader = load_data(depth + "../../FDD/inferno/", opt.img_size, opt.batch_size, rand_hflip=False, FDD=True)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lrG, betas=(opt.b1, opt.b2))
