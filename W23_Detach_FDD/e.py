@@ -315,7 +315,7 @@ fixed_noise = Variable(Tensor(np.random.normal(0, 1, (n_sample, opt.latent_dim))
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
-    for i, (imgs, _) in enumerate(dataloader):
+    for i, (imgs, _, _) in enumerate(dataloader):
         t_batch = time.time()
         # ---------------------
         #  Train Encoder

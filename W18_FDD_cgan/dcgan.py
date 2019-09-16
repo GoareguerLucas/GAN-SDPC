@@ -255,7 +255,7 @@ fixed_label = Variable(Tensor(torch.tensor([[1,0,0],[0,1,0],[0,0,1]]).view(3,3,1
 t_total = time.time()
 for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     t_epoch = time.time()
-    for i, (imgs, _) in enumerate(dataloader):
+    for i, (imgs, _, _) in enumerate(dataloader):
         t_batch = time.time()
         
         gen_labels = Variable(Tensor(np.random.randint(0, opt.n_classes, (opt.batch_size, opt.n_classes))*1.0))
