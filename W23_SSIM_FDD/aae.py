@@ -338,7 +338,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # DONE add a loss for the distance between of z values
         z_zeros = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(0), requires_grad=False)
         z_ones = Variable(Tensor(z_imgs.size(0), z_imgs.size(1)).fill_(1), requires_grad=False)
-        e_loss = ms_ssim_module(real_imgs,decoded_imgs) + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
+        ms_ssim_loss = ms_ssim_module(real_imgs,decoded_imgs)
+        e_loss = ms_ssim_loss + MSE_loss(z_imgs, z_zeros) + MSE_loss(z_imgs.pow(2), z_ones).pow(.5)
         
         # Backward
         e_loss.backward()
@@ -399,8 +400,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         optimizer_G.step()
 
         print(
-            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [Time: %fs]"
-            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), time.time()-t_batch)
+            "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [E loss: %f] [Time: %fs]"
+            % (epoch, opt.n_epochs, i+1, len(dataloader), d_loss.item(), g_loss.item(), e_loss.item(), time.time()-t_batch)
         )
 
         # Compensation pour le BCElogits
@@ -414,6 +415,8 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         iteration = i + nb_batch * epoch
         writer.add_scalar('g_loss', g_loss.item(), global_step=iteration)
         writer.add_scalar('d_loss', d_loss.item(), global_step=iteration)
+        writer.add_scalar('e_loss', e_loss.item(), global_step=iteration)
+        writer.add_scalar('ms_ssim', ms_ssim_loss.item(), global_step=iteration)
 
         writer.add_scalar('d_x_mean', hist["d_x_mean"][i], global_step=iteration)
         writer.add_scalar('d_g_z_mean', hist["d_g_z_mean"][i], global_step=iteration)
@@ -432,14 +435,14 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
     # Save samples
     if epoch % opt.sample_interval == 0:
         tensorboard_sampling(fixed_noise, generator, writer, epoch)
-        #tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
+        tensorboard_AE_comparator(real_imgs[:n_sample], generator, encoder, writer, epoch)
 
     # Save models
     if epoch % opt.model_save_interval == 0 and epoch != opt.n_epochs:
         num = str(int(epoch / opt.model_save_interval))
         save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/" + num + "_D.pt")
         save_model(generator, optimizer_G, epoch, opt.model_save_path + "/" + num + "_G.pt")
-        #save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
+        save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/" + num + "_E.pt")
 
     print("[Epoch Time: ", time.time() - t_epoch, "s]")
 
@@ -450,6 +453,6 @@ print("[Total Time: ", durer.tm_mday - 1, "j:", time.strftime("%Hh:%Mm:%Ss", dur
 if opt.model_save_interval < opt.n_epochs + 1:
     save_model(discriminator, optimizer_D, epoch, opt.model_save_path + "/last_D.pt")
     save_model(generator, optimizer_G, epoch, opt.model_save_path + "/last_G.pt")
-    #save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
+    save_model(encoder, optimizer_E, epoch, opt.model_save_path + "/last_E.pt")
 
 writer.close()
