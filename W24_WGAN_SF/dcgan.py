@@ -294,7 +294,7 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # New discriminator descision, Since we just updated D
         d_g_z = discriminator(gen_imgs)
         # Loss measures generator's ability to fool the discriminator
-        g_loss = -torch.mean(discriminator(gen_imgs))
+        g_loss = -torch.mean(d_g_z)
         # Backward
         g_loss.backward()
 
