@@ -18,6 +18,6 @@ Il ne faut pas ajouter au dictionnaire params l'argument --runs_path (-r), tout 
 exp_name = "WGAN/Scan1"
 
 # Dictionnaire des paramètres à tester avec : noms du "paramètre" : [liste des valeurs]
-params = {"--clip_value": [0.1, 0.01, 0.001]}
+params = {"--clip_value": [0.5, 0.1, 0.01, 0.001]}
 
 scan(exp_name, params)
