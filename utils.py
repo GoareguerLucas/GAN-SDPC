@@ -93,10 +93,13 @@ def load_model(model, optimizer, path):
     return checkpoint['epoch']
 
 
-def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, model_save_path):
+def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, model_save_path, encoder=None, optimizer_E=None):
     start_epochD = load_model(discriminator, optimizer_D, model_save_path + "/last_D.pt")
     start_epochG = load_model(generator, optimizer_G, model_save_path + "/last_G.pt")
-
+    
+    if encoder is not None:
+        start_epochE = load_model(encoder, optimizer_E, model_save_path + "/last_E.pt")
+        
     if start_epochG is not start_epochD:
         print("Error : G trained different times of D  !!")
         #exit(0)

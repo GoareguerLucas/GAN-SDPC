@@ -14,11 +14,6 @@ sys.path.append("../")  # ../../GAN-SDPC/
 
 from utils import *
 
-#########
-# python use_G.py -p scan7_models_eps0.1lrelu1e06/last_G.pt -s seed_dataset_kdc.txt --eps 0.1 --lrelu 0.000001 --GPU 1
-# python use_G.py -p models_eps0.0lrelu0.01/last_G.pt -s seed_dataset_kdc.txt --eps 0.0 --lrelu 0.01 --GPU 1 --kernels_size 9 --padding 4
-#########
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
                     help="Chemin vers le générateur à charger")
