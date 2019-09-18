@@ -202,43 +202,43 @@ points = opt.points
 print("Choix du point A")
 ans = "n"
 while ans != 'y':
-	a = np.random.normal(0, 1, (N, opt.latent_dim))
+    a = np.random.normal(0, 1, (N, opt.latent_dim))
     a = 2.*(a - np.min(a))/np.ptp(a)-1
-	print(a)
-	tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point A")
-	print("Le point tiré convient-il ? (y/n)")
-	ans = input()
+    print(a)
+    tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point A")
+    print("Le point tiré convient-il ? (y/n)")
+    ans = input()
 print("Choix du point B")
 ans = "n"
 while ans != 'y':
-	b = np.random.normal(0, 1, (N, opt.latent_dim))
+    b = np.random.normal(0, 1, (N, opt.latent_dim))
     b = 2.*(b - np.min(b))/np.ptp(b)-1
-	print(b)
-	tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0, image_type="Point B")
-	print("Le point tiré convient-il ? (y/n)")
-	ans = input()
+    print(b)
+    tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0, image_type="Point B")
+    print("Le point tiré convient-il ? (y/n)")
+    ans = input()
 
 diff = np.abs(a-b)
 
 # spherical linear interpolation (slerp) Source : https://machinelearningmastery.com/how-to-interpolate-and-perform-vector-arithmetic-with-faces-using-a-generative-adversarial-network/
 def slerp(val, low, high):
-	omega = np.arccos(np.clip(np.dot(low/np.linalg.norm(low), high/np.linalg.norm(high)), -1, 1))
-	so = np.sin(omega)
-	if so == 0:
-		# L'Hopital's rule/LERP
-		return (1.0-val) * low + val * high
-	return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega) / so * high
+    omega = np.arccos(np.clip(np.dot(low/np.linalg.norm(low), high/np.linalg.norm(high)), -1, 1))
+    so = np.sin(omega)
+    if so == 0:
+        # L'Hopital's rule/LERP
+        return (1.0-val) * low + val * high
+    return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega) / so * high
  
 # uniform interpolation between two points in latent space
 def interpolate_points(p1, p2, n_steps=10):
-	# interpolate ratios between the points
-	ratios = np.linspace(0, 1, num=n_steps)
-	# linear interpolate vectors
-	vectors = list()
-	for ratio in ratios:
-		v = slerp(ratio, p1, p2)
-		vectors.append(v)
-	return np.asarray(vectors)
+    # interpolate ratios between the points
+    ratios = np.linspace(0, 1, num=n_steps)
+    # linear interpolate vectors
+    vectors = list()
+    for ratio in ratios:
+        v = slerp(ratio, p1, p2)
+        vectors.append(v)
+    return np.asarray(vectors)
 
 # Calcul des points intermédiaire avec SLERP
 c = list()
@@ -253,9 +253,9 @@ noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
 tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B", nrow=points)
 for i,line in enumerate(c):
-	line = line.reshape((1,opt.latent_dim))
-	#print(line.shape)
-	sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=str(i), nrow=1)
+    line = line.reshape((1,opt.latent_dim))
+    #print(line.shape)
+    sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=str(i), nrow=1)
 
 # Analyse de l'espace
 print(diff)
