@@ -203,7 +203,6 @@ print("Choix du point A")
 ans = "n"
 while ans != 'y':
     a = np.random.normal(0, 1, (N, opt.latent_dim))
-    a = 2.*(a - np.min(a))/np.ptp(a)-1
     print(a)
     tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point A")
     print("Le point tiré convient-il ? (y/n)")
@@ -212,7 +211,6 @@ print("Choix du point B")
 ans = "n"
 while ans != 'y':
     b = np.random.normal(0, 1, (N, opt.latent_dim))
-    b = 2.*(b - np.min(b))/np.ptp(b)-1
     print(b)
     tensorboard_sampling(Variable(Tensor(b)), generator, writer, 0, image_type="Point B")
     print("Le point tiré convient-il ? (y/n)")
