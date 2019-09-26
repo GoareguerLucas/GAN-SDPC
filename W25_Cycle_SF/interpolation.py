@@ -210,7 +210,7 @@ for point in range(N):
         print("L'un des points tirés convient-il ? (y/n)")
         ans = input()
         if ans is 'y':
-            print("Lequels des 10 points voulez-vous séléctionner ? (0-9)")
+            print("Lequels des 24 points voulez-vous séléctionner ? (0-23)")
             num = int(input())
     points.append(a[num].reshape((1,opt.latent_dim)))
 points = np.asarray(points)
