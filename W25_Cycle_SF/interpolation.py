@@ -210,7 +210,8 @@ for point in range(N):
         print("Le point tiré convient-il ? (y/n)")
         ans = input()
     points.append(a)
-
+points = np.asarray(points)
+print(points.shape)
 
 # spherical linear interpolation (slerp) Source : https://machinelearningmastery.com/how-to-interpolate-and-perform-vector-arithmetic-with-faces-using-a-generative-adversarial-network/
 def slerp(val, low, high):
@@ -235,6 +236,7 @@ def interpolate_points(p1, p2, n_steps=10):
 # Calcul des points intermédiaire avec SLERP
 c = list()
 for i in range(N):
+    print("In ",points[i].shape)
     c.append(interpolate_points(points[i],points[(i+1)%N],nb_points))
 c = np.asarray(c).reshape((N*nb_points,opt.latent_dim)) 
 print(c.shape)
