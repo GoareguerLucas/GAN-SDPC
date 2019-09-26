@@ -204,12 +204,15 @@ for point in range(N):
     print("Choix du point ",point)
     ans = "n"
     while ans != 'y':
-        a = np.random.normal(0, 1, (1, opt.latent_dim))
+        a = np.random.normal(0, 1, (10, opt.latent_dim))
         print(a)
         tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point "+str(point))
-        print("Le point tiré convient-il ? (y/n)")
+        print("L'un des points tirés convient-il ? (y/n)")
         ans = input()
-    points.append(a)
+        if ans is 'y':
+            print("Lequels des 10 points voulez-vous séléctionner ? (0-9)")
+            num = int(input())
+    points.append(a[num])
 points = np.asarray(points)
 #print(points.shape)
 
