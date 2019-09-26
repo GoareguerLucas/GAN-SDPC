@@ -214,7 +214,8 @@ for point in range(N):
             num = int(input())
     points.append(a[num])
 points = np.asarray(points)
-#print(points.shape)
+print(points.shape)
+print(points[0].shape)
 
 # spherical linear interpolation (slerp) Source : https://machinelearningmastery.com/how-to-interpolate-and-perform-vector-arithmetic-with-faces-using-a-generative-adversarial-network/
 def slerp(val, low, high):
