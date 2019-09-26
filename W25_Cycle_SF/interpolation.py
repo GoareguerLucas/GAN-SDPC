@@ -223,9 +223,9 @@ def slerp(val, low, high):
     return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega) / so * high
  
 # uniform interpolation between two points in latent space
-def interpolate_points(p1, p2, n_steps=10):
+def interpolate_points(p1, p2, n_steps=10, endpoint=False):
     # interpolate ratios between the points
-    ratios = np.linspace(0, 1, num=n_steps)
+    ratios = np.linspace(0, 1, num=n_steps,endpoint=endpoint)
     # linear interpolate vectors
     vectors = list()
     for ratio in ratios:
@@ -253,6 +253,6 @@ for i,line in enumerate(c):
     sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=str(i), nrow=1)
 
 # Analyse de l'espace
-print(diff)
-print("Mean diff : :\n",diff.mean(axis=1))
-print("Std diff : :\n",diff.std(axis=1))
+#print(diff)
+#print("Mean diff : :\n",diff.mean(axis=1))
+#print("Std diff : :\n",diff.std(axis=1))
