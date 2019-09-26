@@ -30,7 +30,7 @@ parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kern
 parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
-parser.add_argument("--points", type=int, default=5, help="number of inter points between interpolation")
+parser.add_argument("--nb_points", type=int, default=5, help="number of inter points between interpolation")
 parser.add_argument("--sample", type=int, default=3, help="number of interpolation")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="Afficher des informations complémentaire.")
@@ -196,7 +196,7 @@ writer = SummaryWriter(log_dir=path_data2)
 # Interpolation noise
 # ----------
 N = opt.sample
-points = opt.points
+nb_points = opt.nb_points
 
 # Select N points
 points = list()
@@ -235,15 +235,15 @@ def interpolate_points(p1, p2, n_steps=10):
 # Calcul des points intermédiaire avec SLERP
 c = list()
 for i in range(N):
-    c.append(interpolate_points(points[i],points[(i+1)%N],points))
-c = np.asarray(c).reshape((N*points,opt.latent_dim)) 
+    c.append(interpolate_points(points[i],points[(i+1)%N],nb_points))
+c = np.asarray(c).reshape((N*nb_points,opt.latent_dim)) 
 print(c.shape)
 print(c)
 
 # Génération
 noise = Variable(Tensor(c))
-sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=points)
-tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B", nrow=points)
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=nb_points)
+tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B", nrow=nb_points)
 for i,line in enumerate(c):
     line = line.reshape((1,opt.latent_dim))
     #print(line.shape)

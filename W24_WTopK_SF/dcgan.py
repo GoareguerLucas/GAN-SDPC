@@ -276,6 +276,10 @@ for j, epoch in enumerate(range(start_epoch, opt.n_epochs + 1)):
         # Discriminator descision
         d_g_z = discriminator(gen_imgs.detach())
         
+        idx, _ = torch.topk(d_x,opt.batch_size)
+        ratios = (d_x - np.min(d_x))/np.ptp(d_x)
+        
+        
         d_loss = -torch.mean(d_x) + torch.mean(d_g_z)
         
         d_loss.backward()
