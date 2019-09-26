@@ -237,7 +237,8 @@ def interpolate_points(p1, p2, n_steps=10):
 c = list()
 for i in range(N):
     print("In ",points[i].shape)
-    c.append(interpolate_points(points[i],points[(i+1)%N],nb_points))
+    c.append(interpolate_points(points[i][0],points[(i+1)%N][0],nb_points))
+    print(c[i].shape)
 c = np.asarray(c).reshape((N*nb_points,opt.latent_dim)) 
 print(c.shape)
 print(c)
