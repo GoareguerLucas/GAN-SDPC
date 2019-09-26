@@ -212,7 +212,7 @@ for point in range(N):
         if ans is 'y':
             print("Lequels des 10 points voulez-vous séléctionner ? (0-9)")
             num = int(input())
-    points.append(a[num])
+    points.append(a[num].reshape((1,opt.latent_dim)))
 points = np.asarray(points)
 print(points.shape)
 print(points[0].shape)
@@ -241,9 +241,9 @@ def interpolate_points(p1, p2, n_steps=10, endpoint=False):
 c = list()
 for i in range(N):
     #print("In ",points[i].shape)
-    c.append(interpolate_points(points[i],points[(i+1)%N],nb_points))
+    c.append(interpolate_points(points[i][0],points[(i+1)%N][0],nb_points))
     #print(c[i].shape)
-c = np.asarray(c)#.reshape((N*nb_points,opt.latent_dim)) 
+c = np.asarray(c).reshape((N*nb_points,opt.latent_dim)) 
 print(c.shape)
 print(c)
 
