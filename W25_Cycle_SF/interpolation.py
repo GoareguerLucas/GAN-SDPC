@@ -204,7 +204,7 @@ for point in range(N):
     print("Choix du point ",point)
     ans = "n"
     while ans != 'y':
-        a = np.random.normal(0, 1, (10, opt.latent_dim))
+        a = np.random.normal(0, 1, (24, opt.latent_dim))
         print(a)
         tensorboard_sampling(Variable(Tensor(a)), generator, writer, 0, image_type="Point "+str(point))
         print("L'un des points tirés convient-il ? (y/n)")
