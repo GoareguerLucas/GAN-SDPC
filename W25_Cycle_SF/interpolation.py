@@ -211,7 +211,7 @@ for point in range(N):
         ans = input()
     points.append(a)
 points = np.asarray(points)
-print(points.shape)
+#print(points.shape)
 
 # spherical linear interpolation (slerp) Source : https://machinelearningmastery.com/how-to-interpolate-and-perform-vector-arithmetic-with-faces-using-a-generative-adversarial-network/
 def slerp(val, low, high):
@@ -236,9 +236,9 @@ def interpolate_points(p1, p2, n_steps=10, endpoint=False):
 # Calcul des points intermédiaire avec SLERP
 c = list()
 for i in range(N):
-    print("In ",points[i].shape)
+    #print("In ",points[i].shape)
     c.append(interpolate_points(points[i][0],points[(i+1)%N][0],nb_points))
-    print(c[i].shape)
+    #print(c[i].shape)
 c = np.asarray(c).reshape((N*nb_points,opt.latent_dim)) 
 print(c.shape)
 print(c)
@@ -246,13 +246,8 @@ print(c)
 # Génération
 noise = Variable(Tensor(c))
 sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=nb_points)
-tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation A vers B", nrow=nb_points)
+tensorboard_sampling(noise, generator, writer, 0, image_type="Interpolation entre chaques points choisis", nrow=nb_points)
 for i,line in enumerate(c):
     line = line.reshape((1,opt.latent_dim))
     #print(line.shape)
     sampling(Variable(Tensor(line)), generator, opt.results_path, 0, tag=str(i), nrow=1)
-
-# Analyse de l'espace
-#print(diff)
-#print("Mean diff : :\n",diff.mean(axis=1))
-#print("Std diff : :\n",diff.std(axis=1))
