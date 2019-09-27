@@ -12,9 +12,9 @@ Stage M2 dans le cadre du master https://iaaa.lis-lab.fr/
 L'essentiel du code produit durant le stage est écrit en ```python3```. 
 
 Le travail a consisté en un grand nombres d'expériences et de tests (notamment de proposition d'articles de recherche).  
-Chacune des expériences est rangée dans un dossier nommé ```W*_nom_de_l_experience/``` et les comptes rendus des expériences sont grouper par semaines dans les fichiers ```W*.md```.
-Le fichier ```Makefile``` contient un ensemble de commandes fréquemment utilisées durant les expériences.  
-Le fichier ```requirements.txt``` peut être utilisé, dans un environnement virtuel de préférence, pour installer les librairies utilisées pour les expériences.  
+Chacune des expériences est rangée dans un dossier nommé ```W*_nom_de_l_experience/``` et les comptes rendus des expériences sont grouper par semaines dans les fichiers ```W*.md```.  
+Le fichier [Makefile](Makefile) contient un ensemble de commandes fréquemment utilisées durant les expériences.  
+Le fichier [requirements.txt](requirements.txt) peut être utilisé, dans un environnement virtuel de préférence, pour installer les librairies utilisées pour les expériences.  
 ```
 python3 -m pip install -r requirements.txt  
 ```
@@ -42,15 +42,15 @@ Source : http://datashader.org/topics/strange_attractors.html
 Certaines expériences et résultats sont disponibles dans les fichiers [Rapport_STAGE_M2_IAAA.pdf](Rapport_STAGE_M2_IAAA.pdf) et ```Oral de fin de stage.odp```.
 Vous pouvez également lire les résultats de chacune des expériences mener dans les compte rendue de chaque semaine (cf. ```W*.md```).  
 
-Images générées avec un DCGAN (cf. W17_DCGAN_MAX):
+Images générées avec un DCGAN (cf. [W17_DCGAN_MAX](W17_DCGAN_MAX/)):
 
 ![W17_DCGAN_MAX](readme_images/Results_DCGAN.png "Images générer avec un DCGAN")
  
-Images générées avec un DCGAN (cf. W17_AE_MAX): 
+Images générées avec un DCGAN (cf. [W17_AE_MAX](W17_AE_MAX/)): 
 
 ![W17_AE_MAX](readme_images/Results_AAE.png "Images générer avec un AAE")
 
-Interpolation dans l'espace latent (cf. W25_Cycle_SF):
+Interpolation dans l'espace latent (cf. [W25_Cycle_SF](W25_Cycle_SF/)):
 
 ![W25_Cycle_SF](readme_images/interpolation.gif "Interpolation dans un DCGAN")
 
