@@ -15,8 +15,9 @@ Le travail a consister en un grand nombres d'expériences et de teste (notamment
 Chacune des expériences est ranger dans un dossier nommer W*_nom_de_l_experience/ et les comptes rendu des expériences sont grouper par semaines dans les fichiers W*.md.  
 Le fichier Makefile contient un ensemble de commande fréquemment utiliser durant les expériences.  
 Le fichier requirements.txt peut être utiliser, dans un environnement virtuel de préférence, pour installer les librairies utiliser pour les expériences.  
-    commande : pip install -r requirements.txt  
-
+```
+commande : pip install -r requirements.txt  
+```
 
 ## Dataset utilisés
 
@@ -49,17 +50,11 @@ Images générer avec un DCGAN (cf. W17_AE_MAX):
 
 ![W17_AE_MAX](readme_images/Results_AAE.png "Images générer avec un AAE")
 
-Interpolation dans l'espace latent :
+Interpolation dans l'espace latent (cf. W25_Cycle_SF):
 
 ![W25_Cycle_SF](readme_images/interpolation.gif "Interpolation dans un DCGAN")
 
-## Contact
-
-Lucas Goareguer (étudient) : Lucas.Goareguer@etu.univ-amu.fr
-
-Laurent Perrinet (superviseur): Laurent.Perrinet@univ-amu.fr
-
-## Liens utiles
+## Ressources
 
 Article présentant une architecture :
   - ![Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
@@ -94,3 +89,9 @@ Interpolation :
 Spécificités techniques :
   - ![Deconvolution and Checkerboard Artifacts](https://distill.pub/2016/deconv-checkerboard/)
   - ![Détails des deconvolution](https://datascience.stackexchange.com/questions/6107/what-are-deconvolutional-layers)
+
+## Contact
+
+Lucas Goareguer (étudient) : Lucas.Goareguer@etu.univ-amu.fr
+
+Laurent Perrinet (superviseur): Laurent.Perrinet@univ-amu.fr
