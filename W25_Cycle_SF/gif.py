@@ -7,6 +7,10 @@ sys.path.append("../")  # ../../GAN-SDPC/
 
 from utils import *
 
+# ----------
+# Script de création d'un gif à partir un dossier contenant des images numéroter dans l'ordre d'apparition. 
+# ----------
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--images_path", type=str, default='results/inter1/',
                     help="Chemin vers le dossier contenant les images qui composeront le gif")

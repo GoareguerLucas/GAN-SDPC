@@ -94,6 +94,12 @@ def load_model(model, optimizer, path):
 
 
 def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, model_save_path, encoder=None, optimizer_E=None):
+    """
+    Charge les poids des dernier modèls sauvegarder sous le noms last_*.pt pour G et D dans discriminator et generator.
+    Les optimizer sont également charger dans optimizer_D et optimizer_G.
+    Il est possible de charger un encoder et sont optimizer de la même façon. 
+    """
+    
     start_epochD = load_model(discriminator, optimizer_D, model_save_path + "/last_D.pt")
     start_epochG = load_model(generator, optimizer_G, model_save_path + "/last_G.pt")
     
@@ -177,15 +183,27 @@ def tensorboard_conditional_sampling(noise, label, generator, writer, epoch):
 
 
 def AE_sampling(imgs, encoder, generator, path, epoch):
+    """
+    Utilise generator, encoder et imgs pour encoder, décoder puis sauvegarder deux images dans path/epoch_img.png et path/epoch_dec.png
+    La première contient les images d'origines (imgs) et la seconde contient generator(encoder(imgs)) qui sont les images encoder puis décoder.
+    Le sample est efféctuer en mode eval pour generator et encoder puis ils sont de nouveau régler en mode train.
+    """
     generator.eval()
+    encoder.eval()
+    
     enc_imgs = encoder(imgs)
     dec_imgs = generator(enc_imgs)
     save_image(imgs.data[:16], "%s/%d_img.png" % (path, epoch), nrow=4, normalize=True)
     save_image(dec_imgs.data[:16], "%s/%d_dec.png" % (path, epoch), nrow=4, normalize=True)
+    
+    encoder.train()
     generator.train()
 
 
 def print_network(net):
+    """
+    Affiche la structure d'un réseau de neurones Pytorch 
+    """
     num_params = 0
     for param in net.parameters():
         num_params += param.numel()
@@ -195,12 +213,18 @@ def print_network(net):
 
 
 def comp(s):
+    """
+    Fonction de comparaison pour trier des noms de fichiers numéroter
+    """
     s = s.split("/")[-1]  # Nom du fichier
     num = s.split(".")[0]  # Numéro dans le nom du fichier
 
     return int(num)
 
 def generate_animation(path, fps=1):
+    """
+    Création d'un gif à partir un dossier contenant des images numéroter dans l'ordre d'apparition. 
+    """
     import imageio
     images_path = glob(path + '[0-9]*.png')
 

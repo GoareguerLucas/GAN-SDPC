@@ -15,20 +15,9 @@ try:
 except:
     pass
 
-
-def show_tensor(sample_tensor, epoch):
-    #figure, axes = plt.subplots(1, len(sample_tensor), figsize = (IMAGE_SIZE, IMAGE_SIZE))
-    # for index, axis in enumerate(axes):
-    #   axis.axis('off')
-
-    tensor_view = sample_tensor.permute(1, 2, 0)
-
-    print(tensor_view.shape)
-
-    plt.imshow(np.asarray(tensor_view))
-
-    plt.show()
-
+# ----------
+# Procédure de chargement des datasets
+# ----------
 
 class SimpsonsDataset(Dataset):
     def __init__(self, dir_path, height, width, transforms=None, mode="RGB"):
@@ -50,9 +39,6 @@ class SimpsonsDataset(Dataset):
         single_image_label = self.labels[index]
         # Read each pixels and reshape the 1D array to 2D array
         img_as_np = np.asarray(Image.open(self.files[index]).resize((self.height, self.width))).astype('uint8')
-        # Convert image from numpy array to PIL image
-        #img_as_img = Image.fromarray(img_as_np)
-        #img_as_img = img_as_img.convert('RGB')
 
         # Transform image to tensor
         if self.transforms is not None:
@@ -73,7 +59,6 @@ class SimpsonsDataset(Dataset):
     def __len__(self):
         return len(self.files)
 
-
 class FastSimpsonsDataset(Dataset):
     def __init__(self, dir_path, height, width, transform, mode="RGB"):
         """
@@ -93,8 +78,6 @@ class FastSimpsonsDataset(Dataset):
         # Chargement des images
         self.imgs = list()
         for img in self.files:
-
-            #img_as_np = np.asarray(Image.open(img).resize((self.height, self.width))).astype('uint8')
             img_as_img = Image.open(img).resize((self.height, self.width))
 
             # Use HSV format
@@ -104,8 +87,6 @@ class FastSimpsonsDataset(Dataset):
                 HSV_array = rgb2hsv(array)
                 img_as_img = Image.fromarray(HSV_array, mode="HSV")
                 # print(HSV.shape)
-                #img_as_tensor = torch.from_numpy(array).permute(2, 1, 0)
-                # print(img_as_tensor.shape)
 
             self.imgs.append(img_as_img)
 
@@ -177,6 +158,8 @@ class FastFDD(Dataset):
 class FastClassifiedDataset(Dataset):
     def __init__(self, dir_path, height, width, transform_constante=None, transform_tmp=None,):
         """
+        NON FONCTIONNEL !!
+        
         Args:
                 dir_path (string): path to dir conteint exclusively images png
                 height (int): image height
@@ -248,6 +231,22 @@ class FastClassifiedDataset(Dataset):
         return len(self.files)
 
 
+
+
+def show_tensor(sample_tensor, epoch):
+    """
+    Affiche un tensor torch 3D (deux dimension d'espace et un de couleur) sous la forme d'une image.
+    """
+
+    tensor_view = sample_tensor.permute(1, 2, 0)
+
+    print(tensor_view.shape)
+
+    plt.imshow(np.asarray(tensor_view))
+
+    plt.show()
+
+
 INPUT_DATA_DIR = "../cropped/cp/"
 IMAGE_SIZE = 128
 OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
@@ -255,6 +254,7 @@ OUTPUT_DIR = './{date:%Y-%m-%d_%H:%M:%S}/'.format(date=datetime.datetime.now())
 
 if __name__ == "__main__":
 
+    """
     # Name space test
     
     INPUT_DATA_DIR = "../Dataset/FDD/data/kbc_light/"
@@ -269,7 +269,7 @@ if __name__ == "__main__":
     print("Vecteur :",x[2])
     print("Label :",x[1])
     #show_tensor(x[0], 1)
-    
+    """
     
     """
     # Fast Classified Dataset test
