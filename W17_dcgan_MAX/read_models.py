@@ -26,12 +26,12 @@ parser.add_argument("-t", "--tag", type=str, default='',
                     help="Nom du fichier contenant les résultats")
 parser.add_argument("-s", "--sample", type=int, default=24, help="Nombre de sample générer dans l'image")
 parser.add_argument("--nrow", type=int, default=8, help="Nombre de ligne de sample dans l'image")
-parser.add_argument("--padding", type=int, default=2, help="Taille de l'espace entre chaque sample")
+parser.add_argument("--results_padding", type=int, default=2, help="Taille de l'espace entre chaque sample")
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
 parser.add_argument("--kernels_size", type=int, default=9, help="Taille des kernels")
-parser.add_argument("--padding", type=int, default=4, help="Taille du padding")
+parser.add_argument("--padding", type=int, default=4, help="Taille du padding des convolution")
 parser.add_argument("-i", "--img_size", type=int, default=128, help="size of each image dimension")
 parser.add_argument("--channels", type=int, default=3, help="number of image channels")
 parser.add_argument("-v", "--verbose", action="store_true",
@@ -112,5 +112,5 @@ Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 # Génération
 N = opt.sample
 noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
-sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=opt.nrow, padding=opt.padding)
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=opt.nrow, padding=opt.results_padding)
 
