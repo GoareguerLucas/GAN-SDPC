@@ -20,12 +20,12 @@ from utils import *
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--model_path", type=str, default='models/last_G.pt',
                     help="Chemin vers le générateur à charger")
-parser.add_argument("-s", "--seed_path", type=str, default='seeds.txt',
-                    help="Chemin vers le fichier contenant les seeds à générer.")
 parser.add_argument("-r", "--results_path", type=str, default='results',
                     help="Dossier contenant les résultats")
-parser.add_argument("-t", "--tag", type=str, default='image',
+parser.add_argument("-t", "--tag", type=str, default='',
                     help="Nom du fichier contenant les résultats")
+parser.add_argument("-s", "--sample", type=int, default=24, help="Nombre de sample générer dans l'image")
+parser.add_argument("--nrow", type=int, default=8, help="Nombre de ligne de sample dans l'image")
 parser.add_argument("--eps", type=float, default=0.5, help="batchnorm: espilon for numerical stability")
 parser.add_argument("--lrelu", type=float, default=0.000001, help="LeakyReLU : alpha")
 parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
@@ -109,7 +109,7 @@ if cuda:
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 # Génération
-N = 60*100
+N = opt.sample
 noise = Variable(Tensor(np.random.normal(0, 1, (N, opt.latent_dim))))
-sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=100)
+sampling(noise, generator, opt.results_path, 0, tag=opt.tag, nrow=opt.nrow)
 
