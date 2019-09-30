@@ -116,14 +116,14 @@ def load_models(discriminator, optimizer_D, generator, optimizer_G, n_epochs, mo
 
     return start_epoch + 1  # La dernière epoch est déjà faite
 
-def sampling(noise, generator, path, epoch, tag='', nrow=5):
+def sampling(noise, generator, path, epoch, tag='', nrow=5, padding=2):
     """
     Utilise generator et noise pour générer une images sauvegarder à path/epoch.png
     Le sample est efféctuer en mode eval pour generator puis il est de nouveau régler en mode train.
     """
     generator.eval()
     gen_imgs = generator(noise)
-    save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=nrow, normalize=True)
+    save_image(gen_imgs.data[:], "%s/%s%d.png" % (path, tag, epoch), nrow=nrow, padding=padding, normalize=True)
     generator.train()
 
 
