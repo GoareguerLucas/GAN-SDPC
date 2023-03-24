@@ -31,7 +31,7 @@ tb-nightly==1.15.0a20190617
 tensorboard==1.14.0
 tensorflow==1.12.2
 tensorflow-estimator==1.14.0rc1
-tensorflow-gpu==1.14.0rc1
+tensorflow-gpu==2.12.0
 termcolor==1.1.0
 torch==1.1.0
 torchvision==0.3.0
